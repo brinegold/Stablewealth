@@ -316,129 +316,127 @@ async function distributeTonStakingProfits() {
 
       // Only distribute if today is the next distribution date or later
       if (today >= nextDistributionDateStr) {
-        // Only distribute if today is the next distribution date or later
-        if (today >= nextDistributionDateStr) {
-          // Calculate daily profit for TON staking (in TON coins)
-          const dailyProfitRate = plan.daily_percentage / 100
-          const profitAmount = plan.amount * dailyProfitRate
+        // Calculate daily profit for TON staking (in TON coins)
+        const dailyProfitRate = plan.daily_percentage / 100
+        const profitAmount = plan.amount * dailyProfitRate
 
-          // Add to staking distributions (distribute for today)
-          stakingDistributions.push({
-            staking_plan_id: plan.id,
-            user_id: plan.user_id,
-            profit_amount: profitAmount,
-            distribution_date: today
-          })
+        // Add to staking distributions (distribute for today)
+        stakingDistributions.push({
+          staking_plan_id: plan.id,
+          user_id: plan.user_id,
+          profit_amount: profitAmount,
+          distribution_date: today
+        })
 
-          // Accumulate user updates (TON coins)
-          if (stakingUserUpdates.has(plan.user_id)) {
-            stakingUserUpdates.set(plan.user_id, stakingUserUpdates.get(plan.user_id) + profitAmount)
-          } else {
-            stakingUserUpdates.set(plan.user_id, profitAmount)
-          }
-
-          console.log(`Queued TON staking profit for plan ${plan.id} on ${today} at ${new Date().toLocaleTimeString()}: ${profitAmount.toFixed(2)} TON`)
+        // Accumulate user updates (TON coins)
+        if (stakingUserUpdates.has(plan.user_id)) {
+          stakingUserUpdates.set(plan.user_id, stakingUserUpdates.get(plan.user_id) + profitAmount)
         } else {
-          console.log(`Staking plan ${plan.id} next distribution date is ${nextDistributionDateStr}, today is ${today}`)
+          stakingUserUpdates.set(plan.user_id, profitAmount)
         }
+
+        console.log(`Queued TON staking profit for plan ${plan.id} on ${today} at ${new Date().toLocaleTimeString()}: ${profitAmount.toFixed(2)} TON`)
+      } else {
+        console.log(`Staking plan ${plan.id} next distribution date is ${nextDistributionDateStr}, today is ${today}`)
       }
-
-      if (stakingDistributions.length === 0) {
-        console.log('No new TON staking profits to distribute')
-        return
-      }
-
-      // Insert TON staking distributions
-      const { error: distributionError } = await supabaseAdmin
-        .from('ton_staking_distributions')
-        .insert(stakingDistributions)
-
-      if (distributionError) {
-        console.error('Error inserting TON staking distributions:', distributionError)
-        return
-      }
-
-      // Update user TON balances
-      const userIds = Array.from(stakingUserUpdates.keys())
-      for (const userId of userIds) {
-        const totalProfit = stakingUserUpdates.get(userId)!;
-        // Get current TON balance
-        const { data: currentProfile, error: fetchError } = await supabaseAdmin
-          .from('profiles')
-          .select('total_jarvis_tokens')
-          .eq('id', userId)
-          .single()
-
-        if (fetchError) {
-          console.error(`Error fetching profile for user ${userId}:`, fetchError)
-          continue
-        }
-
-        // Update TON balance
-        const { error: updateError } = await supabaseAdmin
-          .from('profiles')
-          .update({
-            total_jarvis_tokens: (currentProfile.total_jarvis_tokens || 0) + totalProfit
-          })
-          .eq('id', userId)
-
-        if (updateError) {
-          console.error(`Error updating TON balance for user ${userId}:`, updateError)
-          continue
-        }
-
-        // Create TON profit transaction
-        const { error: transactionError } = await supabaseAdmin
-          .from('transactions')
-          .insert({
-            user_id: userId,
-            transaction_type: 'profit',
-            amount: totalProfit,
-            net_amount: totalProfit,
-            status: 'completed',
-            description: 'Daily TON staking profit'
-          })
-
-        if (transactionError) {
-          console.error(`Error creating TON staking transaction for user ${userId}:`, transactionError)
-        }
-
-        console.log(`Updated TON balance for user ${userId}: +${totalProfit.toFixed(2)} TON`)
-      }
-
-      // Update staking plans total profit earned
-      for (const distribution of stakingDistributions) {
-        // Get current total profit earned first
-        const { data: currentPlan, error: fetchPlanError } = await supabaseAdmin
-          .from('ton_staking_plans')
-          .select('total_profit_earned')
-          .eq('id', distribution.staking_plan_id)
-          .single()
-
-        if (fetchPlanError) {
-          console.error(`Error fetching staking plan ${distribution.staking_plan_id}:`, fetchPlanError)
-          continue
-        }
-
-        const { error: planUpdateError } = await supabaseAdmin
-          .from('ton_staking_plans')
-          .update({
-            total_profit_earned: (currentPlan.total_profit_earned || 0) + distribution.profit_amount
-          })
-          .eq('id', distribution.staking_plan_id)
-
-        if (planUpdateError) {
-          console.error(`Error updating staking plan ${distribution.staking_plan_id}:`, planUpdateError)
-        }
-      }
-
-      console.log(`Successfully distributed TON staking profits to ${stakingUserUpdates.size} users`)
-      console.log(`Total TON staking distributions: ${stakingDistributions.length}`)
-
-    } catch (error) {
-      console.error('Error in TON staking profit distribution:', error)
     }
+
+    if (stakingDistributions.length === 0) {
+      console.log('No new TON staking profits to distribute')
+      return
+    }
+
+    // Insert TON staking distributions
+    const { error: distributionError } = await supabaseAdmin
+      .from('ton_staking_distributions')
+      .insert(stakingDistributions)
+
+    if (distributionError) {
+      console.error('Error inserting TON staking distributions:', distributionError)
+      return
+    }
+
+    // Update user TON balances
+    const userIds = Array.from(stakingUserUpdates.keys())
+    for (const userId of userIds) {
+      const totalProfit = stakingUserUpdates.get(userId)!;
+      // Get current TON balance
+      const { data: currentProfile, error: fetchError } = await supabaseAdmin
+        .from('profiles')
+        .select('total_jarvis_tokens')
+        .eq('id', userId)
+        .single()
+
+      if (fetchError) {
+        console.error(`Error fetching profile for user ${userId}:`, fetchError)
+        continue
+      }
+
+      // Update TON balance
+      const { error: updateError } = await supabaseAdmin
+        .from('profiles')
+        .update({
+          total_jarvis_tokens: (currentProfile.total_jarvis_tokens || 0) + totalProfit
+        })
+        .eq('id', userId)
+
+      if (updateError) {
+        console.error(`Error updating TON balance for user ${userId}:`, updateError)
+        continue
+      }
+
+      // Create TON profit transaction
+      const { error: transactionError } = await supabaseAdmin
+        .from('transactions')
+        .insert({
+          user_id: userId,
+          transaction_type: 'profit',
+          amount: totalProfit,
+          net_amount: totalProfit,
+          status: 'completed',
+          description: 'Daily TON staking profit'
+        })
+
+      if (transactionError) {
+        console.error(`Error creating TON staking transaction for user ${userId}:`, transactionError)
+      }
+
+      console.log(`Updated TON balance for user ${userId}: +${totalProfit.toFixed(2)} TON`)
+    }
+
+    // Update staking plans total profit earned
+    for (const distribution of stakingDistributions) {
+      // Get current total profit earned first
+      const { data: currentPlan, error: fetchPlanError } = await supabaseAdmin
+        .from('ton_staking_plans')
+        .select('total_profit_earned')
+        .eq('id', distribution.staking_plan_id)
+        .single()
+
+      if (fetchPlanError) {
+        console.error(`Error fetching staking plan ${distribution.staking_plan_id}:`, fetchPlanError)
+        continue
+      }
+
+      const { error: planUpdateError } = await supabaseAdmin
+        .from('ton_staking_plans')
+        .update({
+          total_profit_earned: (currentPlan.total_profit_earned || 0) + distribution.profit_amount
+        })
+        .eq('id', distribution.staking_plan_id)
+
+      if (planUpdateError) {
+        console.error(`Error updating staking plan ${distribution.staking_plan_id}:`, planUpdateError)
+      }
+    }
+
+    console.log(`Successfully distributed TON staking profits to ${stakingUserUpdates.size} users`)
+    console.log(`Total TON staking distributions: ${stakingDistributions.length}`)
+
+  } catch (error) {
+    console.error('Error in TON staking profit distribution:', error)
   }
+}
 
 // Profit distribution is now handled via:
 // 1. External cron jobs calling /api/auto-profit-distribution
@@ -446,18 +444,18 @@ async function distributeTonStakingProfits() {
 
 // Manual trigger function for testing
 export async function triggerProfitDistribution() {
-    console.log('Manually triggering daily profit distribution...')
-    await distributeProfits()
-  }
+  console.log('Manually triggering daily profit distribution...')
+  await distributeProfits()
+}
 
-  // Manual trigger for investment profits only
-  export async function triggerInvestmentProfitDistribution() {
-    console.log('Manually triggering investment profit distribution...')
-    await distributeInvestmentProfits()
-  }
+// Manual trigger for investment profits only
+export async function triggerInvestmentProfitDistribution() {
+  console.log('Manually triggering investment profit distribution...')
+  await distributeInvestmentProfits()
+}
 
-  // Manual trigger for TON staking profits only
-  export async function triggerTonStakingProfitDistribution() {
-    console.log('Manually triggering TON staking profit distribution...')
-    await distributeTonStakingProfits()
-  }
+// Manual trigger for TON staking profits only
+export async function triggerTonStakingProfitDistribution() {
+  console.log('Manually triggering TON staking profit distribution...')
+  await distributeTonStakingProfits()
+}

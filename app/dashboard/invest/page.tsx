@@ -144,7 +144,7 @@ export default function InvestPage() {
         await dualReferralService.processDualReferralCommissions({
           userId: user?.id || '',
           amount: investAmount,
-          jrcEarned: coinsEarned,
+          tonEarned: coinsEarned,
           transactionType: 'investment',
           planType: plan.name
         })

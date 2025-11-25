@@ -140,7 +140,7 @@ export default function TonStakingPage() {
         await dualReferralService.processDualReferralCommissions({
           userId: user?.id || '',
           amount: usdtEquivalent,
-          jrcEarned: stakingAmount, // TON staking - the staked amount is the TON earned for referral calculation
+          tonEarned: stakingAmount, // TON staking - the staked amount is the TON earned for referral calculation
           transactionType: 'staking',
           planType: `TON ${selectedPeriod?.label} at ${selectedPeriod?.apy} APY`
         })
