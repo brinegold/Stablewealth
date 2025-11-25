@@ -25,7 +25,7 @@ import { useOptimizedData } from '@/hooks/useOptimizedData'
 
 // Lazy load heavy components
 const IncomeModal = lazy(() => import('@/components/dashboard/IncomeModal'))
-const JrcPurchaseModal = lazy(() => import('@/components/dashboard/JrcPurchaseModal'))
+const TonPurchaseModal = lazy(() => import('@/components/dashboard/TonPurchaseModal'))
 
 interface Profile {
   id: string
@@ -46,7 +46,7 @@ interface InvestmentPlan {
   created_at: string
 }
 
-interface JrcStakingPlan {
+interface TonStakingPlan {
   id: string
   user_id: string
   amount: number
@@ -70,21 +70,21 @@ export default function DashboardPage() {
   const [incomeData, setIncomeData] = useState<any[]>([])
   const [referralCommissions, setReferralCommissions] = useState(0)
   const [referralUsdtEarned, setReferralUsdtEarned] = useState(0)
-  const [referralJrcEarned, setReferralJrcEarned] = useState(0)
+  const [referralTonEarned, setReferralTonEarned] = useState(0)
   const [totalReferrals, setTotalReferrals] = useState(0)
   const [teamInvestment, setTeamInvestment] = useState(0)
-  const [totalJrcStaked, setTotalJrcStaked] = useState(0)
+  const [totalTonStaked, setTotalTonStaked] = useState(0)
   const [plans, setPlans] = useState<InvestmentPlan[]>([])
-  const [jrcStakingPlans, setJrcStakingPlans] = useState<JrcStakingPlan[]>([])
-  const [totalJrcEarned, setTotalJrcEarned] = useState(0)
+  const [tonStakingPlans, setTonStakingPlans] = useState<TonStakingPlan[]>([])
+  const [totalTonEarned, setTotalTonEarned] = useState(0)
   const [stakingIncome, setStakingIncome] = useState(0)
   const [loadingData, setLoadingData] = useState(true)
   const [showSkeleton, setShowSkeleton] = useState(false) // Always false - no skeleton
-  const [showJrcModal, setShowJrcModal] = useState(false)
-  const [jrcAmount, setJrcAmount] = useState('')
-  const [jrcPurchasing, setJrcPurchasing] = useState(false)
-  const [jrcError, setJrcError] = useState('')
-  const [jrcSuccess, setJrcSuccess] = useState('')
+  const [showTonModal, setShowTonModal] = useState(false)
+  const [tonAmount, setTonAmount] = useState('')
+  const [tonPurchasing, setTonPurchasing] = useState(false)
+  const [tonError, setTonError] = useState('')
+  const [tonSuccess, setTonSuccess] = useState('')
   const supabase = createSupabaseClient()
 
   useEffect(() => {
@@ -105,7 +105,7 @@ export default function DashboardPage() {
       const [
         profileResult,
         plansResult,
-        jrcStakingResult,
+        tonStakingResult,
         profitDistributionsResult,
         legacyCommissionsResult
       ] = await Promise.allSettled([
@@ -123,9 +123,9 @@ export default function DashboardPage() {
           .eq('user_id', user?.id)
           .eq('is_active', true),
 
-        // JRC staking plans query
+        // TON staking plans query
         supabase
-          .from('jrc_staking_plans')
+          .from('ton_staking_plans')
           .select('*')
           .eq('user_id', user?.id)
           .order('created_at', { ascending: false }),
@@ -187,20 +187,20 @@ export default function DashboardPage() {
         }
       }
 
-      // Process JRC staking data
-      if (jrcStakingResult.status === 'fulfilled' && !jrcStakingResult.value.error) {
-        const jrcStakingData = jrcStakingResult.value.data || []
-        setJrcStakingPlans(jrcStakingData)
+      // Process TON staking data
+      if (tonStakingResult.status === 'fulfilled' && !tonStakingResult.value.error) {
+        const tonStakingData = tonStakingResult.value.data || []
+        setTonStakingPlans(tonStakingData)
 
-        // Calculate total JRC earned and staked
-        const totalJrcEarned = jrcStakingData.reduce((sum: number, plan: JrcStakingPlan) =>
+        // Calculate total TON earned and staked
+        const totalTonEarned = tonStakingData.reduce((sum: number, plan: TonStakingPlan) =>
           sum + (plan.total_profit_earned || 0), 0)
-        setTotalJrcEarned(totalJrcEarned)
+        setTotalTonEarned(totalTonEarned)
 
-        const totalStaked = jrcStakingData
-          .filter((plan: JrcStakingPlan) => plan.status === 'active')
-          .reduce((sum: number, plan: JrcStakingPlan) => sum + (plan.amount || 0), 0)
-        setTotalJrcStaked(totalStaked)
+        const totalStaked = tonStakingData
+          .filter((plan: TonStakingPlan) => plan.status === 'active')
+          .reduce((sum: number, plan: TonStakingPlan) => sum + (plan.amount || 0), 0)
+        setTotalTonStaked(totalStaked)
       }
 
       // Process referral data in parallel after profile is available
@@ -212,7 +212,7 @@ export default function DashboardPage() {
           // Optimized referral stats (simplified)
           supabase
             .from('referral_commissions')
-            .select('commission_amount, jrc_commission, level, referred_id')
+            .select('commission_amount, ton_commission, level, referred_id')
             .eq('referrer_id', user?.id),
 
           // Direct referrals for team investment
@@ -226,11 +226,11 @@ export default function DashboardPage() {
         if (referralStatsResult.status === 'fulfilled' && !referralStatsResult.value.error) {
           const commissions = referralStatsResult.value.data || []
           const totalUsdtEarned = commissions.reduce((sum, c) => sum + (c.commission_amount || 0), 0)
-          const totalJrcEarned = commissions.reduce((sum, c) => sum + (c.jrc_commission || 0), 0)
+          const totalTonEarned = commissions.reduce((sum, c) => sum + (c.ton_commission || 0), 0)
 
           setReferralCommissions(totalUsdtEarned)
           setReferralUsdtEarned(totalUsdtEarned)
-          setReferralJrcEarned(totalJrcEarned)
+          setReferralTonEarned(totalTonEarned)
 
           // Count unique referrals from commissions
           const uniqueReferrals = new Set(commissions.map(c => c.referred_id)).size
@@ -337,14 +337,14 @@ export default function DashboardPage() {
           break
 
         case 'staking-referral':
-          // Fetch JRC staking plans and distributions
-          const { data: stakingPlans, error: jrcStakingError } = await supabase
-            .from('jrc_staking_plans')
+          // Fetch TON staking plans and distributions
+          const { data: stakingPlans, error: tonStakingError } = await supabase
+            .from('ton_staking_plans')
             .select('*')
             .eq('user_id', user?.id)
             .order('created_at', { ascending: false })
 
-          if (!jrcStakingError) {
+          if (!tonStakingError) {
             setIncomeData(stakingPlans || [])
           }
           break
@@ -365,30 +365,30 @@ export default function DashboardPage() {
     router.push('/')
   }
 
-  const handleJrcPurchase = async () => {
-    if (!jrcAmount || !profile) return
+  const handleTonPurchase = async () => {
+    if (!tonAmount || !profile) return
 
-    setJrcPurchasing(true)
-    setJrcError('')
-    setJrcSuccess('')
+    setTonPurchasing(true)
+    setTonError('')
+    setTonSuccess('')
 
-    const coinsToBuy = parseFloat(jrcAmount)
+    const coinsToBuy = parseFloat(tonAmount)
 
     // Validation
     if (coinsToBuy <= 0) {
-      setJrcError('Please enter a valid amount of JRC coins to purchase')
-      setJrcPurchasing(false)
+      setTonError('Please enter a valid amount of TON coins to purchase')
+      setTonPurchasing(false)
       return
     }
 
     try {
-      const response = await fetch('/api/jrc/purchase', {
+      const response = await fetch('/api/ton/purchase', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          jrcAmount: jrcAmount,
+          tonAmount: tonAmount,
           userId: user.id
         })
       })
@@ -396,29 +396,29 @@ export default function DashboardPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to purchase JRC coins')
+        throw new Error(data.error || 'Failed to purchase TON coins')
       }
 
       // Update local state with response data
       setProfile((prev: any) => ({
         ...prev,
         fund_wallet_balance: data.newFundBalance,
-        total_jarvis_tokens: data.newJrcBalance
+        total_jarvis_tokens: data.newTonBalance
       }))
 
-      setJrcSuccess(data.message)
-      setJrcAmount('')
+      setTonSuccess(data.message)
+      setTonAmount('')
 
       // Close modal after 2 seconds
       setTimeout(() => {
-        setShowJrcModal(false)
-        setJrcSuccess('')
+        setShowTonModal(false)
+        setTonSuccess('')
       }, 2000)
 
     } catch (error: any) {
-      setJrcError(error.message || 'Failed to purchase JRC coins')
+      setTonError(error.message || 'Failed to purchase TON coins')
     } finally {
-      setJrcPurchasing(false)
+      setTonPurchasing(false)
     }
   }
 
@@ -546,7 +546,7 @@ export default function DashboardPage() {
         {/* Staking Notice */}
         <div className="bg-blue-600/20 border border-blue-500 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 overflow-hidden">
           <div className="whitespace-nowrap animate-marquee">
-            <p className="text-white inline-block">Staking Started from 10 USDT: Earn 5% daily on USDT and JRC. Referral Commission up to 10 Levels</p>
+            <p className="text-white inline-block">Staking Started from 10 USDT: Earn 3% daily on USDT and TON. Referral Commission up to 10 Levels</p>
           </div>
         </div>
 
@@ -589,14 +589,14 @@ export default function DashboardPage() {
                 <Coins className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
               </div>
               <div>
-                <h3 className="text-white font-semibold text-sm sm:text-base">Jarvis Coins</h3>
-                <p className="text-lg sm:text-2xl font-bold text-yellow-400">{profile.total_jarvis_tokens.toLocaleString()} JRC</p>
-                <p className="text-gray-300 text-xs sm:text-sm mb-2">$0.1 per JRC</p>
+                <h3 className="text-white font-semibold text-sm sm:text-base">Ton Coins</h3>
+                <p className="text-lg sm:text-2xl font-bold text-yellow-400">{profile.total_jarvis_tokens.toLocaleString()} TON</p>
+                <p className="text-gray-300 text-xs sm:text-sm mb-2">$0.1 per TON</p>
                 <button
-                  onClick={() => setShowJrcModal(true)}
+                  onClick={() => setShowTonModal(true)}
                   className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 sm:px-4 rounded-full text-xs sm:text-sm font-semibold mt-2 transition-colors"
                 >
-                  BUY JRC
+                  BUY TON
                 </button>
               </div>
             </div>
@@ -627,7 +627,7 @@ export default function DashboardPage() {
 
           <Link href="/dashboard/bnx-staking" className="jarvis-card rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center hover:scale-105 transition-transform">
             <Coins className="h-6 w-6 sm:h-8 sm:w-8 text-orange-400 mx-auto mb-2" />
-            <p className="text-white font-semibold text-xs sm:text-sm">JRC Staking</p>
+            <p className="text-white font-semibold text-xs sm:text-sm">TON Staking</p>
           </Link>
 
           <Link href="/dashboard/referral" className="jarvis-card rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center hover:scale-105 transition-transform">
@@ -648,7 +648,7 @@ export default function DashboardPage() {
             <div className="flex items-center space-x-2 sm:space-x-3">
               <Coins className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400" />
               <div>
-                <p className="text-white font-semibold text-sm sm:text-base">JRC Referral Coin</p>
+                <p className="text-white font-semibold text-sm sm:text-base">TON Referral Coin</p>
                 <button
                   onClick={() => handleViewIncome('tokens')}
                   className="text-blue-400 text-xs sm:text-sm hover:text-blue-300"
@@ -657,7 +657,7 @@ export default function DashboardPage() {
                 </button>
               </div>
             </div>
-            <p className="text-white font-bold text-sm sm:text-base">{referralJrcEarned.toLocaleString()} JRC</p>
+            <p className="text-white font-bold text-sm sm:text-base">{referralTonEarned.toLocaleString()} TON</p>
           </div>
 
 
@@ -699,7 +699,7 @@ export default function DashboardPage() {
             <div className="flex items-center space-x-2 sm:space-x-3">
               <Users className="h-5 w-5 sm:h-6 sm:w-6 text-orange-400" />
               <div>
-                <p className="text-white font-semibold text-sm sm:text-base">Jarvis Staking Reward</p>
+                <p className="text-white font-semibold text-sm sm:text-base">TON Staking Reward</p>
                 <button
                   onClick={() => handleViewIncome('staking-referral')}
                   className="text-blue-400 text-xs sm:text-sm hover:text-blue-300"
@@ -708,7 +708,7 @@ export default function DashboardPage() {
                 </button>
               </div>
             </div>
-            <p className="text-white font-bold text-sm sm:text-base">JRC {totalJrcEarned.toFixed(2)}</p>
+            <p className="text-white font-bold text-sm sm:text-base">TON {totalTonEarned.toFixed(2)}</p>
           </div>
         </div>
 
@@ -738,7 +738,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="text-center">
                   <p className="text-gray-300 text-xs sm:text-sm">Stable Wealth</p>
-                  <p className="text-lg sm:text-2xl font-bold text-white">{(totalJrcStaked || 0).toLocaleString()} JRC</p>
+                  <p className="text-lg sm:text-2xl font-bold text-white">{(totalTonStaked || 0).toLocaleString()} TON</p>
                 </div>
               </div>
             </div>
@@ -761,15 +761,15 @@ export default function DashboardPage() {
 
       {/* JRC Purchase Modal - Lazy Loaded */}
       <Suspense fallback={null}>
-        <JrcPurchaseModal
-          showJrcModal={showJrcModal}
-          setShowJrcModal={setShowJrcModal}
-          jrcAmount={jrcAmount}
-          setJrcAmount={setJrcAmount}
-          jrcPurchasing={jrcPurchasing}
-          jrcError={jrcError}
-          jrcSuccess={jrcSuccess}
-          handleJrcPurchase={handleJrcPurchase}
+        <TonPurchaseModal
+          showTonModal={showTonModal}
+          setShowTonModal={setShowTonModal}
+          tonAmount={tonAmount}
+          setTonAmount={setTonAmount}
+          tonPurchasing={tonPurchasing}
+          tonError={tonError}
+          tonSuccess={tonSuccess}
+          handleTonPurchase={handleTonPurchase}
         />
       </Suspense>
     </div>

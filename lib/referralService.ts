@@ -3,13 +3,13 @@ import { createSupabaseClient } from './supabase'
 export interface ReferralCommissionRates {
   level: number
   usdtRate: number // Percentage for USDT commission
-  jrcRate: number  // Percentage for JRC coin commission
+  tonRate: number  // Percentage for TON coin commission
 }
 
 export interface ReferralTransaction {
   userId: string
   amount: number
-  jrcEarned?: number // JRC coins earned by the user (for calculating JRC commission)
+  tonEarned?: number // TON coins earned by the user (for calculating TON commission)
   transactionType: 'staking' | 'investment' | 'deposit'
   planType?: string
 }
@@ -19,12 +19,12 @@ export class DualReferralService {
 
   // 6-level referral commission structure for USDT staking
   private readonly commissionRates: ReferralCommissionRates[] = [
-    { level: 1, usdtRate: 10, jrcRate: 0 },   // Level 1: 10% USDT
-    { level: 2, usdtRate: 5, jrcRate: 0 },    // Level 2: 5% USDT
-    { level: 3, usdtRate: 3, jrcRate: 0 },    // Level 3: 3% USDT
-    { level: 4, usdtRate: 2, jrcRate: 0 },    // Level 4: 2% USDT
-    { level: 5, usdtRate: 1, jrcRate: 0 },    // Level 5: 1% USDT
-    { level: 6, usdtRate: 0.5, jrcRate: 0 }   // Level 6: 0.5% USDT
+    { level: 1, usdtRate: 10, tonRate: 0 },   // Level 1: 10% USDT
+    { level: 2, usdtRate: 5, tonRate: 0 },    // Level 2: 5% USDT
+    { level: 3, usdtRate: 3, tonRate: 0 },    // Level 3: 3% USDT
+    { level: 4, usdtRate: 2, tonRate: 0 },    // Level 4: 2% USDT
+    { level: 5, usdtRate: 1, tonRate: 0 },    // Level 5: 1% USDT
+    { level: 6, usdtRate: 0.5, tonRate: 0 }   // Level 6: 0.5% USDT
   ]
 
   /**
@@ -51,7 +51,7 @@ export class DualReferralService {
           referrer.id,
           transaction.userId,
           transaction.amount,
-          transaction.jrcEarned || 0,
+          transaction.tonEarned || 0,
           rates,
           transaction.transactionType,
           transaction.planType
@@ -105,13 +105,13 @@ export class DualReferralService {
   }
 
   /**
-   * Pay dual commission (USDT + JRC) to a referrer
+   * Pay dual commission (USDT + TON) to a referrer
    */
   private async payDualCommission(
     referrerId: string,
     referredUserId: string,
     transactionAmount: number,
-    jrcEarned: number,
+    tonEarned: number,
     rates: ReferralCommissionRates,
     transactionType: string,
     planType?: string
@@ -119,15 +119,15 @@ export class DualReferralService {
     try {
       // Calculate commissions
       const usdtCommission = (transactionAmount * rates.usdtRate) / 100
-      const jrcCommission = (jrcEarned * rates.jrcRate) / 100 // JRC coins based on actual JRC earned
+      const tonCommission = (tonEarned * rates.tonRate) / 100 // TON coins based on actual TON earned
 
       console.log(`🧮 Commission Calculation for Level ${rates.level}:`)
       console.log(`   Transaction Amount: $${transactionAmount}`)
-      console.log(`   JRC Earned: ${jrcEarned}`)
+      console.log(`   TON Earned: ${tonEarned}`)
       console.log(`   USDT Rate: ${rates.usdtRate}%`)
-      console.log(`   JRC Rate: ${rates.jrcRate}%`)
+      console.log(`   TON Rate: ${rates.tonRate}%`)
       console.log(`   USDT Commission: $${usdtCommission}`)
-      console.log(`   JRC Commission: ${jrcCommission} JRC`)
+      console.log(`   TON Commission: ${tonCommission} TON`)
       console.log(`   Paying to referrer: ${referrerId}`)
 
       // Get current referrer balances
@@ -143,13 +143,13 @@ export class DualReferralService {
 
       // Update referrer balances
       const newUsdtBalance = referrer.main_wallet_balance + usdtCommission
-      const newJrcBalance = referrer.total_jarvis_tokens + jrcCommission
+      const newTonBalance = referrer.total_jarvis_tokens + tonCommission
 
       const { error: updateError } = await this.supabase
         .from('profiles')
         .update({
           main_wallet_balance: newUsdtBalance,
-          total_jarvis_tokens: newJrcBalance
+          total_jarvis_tokens: newTonBalance
         })
         .eq('id', referrerId)
 
@@ -168,23 +168,23 @@ export class DualReferralService {
         planType
       )
 
-      // Create JRC commission transaction
+      // Create TON commission transaction
       await this.createCommissionTransaction(
         referrerId,
         referredUserId,
-        jrcCommission,
-        'JRC',
+        tonCommission,
+        'TON',
         rates.level,
         transactionType,
         planType
       )
 
-      // Create referral commission record (we'll create one record for USDT, JRC info will be in additional columns)
+      // Create referral commission record (we'll create one record for USDT, TON info will be in additional columns)
       await this.createReferralCommissionRecord(
         referrerId,
         referredUserId,
         usdtCommission,
-        jrcCommission,
+        tonCommission,
         rates.level,
         transactionType,
         planType,
@@ -204,7 +204,7 @@ export class DualReferralService {
     referrerId: string,
     referredUserId: string,
     amount: number,
-    currency: 'USDT' | 'JRC',
+    currency: 'USDT' | 'TON',
     level: number,
     transactionType: string,
     planType?: string
@@ -235,14 +235,14 @@ export class DualReferralService {
     referrerId: string,
     referredUserId: string,
     usdtAmount: number,
-    jrcAmount: number,
+    tonAmount: number,
     level: number,
     transactionType: string,
     planType?: string,
     transactionId?: string | null
   ): Promise<void> {
     try {
-      console.log(`💾 Saving referral commission: Level ${level}, USDT: ${usdtAmount}, JRC: ${jrcAmount}`)
+      console.log(`💾 Saving referral commission: Level ${level}, USDT: ${usdtAmount}, TON: ${tonAmount}`)
 
       // Insert with dual commission format
       const { error: insertError } = await this.supabase
@@ -253,10 +253,10 @@ export class DualReferralService {
           transaction_id: transactionId, // May be null
           commission_amount: usdtAmount, // Legacy field for backward compatibility
           usdt_commission: usdtAmount,
-          jrc_commission: jrcAmount,
+          ton_commission: tonAmount,
           level: level,
           commission_percentage: this.commissionRates[level - 1]?.usdtRate || 0,
-          jrc_percentage: this.commissionRates[level - 1]?.jrcRate || 0,
+          ton_percentage: this.commissionRates[level - 1]?.tonRate || 0,
           transaction_type: transactionType,
           plan_type: planType || null,
           created_at: new Date().toISOString(),
@@ -268,7 +268,7 @@ export class DualReferralService {
         throw insertError // Throw error to see what's wrong
       } else {
         console.log('✅ Referral commission saved successfully with dual format')
-        console.log(`📊 Saved: ${usdtAmount} USDT + ${jrcAmount} JRC for Level ${level}`)
+        console.log(`📊 Saved: ${usdtAmount} USDT + ${tonAmount} TON for Level ${level}`)
       }
     } catch (error) {
       console.error('💥 Error in createReferralCommissionRecord:', error)
@@ -360,15 +360,15 @@ export class DualReferralService {
    */
   async getReferralStats(userId: string): Promise<{
     totalUsdtEarned: number
-    totalJrcEarned: number
+    totalTonEarned: number
     totalReferrals: number
     levelStats: Array<{
       level: number
       count: number
       usdtEarned: number
-      jrcEarned: number
+      tonEarned: number
       usdtRate: number
-      jrcRate: number
+      tonRate: number
     }>
   }> {
     try {
@@ -386,7 +386,7 @@ export class DualReferralService {
       const totalUsdtEarned = commissions?.reduce((sum, c) => {
         return sum + (c.usdt_commission || c.commission_amount || 0)
       }, 0) || 0
-      const totalJrcEarned = commissions?.reduce((sum, c) => sum + (c.jrc_commission || 0), 0) || 0
+      const totalTonEarned = commissions?.reduce((sum, c) => sum + (c.ton_commission || 0), 0) || 0
 
       // Get actual referral counts by level
       const referralChain = await this.getReferralChain(userId)
@@ -409,9 +409,9 @@ export class DualReferralService {
           level: rate.level,
           count: referralCount,
           usdtEarned: levelCommissions.reduce((sum, c) => sum + (c.usdt_commission || c.commission_amount || 0), 0),
-          jrcEarned: levelCommissions.reduce((sum, c) => sum + (c.jrc_commission || 0), 0),
+          tonEarned: levelCommissions.reduce((sum, c) => sum + (c.ton_commission || 0), 0),
           usdtRate: rate.usdtRate,
-          jrcRate: rate.jrcRate
+          tonRate: rate.tonRate
         }
       }))
 
@@ -420,7 +420,7 @@ export class DualReferralService {
 
       return {
         totalUsdtEarned,
-        totalJrcEarned,
+        totalTonEarned,
         totalReferrals: allReferrals?.length || 0,
         levelStats
       }

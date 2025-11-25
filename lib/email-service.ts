@@ -13,7 +13,7 @@ interface EmailConfig {
 interface TransactionEmailData {
   userEmail: string
   userName: string
-  transactionType: 'deposit' | 'withdrawal' | 'transfer' | 'staking' | 'jrc_purchase'
+  transactionType: 'deposit' | 'withdrawal' | 'transfer' | 'staking' | 'ton_purchase'
   status: 'success' | 'failed' | 'pending'
   amount: number
   currency: string
@@ -304,7 +304,7 @@ class EmailService {
       case 'withdrawal': return 'Withdrawal'
       case 'transfer': return 'Transfer'
       case 'staking': return 'Staking'
-      case 'jrc_purchase': return 'JRC Purchase'
+      case 'ton_purchase': return 'TON Purchase'
       default: return 'Transaction'
     }
   }
@@ -346,11 +346,11 @@ class EmailService {
               <p>Your staking transaction of <strong>${this.formatNumber(amount)} ${currency}</strong> has been activated successfully.</p>
             </div>
           `
-        case 'jrc_purchase':
+        case 'ton_purchase':
           return `
             <div class="transaction-summary">
-              <div class="summary-title">JRC Purchase Confirmation</div>
-              <p>Your JRC token purchase of <strong>${this.formatNumber(amount)} ${currency}</strong> has been completed successfully.</p>
+              <div class="summary-title">TON Purchase Confirmation</div>
+              <p>Your TON token purchase of <strong>${this.formatNumber(amount)} ${currency}</strong> has been completed successfully.</p>
             </div>
           `
       }
@@ -577,11 +577,11 @@ class EmailService {
     })
   }
 
-  async sendJrcPurchaseNotification(userEmail: string, userName: string, amount: number, currency: string, status: 'success' | 'failed', transactionId?: string, errorMessage?: string): Promise<boolean> {
+  async sendTonPurchaseNotification(userEmail: string, userName: string, amount: number, currency: string, status: 'success' | 'failed', transactionId?: string, errorMessage?: string): Promise<boolean> {
     return this.sendTransactionEmail({
       userEmail,
       userName,
-      transactionType: 'jrc_purchase',
+      transactionType: 'ton_purchase',
       status,
       amount,
       currency,
@@ -632,12 +632,12 @@ class EmailService {
             
             <div class="feature-box">
               <div class="feature-title">USDT Staking Plan</div>
-              <p>Earn <strong>5% daily returns</strong> with our premium USDT staking plan. Minimum investment requirement: $10 USD.</p>
+              <p>Earn <strong>3% daily returns</strong> with our premium USDT staking plan. Minimum investment requirement: $10 USD.</p>
             </div>
             
             <div class="feature-box">
-              <div class="feature-title">JRC Token Rewards</div>
-              <p>Receive <strong>100 JRC tokens</strong> for every $10 invested. JRC tokens can be staked for additional yield generation.</p>
+              <div class="feature-title">TON Token Rewards</div>
+              <p>Receive <strong>100 TON tokens</strong> for every $10 invested. TON tokens can be staked for additional yield generation.</p>
             </div>
             
             <div class="feature-box">

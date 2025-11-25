@@ -21,7 +21,7 @@ interface InvestmentPlan {
   created_at: string
 }
 
-interface JrcStakingPlan {
+interface TonStakingPlan {
   id: string
   user_id: string
   amount: number
@@ -38,29 +38,29 @@ interface JrcStakingPlan {
 interface DashboardData {
   profile: Profile | null
   plans: InvestmentPlan[]
-  jrcStakingPlans: JrcStakingPlan[]
+  tonStakingPlans: TonStakingPlan[]
   totalProfits: number
   referralCommissions: number
   referralUsdtEarned: number
-  referralJrcEarned: number
+  referralTonEarned: number
   totalReferrals: number
   teamInvestment: number
-  totalJrcStaked: number
-  totalJrcEarned: number
+  totalTonStaked: number
+  totalTonEarned: number
 }
 
 const initialData: DashboardData = {
   profile: null,
   plans: [],
-  jrcStakingPlans: [],
+  tonStakingPlans: [],
   totalProfits: 0,
   referralCommissions: 0,
   referralUsdtEarned: 0,
-  referralJrcEarned: 0,
+  referralTonEarned: 0,
   totalReferrals: 0,
   teamInvestment: 0,
-  totalJrcStaked: 0,
-  totalJrcEarned: 0
+  totalTonStaked: 0,
+  totalTonEarned: 0
 }
 
 export function useDashboardData(userId: string | undefined) {
@@ -80,7 +80,7 @@ export function useDashboardData(userId: string | undefined) {
       const [
         profileResult,
         plansResult,
-        jrcStakingResult,
+        tonStakingResult,
         dualStatsResult
       ] = await Promise.allSettled([
         // Profile data
@@ -89,21 +89,21 @@ export function useDashboardData(userId: string | undefined) {
           .select('*')
           .eq('id', userId)
           .single(),
-        
+
         // Investment plans
         supabase
           .from('investment_plans')
           .select('*')
           .eq('user_id', userId)
           .eq('is_active', true),
-        
-        // JRC staking plans
+
+        // TON staking plans
         supabase
-          .from('jrc_staking_plans')
+          .from('ton_staking_plans')
           .select('*')
           .eq('user_id', userId)
           .order('created_at', { ascending: false }),
-        
+
         // Dual referral stats
         dualReferralService.getReferralStats(userId)
       ])
@@ -119,28 +119,28 @@ export function useDashboardData(userId: string | undefined) {
       if (plansResult.status === 'fulfilled' && plansResult.value.data) {
         newData.plans = plansResult.value.data
         newData.totalProfits = plansResult.value.data.reduce(
-          (sum: number, plan: any) => sum + (plan.total_profit_earned || 0), 
+          (sum: number, plan: any) => sum + (plan.total_profit_earned || 0),
           0
         )
       }
 
-      // Process JRC staking plans
-      if (jrcStakingResult.status === 'fulfilled' && jrcStakingResult.value.data) {
-        newData.jrcStakingPlans = jrcStakingResult.value.data
-        newData.totalJrcEarned = jrcStakingResult.value.data.reduce(
-          (sum: number, plan: JrcStakingPlan) => sum + (plan.total_profit_earned || 0), 
+      // Process TON staking plans
+      if (tonStakingResult.status === 'fulfilled' && tonStakingResult.value.data) {
+        newData.tonStakingPlans = tonStakingResult.value.data
+        newData.totalTonEarned = tonStakingResult.value.data.reduce(
+          (sum: number, plan: TonStakingPlan) => sum + (plan.total_profit_earned || 0),
           0
         )
-        newData.totalJrcStaked = jrcStakingResult.value.data
+        newData.totalTonStaked = tonStakingResult.value.data
           .filter(plan => plan.status === 'active')
-          .reduce((sum: number, plan: JrcStakingPlan) => sum + (plan.amount || 0), 0)
+          .reduce((sum: number, plan: TonStakingPlan) => sum + (plan.amount || 0), 0)
       }
 
       // Process dual referral stats
       if (dualStatsResult.status === 'fulfilled') {
         const dualStats = dualStatsResult.value
         newData.referralUsdtEarned = dualStats.totalUsdtEarned
-        newData.referralJrcEarned = dualStats.totalJrcEarned
+        newData.referralTonEarned = dualStats.totalTonEarned
         newData.totalReferrals = dualStats.totalReferrals
         newData.referralCommissions = dualStats.totalUsdtEarned
       }
@@ -152,16 +152,16 @@ export function useDashboardData(userId: string | undefined) {
             .from('profiles')
             .select('id')
             .eq('sponsor_id', newData.profile.referral_code)
-          
+
           if (directReferrals && directReferrals.length > 0) {
             const referralIds = directReferrals.map(r => r.id)
             const { data: teamInvestments } = await supabase
               .from('investment_plans')
               .select('investment_amount')
               .in('user_id', referralIds)
-            
+
             newData.teamInvestment = teamInvestments?.reduce(
-              (sum, inv) => sum + inv.investment_amount, 
+              (sum, inv) => sum + inv.investment_amount,
               0
             ) || 0
           }

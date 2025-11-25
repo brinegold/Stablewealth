@@ -3,31 +3,31 @@ import { createSupabaseClient } from './supabase'
 export interface ReferralCommissionRates {
   level: number
   usdtRate: number
-  jrcRate: number
+  tonRate: number
 }
 
 export interface OptimizedReferralStats {
   totalUsdtEarned: number
-  totalJrcEarned: number
+  totalTonEarned: number
   totalReferrals: number
   levelStats: Array<{
     level: number
     count: number
     usdtEarned: number
-    jrcEarned: number
+    tonEarned: number
     usdtRate: number
-    jrcRate: number
+    tonRate: number
   }>
 }
 
 export class OptimizedReferralService {
   private supabase = createSupabaseClient()
-  
+
   private readonly commissionRates: ReferralCommissionRates[] = [
-    { level: 1, usdtRate: 5, jrcRate: 20 },
-    { level: 2, usdtRate: 3, jrcRate: 15 },
-    { level: 3, usdtRate: 2, jrcRate: 10 },
-    { level: 4, usdtRate: 1, jrcRate: 8 }
+    { level: 1, usdtRate: 5, tonRate: 20 },
+    { level: 2, usdtRate: 3, tonRate: 15 },
+    { level: 3, usdtRate: 2, tonRate: 10 },
+    { level: 4, usdtRate: 1, tonRate: 8 }
   ]
 
   /**
@@ -36,11 +36,11 @@ export class OptimizedReferralService {
   async getReferralStats(userId: string): Promise<OptimizedReferralStats> {
     try {
       console.log('🚀 Starting optimized referral stats fetch for user:', userId)
-      
+
       // Single query to get all referral commissions with aggregation
       const { data: commissions, error: commissionsError } = await this.supabase
         .from('referral_commissions')
-        .select('level, usdt_commission, jrc_commission, commission_amount, referred_id')
+        .select('level, usdt_commission, ton_commission, commission_amount, referred_id')
         .eq('referrer_id', userId)
 
       if (commissionsError) {
@@ -75,8 +75,8 @@ export class OptimizedReferralService {
         return sum + (c.usdt_commission || c.commission_amount || 0)
       }, 0) || 0
 
-      const totalJrcEarned = commissions?.reduce((sum, c) => {
-        return sum + (c.jrc_commission || 0)
+      const totalTonEarned = commissions?.reduce((sum, c) => {
+        return sum + (c.ton_commission || 0)
       }, 0) || 0
 
       // Group commissions by level for efficient processing
@@ -85,7 +85,7 @@ export class OptimizedReferralService {
 
       commissions?.forEach(commission => {
         const level = commission.level
-        
+
         // Group commissions
         if (!commissionsByLevel.has(level)) {
           commissionsByLevel.set(level, [])
@@ -103,20 +103,20 @@ export class OptimizedReferralService {
       const levelStats = this.commissionRates.map(rate => {
         const levelCommissions = commissionsByLevel.get(rate.level) || []
         const uniqueReferrals = referralCountsByLevel.get(rate.level) || new Set()
-        
+
         return {
           level: rate.level,
           count: rate.level === 1 ? (directReferralsCount.count || 0) : uniqueReferrals.size,
           usdtEarned: levelCommissions.reduce((sum, c) => sum + (c.usdt_commission || c.commission_amount || 0), 0),
-          jrcEarned: levelCommissions.reduce((sum, c) => sum + (c.jrc_commission || 0), 0),
+          tonEarned: levelCommissions.reduce((sum, c) => sum + (c.ton_commission || 0), 0),
           usdtRate: rate.usdtRate,
-          jrcRate: rate.jrcRate
+          tonRate: rate.tonRate
         }
       })
 
       const result = {
         totalUsdtEarned,
-        totalJrcEarned,
+        totalTonEarned,
         totalReferrals: directReferralsCount.count || 0,
         levelStats
       }
@@ -159,7 +159,7 @@ export class OptimizedReferralService {
   private async getReferralChainIterative(userId: string): Promise<any[]> {
     const chain: any[] = []
     const userIds = [userId]
-    
+
     // Batch query to get all sponsor relationships
     const { data: allProfiles, error } = await this.supabase
       .from('profiles')

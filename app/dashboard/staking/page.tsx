@@ -66,7 +66,7 @@ export default function StakingPage() {
     setSuccess('')
 
     const stakingAmount = parseFloat(amount)
-    
+
     if (stakingAmount < 50) {
       setError('Minimum staking amount is $50')
       setIsSubmitting(false)
@@ -106,19 +106,19 @@ export default function StakingPage() {
       // Deduct from fund wallet
       const { error: walletError } = await supabase
         .from('profiles')
-        .update({ 
+        .update({
           fund_wallet_balance: profile.fund_wallet_balance - stakingAmount
         })
         .eq('id', user?.id)
 
       if (walletError) throw walletError
 
-      // Process dual referral commissions (USDT + JRC)
+      // Process dual referral commissions (USDT + TON)
       try {
         await dualReferralService.processDualReferralCommissions({
           userId: user?.id || '',
           amount: stakingAmount,
-          jrcEarned: 0, // USDT staking doesn't earn JRC coins
+          tonEarned: 0, // USDT staking doesn't earn TON coins
           transactionType: 'staking',
           planType: `${selectedPeriod?.label} at ${selectedPeriod?.apy} APY`
         })
@@ -131,7 +131,7 @@ export default function StakingPage() {
       setSuccess(`Successfully staked $${stakingAmount} for ${selectedPeriod?.label} at ${selectedPeriod?.apy} APY!`)
       setAmount('')
       setStakingPeriod('')
-      
+
       // Update local profile state
       setProfile(prev => prev ? { ...prev, fund_wallet_balance: prev.fund_wallet_balance - stakingAmount } : null)
 
@@ -269,7 +269,7 @@ export default function StakingPage() {
         </div>
 
         {/* Staking History Button */}
-        <Link 
+        <Link
           href="/dashboard/staking/history"
           className="jarvis-card rounded-xl p-4 flex items-center justify-between hover:bg-white/10 transition-colors"
         >
@@ -295,7 +295,7 @@ export default function StakingPage() {
           <div className="bg-yellow-600/20 border border-yellow-500 rounded-lg p-4">
             <h4 className="text-yellow-400 font-semibold mb-2">Important Notice</h4>
             <p className="text-yellow-200 text-sm">
-              Staked funds are locked for the selected period. 
+              Staked funds are locked for the selected period.
               Early withdrawal may result in penalty fees and loss of rewards.
             </p>
           </div>

@@ -4,9 +4,9 @@ import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { useRouter } from 'next/navigation'
 import { createSupabaseClient } from '@/lib/supabase'
-import { 
-  ArrowLeft, 
-  TrendingUp, 
+import {
+  ArrowLeft,
+  TrendingUp,
   Search,
   Filter,
   Eye,
@@ -95,7 +95,7 @@ export default function InvestmentsManagement() {
         .order('created_at', { ascending: false })
 
       if (error) throw error
-      
+
       console.log('Investment plans data:', data)
 
       // Fetch profit distributions for all investments
@@ -104,13 +104,13 @@ export default function InvestmentsManagement() {
         .select('plan_id, profit_amount')
 
       if (profitError) throw profitError
-      
+
       console.log('Profit distributions data:', profitData)
 
       // Fetch user emails
       const userIds = data?.map(inv => inv.user_id) || []
       let emailMap: { [key: string]: string } = {}
-      
+
       if (userIds.length > 0) {
         try {
           const emailResponse = await fetch('/api/admin/get-user-emails', {
@@ -134,21 +134,21 @@ export default function InvestmentsManagement() {
         // Calculate total earned from profit_distributions table
         const investmentProfits = profitData?.filter(profit => profit.plan_id === inv.id) || []
         const totalEarnedFromProfits = investmentProfits.reduce((sum, profit) => sum + (profit.profit_amount || 0), 0)
-        
+
         // Calculate expected profits based on time elapsed (for display purposes)
         const createdAt = new Date(inv.created_at)
         const now = new Date()
         const daysSinceCreation = Math.max(0, Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24)))
         const dailyProfitRate = inv.daily_percentage / 100
         const expectedTotalProfit = daysSinceCreation * inv.investment_amount * dailyProfitRate
-        
+
         // Use the maximum of: distributed profits, stored total, or expected profit
         const actualProfit = Math.max(totalEarnedFromProfits, inv.total_profit_earned || 0)
         const displayProfit = Math.max(actualProfit, expectedTotalProfit)
         const isExpectedProfit = displayProfit > actualProfit
-        
+
         console.log(`Investment ${inv.id}: days since creation: ${daysSinceCreation}, expected: $${expectedTotalProfit.toFixed(2)}, actual: $${actualProfit.toFixed(2)}, display: $${displayProfit.toFixed(2)}, isExpected: ${isExpectedProfit}`)
-        
+
         return {
           id: inv.id,
           user_id: inv.user_id,
@@ -216,7 +216,7 @@ export default function InvestmentsManagement() {
     }
 
     if (searchTerm) {
-      filtered = filtered.filter(inv => 
+      filtered = filtered.filter(inv =>
         (inv.full_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
         (inv.user_email?.toLowerCase() || '').includes(searchTerm.toLowerCase())
       )
@@ -331,7 +331,7 @@ export default function InvestmentsManagement() {
               <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
               <p className="text-white font-semibold">Plan C</p>
             </div>
-            <p className="text-gray-400 text-sm">$500 - $50,000 • 5% Daily</p>
+            <p className="text-gray-400 text-sm">$500 - $50,000 • 3% Daily</p>
             <p className="text-xl font-bold text-purple-400">{stats.planCCount} investments</p>
             <p className="text-gray-400 text-xs mt-1">100,000 JRV tokens per investment</p>
           </div>
@@ -372,7 +372,7 @@ export default function InvestmentsManagement() {
               </div>
               <div className="text-sm space-y-1">
                 <p className="text-gray-300"><span className="text-white">Range:</span> $500 - $50,000</p>
-                <p className="text-gray-300"><span className="text-white">Daily ROI:</span> 5%</p>
+                <p className="text-gray-300"><span className="text-white">Daily ROI:</span> 3%</p>
                 <p className="text-gray-300"><span className="text-white">JRV Tokens:</span> 100,000 per investment</p>
                 <p className="text-gray-300"><span className="text-white">Duration:</span> Unlimited</p>
               </div>
@@ -424,7 +424,7 @@ export default function InvestmentsManagement() {
         {/* Investments Table */}
         <div className="jarvis-card rounded-2xl p-6">
           <h2 className="text-xl font-bold text-white mb-6">Investment Plans</h2>
-          
+
           {filteredInvestments.length === 0 ? (
             <div className="text-center py-8">
               <Eye className="h-16 w-16 text-gray-400 mx-auto mb-4" />
@@ -448,7 +448,7 @@ export default function InvestmentsManagement() {
                           {investment.status}
                         </div>
                       </div>
-                      
+
                       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
                         <div>
                           <p className="text-gray-400">Investment</p>

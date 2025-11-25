@@ -15,7 +15,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'Ton Staking - Smart Crypto Growth Platform',
   description: 'Invest in Future Smart Crypto Growth with Ton Staking. Revolutionary cryptocurrency investment platform offering secure, decentralized alternatives to traditional money.',
-  keywords: ['crypto', 'staking', 'investment', 'blockchain', 'USDT', 'JRC', 'cryptocurrency'],
+  keywords: ['crypto', 'staking', 'investment', 'blockchain', 'USDT', 'TON', 'cryptocurrency'],
   authors: [{ name: 'Ton Staking Team' }],
   creator: 'Ton Staking',
   publisher: 'Ton Staking',

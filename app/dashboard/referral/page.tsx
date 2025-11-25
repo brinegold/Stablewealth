@@ -19,14 +19,14 @@ interface ReferralStats {
   total_referrals: number
   total_commission: number
   total_usdt_earned: number
-  total_jrc_earned: number
+  total_ton_earned: number
   level_stats: Array<{
     level: number
     count: number
     usdtEarned: number
-    jrcEarned: number
+    tonEarned: number
     usdtRate: number
-    jrcRate: number
+    tonRate: number
   }>
 }
 
@@ -80,7 +80,7 @@ export default function ReferralPage() {
           total_referrals: fallbackStats.totalReferrals,
           total_commission: fallbackStats.totalUsdtEarned, // For backward compatibility
           total_usdt_earned: fallbackStats.totalUsdtEarned,
-          total_jrc_earned: fallbackStats.totalJrcEarned,
+          total_ton_earned: fallbackStats.totalTonEarned,
           level_stats: fallbackStats.levelStats
         })
       } else {
@@ -89,7 +89,7 @@ export default function ReferralPage() {
           total_referrals: optimizedStats.totalReferrals,
           total_commission: optimizedStats.totalUsdtEarned,
           total_usdt_earned: optimizedStats.totalUsdtEarned,
-          total_jrc_earned: optimizedStats.totalJrcEarned,
+          total_ton_earned: optimizedStats.totalTonEarned,
           level_stats: optimizedStats.levelStats
         })
       }
@@ -239,8 +239,8 @@ export default function ReferralPage() {
                 <p className="text-xl font-bold text-green-400">${stats?.total_usdt_earned?.toFixed(2) || '0.00'}</p>
               </div>
               <div className="bg-yellow-500/10 rounded-lg p-3">
-                <p className="text-gray-300 text-sm">JRC Earned</p>
-                <p className="text-xl font-bold text-yellow-400">{stats?.total_jrc_earned?.toLocaleString() || '0'} JRC</p>
+                <p className="text-gray-300 text-sm">TON Earned</p>
+                <p className="text-xl font-bold text-yellow-400">{stats?.total_ton_earned?.toLocaleString() || '0'} TON</p>
               </div>
             </div>
           </div>
@@ -328,8 +328,8 @@ export default function ReferralPage() {
                       <p className="text-gray-400 text-xs">Earned: ${levelStat?.usdtEarned?.toFixed(2) || '0.00'}</p>
                     </div>
                     <div className="bg-yellow-500/10 rounded p-2">
-                      <p className="text-yellow-400 font-bold text-sm">{level.percentage + 5}% JRC</p>
-                      <p className="text-gray-400 text-xs">Earned: {levelStat?.jrcEarned?.toLocaleString() || '0'} JRC</p>
+                      <p className="text-yellow-400 font-bold text-sm">{level.percentage + 5}% TON</p>
+                      <p className="text-gray-400 text-xs">Earned: {levelStat?.tonEarned?.toLocaleString() || '0'} TON</p>
                     </div>
                   </div>
                 </div>
@@ -352,7 +352,7 @@ export default function ReferralPage() {
               <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-white text-xs font-bold">2</span>
               </div>
-              <p>When they invest or stake, you earn dual commissions in both USDT and JRC coins</p>
+              <p>When they invest or stake, you earn dual commissions in both USDT and TON coins</p>
             </div>
             <div className="flex items-start space-x-3">
               <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -364,7 +364,7 @@ export default function ReferralPage() {
               <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-white text-xs font-bold">4</span>
               </div>
-              <p>USDT commissions go to your main wallet, JRC coins are added to your coin balance</p>
+              <p>USDT commissions go to your main wallet, TON coins are added to your coin balance</p>
             </div>
           </div>
         </div>
@@ -381,12 +381,12 @@ export default function ReferralPage() {
             <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg p-4">
               <Gift className="h-8 w-8 text-purple-400 mx-auto mb-2" />
               <p className="text-white font-semibold">Dual Rewards</p>
-              <p className="text-gray-300 text-sm">USDT + JRC Coins</p>
+              <p className="text-gray-300 text-sm">USDT + TON Coins</p>
             </div>
           </div>
           <div className="mt-4 p-4 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-lg border border-yellow-500/30">
             <p className="text-center text-yellow-400 font-semibold text-sm">
-              🎉 Earn up to 5% USDT + 20% JRC coins on Level 1 referrals!
+              🎉 Earn up to 5% USDT + 20% TON coins on Level 1 referrals!
             </p>
           </div>
         </div>

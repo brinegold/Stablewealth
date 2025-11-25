@@ -119,7 +119,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-3xl font-bold text-white mb-3">USDT Staking</h3>
               <p className="text-gray-300 mb-4 text-lg">$10 to $50,000</p>
-              <div className="text-4xl font-bold text-green-400 mb-4">5% Daily</div>
+              <div className="text-4xl font-bold text-green-400 mb-4">3% Daily</div>
               <p className="text-gray-300 mb-4 text-lg">100 TON per $10</p>
               <div className="text-sm text-gray-400">
                 Current: $0.1/token<br />

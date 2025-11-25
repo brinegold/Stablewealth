@@ -12,7 +12,7 @@ interface Profile {
   total_jarvis_tokens: number
 }
 
-export default function JRCStakingPage() {
+export default function TonStakingPage() {
   const { user, loading } = useAuth()
   const router = useRouter()
   const [profile, setProfile] = useState<Profile | null>(null)
@@ -67,13 +67,13 @@ export default function JRCStakingPage() {
     const stakingAmount = parseFloat(amount)
 
     if (stakingAmount < 100) {
-      setError('Minimum JRC staking amount is 100 JRC')
+      setError('Minimum TON staking amount is 100 TON')
       setIsSubmitting(false)
       return
     }
 
     if (!profile || stakingAmount > profile.total_jarvis_tokens) {
-      setError('Insufficient Jarvis Coin balance')
+      setError('Insufficient Ton Coin balance')
       setIsSubmitting(false)
       return
     }
@@ -85,7 +85,7 @@ export default function JRCStakingPage() {
     }
 
     try {
-      // Create JRC staking transaction
+      // Create TON staking transaction
       const selectedPeriod = stakingPeriods.find(p => p.value === stakingPeriod)
       const { data: transaction, error: transactionError } = await supabase
         .from('transactions')
@@ -95,21 +95,21 @@ export default function JRCStakingPage() {
           amount: stakingAmount,
           net_amount: stakingAmount,
           status: 'completed',
-          description: `JRC Staking - ${stakingAmount} coins for ${selectedPeriod?.value} days at ${selectedPeriod?.apy} APY`
+          description: `TON Staking - ${stakingAmount} coins for ${selectedPeriod?.value} days at ${selectedPeriod?.apy} APY`
         })
         .select()
         .single()
 
       if (transactionError) throw transactionError
 
-      // Create JRC staking plan record
+      // Create TON staking plan record
       const dailyPercentage = parseFloat(selectedPeriod?.apy.replace('% Daily', '') || '3')
       const stakingPeriodDays = parseInt(selectedPeriod?.value || '30')
       const endDate = new Date()
       endDate.setDate(endDate.getDate() + stakingPeriodDays)
 
       const { data: stakingPlan, error: stakingError } = await supabase
-        .from('jrc_staking_plans')
+        .from('ton_staking_plans')
         .insert({
           user_id: user?.id,
           amount: stakingAmount,
@@ -123,7 +123,7 @@ export default function JRCStakingPage() {
 
       if (stakingError) throw stakingError
 
-      // Deduct from Jarvis coins
+      // Deduct from Ton coins
       const { error: tokenError } = await supabase
         .from('profiles')
         .update({
@@ -133,24 +133,24 @@ export default function JRCStakingPage() {
 
       if (tokenError) throw tokenError
 
-      // Process dual referral commissions (USDT + JRC) - convert JRC amount to USDT equivalent for calculation
+      // Process dual referral commissions (USDT + TON) - convert TON amount to USDT equivalent for calculation
       try {
-        // Assuming 1 JRC = $0.01 for referral calculation purposes
+        // Assuming 1 TON = $0.01 for referral calculation purposes
         const usdtEquivalent = stakingAmount * 0.01
         await dualReferralService.processDualReferralCommissions({
           userId: user?.id || '',
           amount: usdtEquivalent,
-          jrcEarned: stakingAmount, // JRC staking - the staked amount is the JRC earned for referral calculation
+          jrcEarned: stakingAmount, // TON staking - the staked amount is the TON earned for referral calculation
           transactionType: 'staking',
-          planType: `JRC ${selectedPeriod?.label} at ${selectedPeriod?.apy} APY`
+          planType: `TON ${selectedPeriod?.label} at ${selectedPeriod?.apy} APY`
         })
-        console.log('Dual referral commissions processed successfully for JRC staking')
+        console.log('Dual referral commissions processed successfully for TON staking')
       } catch (referralError) {
         console.error('Error processing referral commissions:', referralError)
         // Don't fail the staking if referral processing fails
       }
 
-      setSuccess(`Successfully staked ${stakingAmount} JRC for ${selectedPeriod?.label} at ${selectedPeriod?.apy} APY!`)
+      setSuccess(`Successfully staked ${stakingAmount} TON for ${selectedPeriod?.label} at ${selectedPeriod?.apy} APY!`)
       setAmount('')
       setStakingPeriod('')
 
@@ -188,9 +188,9 @@ export default function JRCStakingPage() {
       <div className="container mx-auto p-4 max-w-md">
         {/* Available Balance */}
         <div className="jarvis-card rounded-2xl p-6 mb-6 text-center">
-          <h2 className="text-white text-lg mb-2">Available Jarvis Wallet</h2>
-          <p className="text-3xl font-bold text-yellow-400">{profile?.total_jarvis_tokens.toLocaleString() || '0'} JRC</p>
-          <p className="text-gray-300 text-sm mt-2">Amount in JRC</p>
+          <h2 className="text-white text-lg mb-2">Available Ton Wallet</h2>
+          <p className="text-3xl font-bold text-yellow-400">{profile?.total_jarvis_tokens.toLocaleString() || '0'} TON</p>
+          <p className="text-gray-300 text-sm mt-2">Amount in TON</p>
         </div>
 
         {error && (
@@ -205,16 +205,16 @@ export default function JRCStakingPage() {
           </div>
         )}
 
-        {/* JRC Staking Form */}
+        {/* TON Staking Form */}
         <div className="jarvis-card rounded-2xl p-6 mb-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-white text-sm font-medium mb-2">JRC Amount</label>
+              <label className="block text-white text-sm font-medium mb-2">TON Amount</label>
               <input
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                placeholder="Enter JRC amount"
+                placeholder="Enter TON amount"
                 min="100"
                 step="1"
                 required
@@ -244,16 +244,16 @@ export default function JRCStakingPage() {
               disabled={isSubmitting}
               className="w-full jarvis-button py-4 rounded-lg text-white font-semibold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? 'Processing...' : 'Stake JRC'}
+              {isSubmitting ? 'Processing...' : 'Stake TON'}
             </button>
           </form>
         </div>
 
-        {/* JRC Staking Periods Info */}
+        {/* TON Staking Periods Info */}
         <div className="jarvis-card rounded-2xl p-6 mb-6">
           <h3 className="text-white font-bold text-lg mb-4 flex items-center">
             <Coins className="h-6 w-6 mr-2 text-yellow-400" />
-            JRC Staking Options
+            TON Staking Options
           </h3>
           <div className="space-y-3">
             {stakingPeriods.map((period) => (
@@ -277,48 +277,48 @@ export default function JRCStakingPage() {
           <div className="space-y-3">
             <div className="flex justify-between">
               <span className="text-gray-300">Current Price:</span>
-              <span className="text-white font-semibold">$0.1 per JRC</span>
+              <span className="text-white font-semibold">$0.1 per TON</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-300">Future Listing:</span>
-              <span className="text-green-400 font-semibold">$3.0 per JRC</span>
+              <span className="text-green-400 font-semibold">$3.0 per TON</span>
             </div>
             <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-lg p-3 mt-4">
               <p className="text-center text-white text-sm">
-                🚀 <strong>Stake JRC coins and earn rewards while holding for future growth!</strong>
+                🚀 <strong>Stake TON coins and earn rewards while holding for future growth!</strong>
               </p>
             </div>
           </div>
         </div>
 
-        {/* JRC Staking History Button */}
+        {/* TON Staking History Button */}
         <Link
           href="/dashboard/bnx-staking/history"
           className="jarvis-card rounded-xl p-4 flex items-center justify-between hover:bg-white/10 transition-colors"
         >
           <div className="flex items-center space-x-3">
             <History className="h-6 w-6 text-blue-400" />
-            <span className="text-white font-semibold">JRC STAKING HISTORY</span>
+            <span className="text-white font-semibold">TON STAKING HISTORY</span>
           </div>
         </Link>
 
         {/* Information */}
         <div className="mt-6 space-y-4">
           <div className="jarvis-card rounded-xl p-4">
-            <h3 className="text-white font-semibold mb-2">JRC Staking Information</h3>
+            <h3 className="text-white font-semibold mb-2">TON Staking Information</h3>
             <ul className="text-gray-300 text-sm space-y-1">
-              <li>• Minimum staking: 100 JRC</li>
+              <li>• Minimum staking: 100 TON</li>
               <li>• Higher APY than USD staking</li>
-              <li>• Rewards paid in JRC coins</li>
+              <li>• Rewards paid in TON coins</li>
               <li>• Longer periods = higher rewards</li>
               <li>• Participate in coin ecosystem growth</li>
             </ul>
           </div>
 
           <div className="bg-blue-600/20 border border-blue-500 rounded-lg p-4">
-            <h4 className="text-blue-400 font-semibold mb-2">JRC Staking Benefits</h4>
+            <h4 className="text-blue-400 font-semibold mb-2">TON Staking Benefits</h4>
             <p className="text-blue-200 text-sm">
-              Stake your JRC coins to earn higher APY rewards while supporting the Jarvis Staking ecosystem.
+              Stake your TON coins to earn higher APY rewards while supporting the Jarvis Staking ecosystem.
               Your staked coins contribute to platform liquidity and governance.
             </p>
           </div>

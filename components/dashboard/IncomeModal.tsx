@@ -9,11 +9,11 @@ interface IncomeModalProps {
   incomeData: any[]
 }
 
-export default function IncomeModal({ 
-  showIncomeModal, 
-  setShowIncomeModal, 
-  selectedIncomeType, 
-  incomeData 
+export default function IncomeModal({
+  showIncomeModal,
+  setShowIncomeModal,
+  selectedIncomeType,
+  incomeData
 }: IncomeModalProps) {
   if (!showIncomeModal) return null
 
@@ -27,7 +27,7 @@ export default function IncomeModal({
             {selectedIncomeType === 'tokens' && 'Token Transaction Details'}
             {selectedIncomeType === 'rewards' && 'Reward Income Details'}
             {selectedIncomeType === 'staking' && 'Staking Income Details'}
-            {selectedIncomeType === 'staking-referral' && 'JRC Staking Reward Details'}
+            {selectedIncomeType === 'staking-referral' && 'TON Staking Reward Details'}
           </h3>
           <button
             onClick={() => setShowIncomeModal(false)}
@@ -36,7 +36,7 @@ export default function IncomeModal({
             <XCircle className="h-5 w-5 sm:h-6 sm:w-6" />
           </button>
         </div>
-        
+
         <div className="space-y-3 sm:space-y-4">
           {incomeData.length === 0 ? (
             <div className="text-center py-6 sm:py-8">
@@ -65,7 +65,7 @@ export default function IncomeModal({
                     </div>
                   </div>
                 )}
-                
+
                 {selectedIncomeType === 'referral' && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
                     <div>
@@ -86,7 +86,7 @@ export default function IncomeModal({
                     </div>
                   </div>
                 )}
-                
+
                 {selectedIncomeType === 'staking' && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
                     <div>
@@ -115,7 +115,7 @@ export default function IncomeModal({
                     </div>
                   </div>
                 )}
-                
+
                 {selectedIncomeType === 'tokens' && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
                     <div>
@@ -124,7 +124,7 @@ export default function IncomeModal({
                     </div>
                     <div>
                       <p className="text-gray-400">Amount</p>
-                      <p className="text-yellow-400">{item.amount} JRC</p>
+                      <p className="text-yellow-400">{item.amount} TON</p>
                     </div>
                     <div>
                       <p className="text-gray-400">Status</p>
@@ -141,7 +141,7 @@ export default function IncomeModal({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
                     <div>
                       <p className="text-gray-400">Staking Amount</p>
-                      <p className="text-white font-semibold">{item.amount} JRC</p>
+                      <p className="text-white font-semibold">{item.amount} TON</p>
                     </div>
                     <div>
                       <p className="text-gray-400">Staking Period</p>
@@ -153,7 +153,7 @@ export default function IncomeModal({
                     </div>
                     <div>
                       <p className="text-gray-400">Total Earned</p>
-                      <p className="text-yellow-400">{item.total_profit_earned?.toFixed(2)} JRC</p>
+                      <p className="text-yellow-400">{item.total_profit_earned?.toFixed(2)} TON</p>
                     </div>
                     <div>
                       <p className="text-gray-400">Status</p>
@@ -171,7 +171,7 @@ export default function IncomeModal({
                     </div>
                     <div>
                       <p className="text-gray-400">Rewards Claimed</p>
-                      <p className="text-yellow-400">{item.rewards_claimed?.toFixed(2)} JRC</p>
+                      <p className="text-yellow-400">{item.rewards_claimed?.toFixed(2)} TON</p>
                     </div>
                   </div>
                 )}
