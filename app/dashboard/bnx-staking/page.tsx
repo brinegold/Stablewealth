@@ -177,7 +177,7 @@ export default function TonStakingPage() {
       {/* Header */}
       <header className="border-b border-white/20 p-4">
         <div className="container mx-auto flex items-center justify-between">
-          <Link href="/dashboard" className="text-white hover:text-blue-300">
+          <Link href="/dashboard" className="text-white hover:text-amber-200">
             <ArrowLeft className="h-6 w-6" />
           </Link>
           <h1 className="text-2xl font-bold text-white mb-4">Stable Wealth Staking</h1>
@@ -189,7 +189,7 @@ export default function TonStakingPage() {
         {/* Available Balance */}
         <div className="jarvis-card rounded-2xl p-6 mb-6 text-center">
           <h2 className="text-white text-lg mb-2">Available Ton Wallet</h2>
-          <p className="text-3xl font-bold text-yellow-400">{profile?.total_jarvis_tokens.toLocaleString() || '0'} TON</p>
+          <p className="text-3xl font-bold text-amber-300">{profile?.total_jarvis_tokens.toLocaleString() || '0'} TON</p>
           <p className="text-gray-300 text-sm mt-2">Amount in TON</p>
         </div>
 
@@ -218,7 +218,7 @@ export default function TonStakingPage() {
                 min="100"
                 step="1"
                 required
-                className="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-lg text-white text-2xl text-center placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-lg text-white text-2xl text-center placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
             </div>
 
@@ -228,7 +228,7 @@ export default function TonStakingPage() {
                 value={stakingPeriod}
                 onChange={(e) => setStakingPeriod(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
               >
                 <option value="">Select staking period</option>
                 {stakingPeriods.map((period) => (
@@ -252,7 +252,7 @@ export default function TonStakingPage() {
         {/* TON Staking Periods Info */}
         <div className="jarvis-card rounded-2xl p-6 mb-6">
           <h3 className="text-white font-bold text-lg mb-4 flex items-center">
-            <Coins className="h-6 w-6 mr-2 text-yellow-400" />
+            <Coins className="h-6 w-6 mr-2 text-amber-300" />
             TON Staking Options
           </h3>
           <div className="space-y-3">
@@ -263,7 +263,7 @@ export default function TonStakingPage() {
                   <p className="text-gray-300 text-sm">Lock period</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-yellow-400 font-bold">{period.apy}</p>
+                  <p className="text-amber-300 font-bold">{period.apy}</p>
                   <p className="text-gray-400 text-sm">APY</p>
                 </div>
               </div>
@@ -281,9 +281,9 @@ export default function TonStakingPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-gray-300">Future Listing:</span>
-              <span className="text-green-400 font-semibold">$3.0 per TON</span>
+              <span className="text-amber-300 font-semibold">$3.0 per TON</span>
             </div>
-            <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-lg p-3 mt-4">
+            <div className="bg-gradient-to-r from-amber-600/20 to-amber-700/20 rounded-lg p-3 mt-4">
               <p className="text-center text-white text-sm">
                 🚀 <strong>Stake TON coins and earn rewards while holding for future growth!</strong>
               </p>
@@ -297,7 +297,7 @@ export default function TonStakingPage() {
           className="jarvis-card rounded-xl p-4 flex items-center justify-between hover:bg-white/10 transition-colors"
         >
           <div className="flex items-center space-x-3">
-            <History className="h-6 w-6 text-blue-400" />
+            <History className="h-6 w-6 text-amber-300" />
             <span className="text-white font-semibold">TON STAKING HISTORY</span>
           </div>
         </Link>

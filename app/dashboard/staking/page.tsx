@@ -155,7 +155,7 @@ export default function StakingPage() {
       {/* Header */}
       <header className="border-b border-white/20 p-4">
         <div className="container mx-auto flex items-center justify-between">
-          <Link href="/dashboard" className="text-white hover:text-blue-300">
+          <Link href="/dashboard" className="text-white hover:text-amber-200">
             <ArrowLeft className="h-6 w-6" />
           </Link>
           <h1 className="text-xl font-bold text-white">User Staking</h1>
@@ -167,7 +167,7 @@ export default function StakingPage() {
         {/* Available Balance */}
         <div className="jarvis-card rounded-2xl p-6 mb-6 text-center">
           <h2 className="text-white text-lg mb-2">Available Fund Wallet</h2>
-          <p className="text-3xl font-bold text-green-400">${profile?.fund_wallet_balance.toFixed(2) || '0.00'}</p>
+          <p className="text-3xl font-bold text-amber-300">${profile?.fund_wallet_balance.toFixed(2) || '0.00'}</p>
           <p className="text-gray-300 text-sm mt-2">Amount in USDT</p>
         </div>
 
@@ -183,7 +183,7 @@ export default function StakingPage() {
         )}
 
         {success && (
-          <div className="bg-green-500/20 border border-green-500 text-green-200 px-4 py-3 rounded-lg mb-4">
+          <div className="bg-amber-600/20 border border-amber-600 text-amber-200 px-4 py-3 rounded-lg mb-4">
             {success}
           </div>
         )}
@@ -200,7 +200,7 @@ export default function StakingPage() {
                 min="50"
                 step="0.01"
                 required
-                className="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-lg text-white text-2xl text-center placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-lg text-white text-2xl text-center placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
               <p className="text-center text-gray-300 text-sm mt-2">Amount in USD</p>
             </div>
@@ -213,7 +213,7 @@ export default function StakingPage() {
                 value={stakingPeriod}
                 onChange={(e) => setStakingPeriod(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
               >
                 <option value="" className="bg-gray-800">--Select--</option>
                 {stakingPeriods.map((period) => (
@@ -249,7 +249,7 @@ export default function StakingPage() {
         {/* Staking Periods Info */}
         <div className="jarvis-card rounded-2xl p-6 mb-6">
           <h3 className="text-white font-bold text-lg mb-4 flex items-center">
-            <Coins className="h-6 w-6 mr-2 text-yellow-400" />
+            <Coins className="h-6 w-6 mr-2 text-amber-300" />
             Staking Options
           </h3>
           <div className="space-y-3">
@@ -260,7 +260,7 @@ export default function StakingPage() {
                   <p className="text-gray-300 text-sm">Lock period</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-green-400 font-bold">{period.apy}</p>
+                  <p className="text-amber-300 font-bold">{period.apy}</p>
                   <p className="text-gray-400 text-sm">APY</p>
                 </div>
               </div>
@@ -274,7 +274,7 @@ export default function StakingPage() {
           className="jarvis-card rounded-xl p-4 flex items-center justify-between hover:bg-white/10 transition-colors"
         >
           <div className="flex items-center space-x-3">
-            <History className="h-6 w-6 text-blue-400" />
+            <History className="h-6 w-6 text-amber-300" />
             <span className="text-white font-semibold">STAKING HISTORY</span>
           </div>
         </Link>
@@ -292,9 +292,9 @@ export default function StakingPage() {
             </ul>
           </div>
 
-          <div className="bg-yellow-600/20 border border-yellow-500 rounded-lg p-4">
-            <h4 className="text-yellow-400 font-semibold mb-2">Important Notice</h4>
-            <p className="text-yellow-200 text-sm">
+          <div className="bg-amber-700/20 border border-amber-600 rounded-lg p-4">
+            <h4 className="text-amber-400 font-semibold mb-2">Important Notice</h4>
+            <p className="text-amber-200 text-sm">
               Staked funds are locked for the selected period.
               Early withdrawal may result in penalty fees and loss of rewards.
             </p>

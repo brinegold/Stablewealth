@@ -27,17 +27,17 @@ body {
 }
 
 .jarvis-gradient {
-  background: linear-gradient(135deg, #2D1B69 0%, #11998e 100%);
+  background: linear-gradient(135deg, #5C4033 0%, #8B6F47 100%);
 }
 
 .jarvis-card {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(139, 111, 71, 0.15);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(139, 111, 71, 0.3);
 }
 
 .jarvis-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #8B6F47 0%, #6B5344 100%);
   transition: all 0.3s ease;
 }
 

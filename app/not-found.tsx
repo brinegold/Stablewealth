@@ -32,7 +32,7 @@ export default function NotFound() {
           <br />
           <Link
             href="/dashboard"
-            className="text-blue-400 hover:text-blue-300 transition-colors"
+            className="text-amber-300 hover:text-amber-200 transition-colors"
           >
             Go to Dashboard
           </Link>

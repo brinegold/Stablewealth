@@ -82,7 +82,7 @@ export default function HomePage() {
         <div className="text-center max-w-4xl mx-auto">
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
             Invest<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-600">
               in Future
             </span><br />
             Smart Crypto Growth !
@@ -105,7 +105,7 @@ export default function HomePage() {
             </Link>
             <Link
               href="/auth/signin"
-              className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-purple-900 transition-all duration-300"
+              className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-amber-900 transition-all duration-300"
             >
               SIGN IN
             </Link>
@@ -113,19 +113,19 @@ export default function HomePage() {
 
           {/* Investment Plan */}
           <div className="flex justify-center mb-16">
-            <div className="jarvis-card rounded-2xl p-8 text-center border-2 border-green-400 max-w-md">
-              <div className="bg-gradient-to-r from-green-400 to-blue-500 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="jarvis-card rounded-2xl p-8 text-center border-2 border-amber-400 max-w-md">
+              <div className="bg-gradient-to-r from-amber-400 to-amber-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <TrendingUp className="h-10 w-10 text-white" />
               </div>
               <h3 className="text-3xl font-bold text-white mb-3">USDT Staking</h3>
               <p className="text-gray-300 mb-4 text-lg">$10 to $50,000</p>
-              <div className="text-4xl font-bold text-green-400 mb-4">3% Daily</div>
+              <div className="text-4xl font-bold text-amber-300 mb-4">3% Daily</div>
               <p className="text-gray-300 mb-4 text-lg">100 TON per $10</p>
               <div className="text-sm text-gray-400">
                 Current: $0.1/token<br />
                 Future: $3/token
               </div>
-              <div className="absolute -top-3 -right-3 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
+              <div className="absolute -top-3 -right-3 bg-amber-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
                 Best Plan
               </div>
             </div>

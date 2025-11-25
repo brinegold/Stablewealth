@@ -47,7 +47,7 @@ export default function GlobalError({
               </button>
               <Link
                 href="/"
-                className="text-blue-400 hover:text-blue-300 transition-colors"
+                className="text-amber-300 hover:text-amber-200 transition-colors"
               >
                 Go Home
               </Link>

@@ -481,7 +481,7 @@ export default function DashboardPage() {
             <div className="text-white text-right hidden sm:block">
               <p className="text-sm text-gray-300">Welcome back</p>
               <p className="font-semibold">{profile.full_name}</p>
-              <p className="text-xs text-blue-300">User ID: {profile.referral_code}</p>
+              <p className="text-xs text-amber-300">User ID: {profile.referral_code}</p>
             </div>
             <div className="flex items-center space-x-1 sm:space-x-2">
               {/* Social Media Icons */}
@@ -555,7 +555,7 @@ export default function DashboardPage() {
           <div className="jarvis-card rounded-xl sm:rounded-2xl p-4 sm:p-6">
             <div className="flex items-center justify-between mb-2 sm:mb-4">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-500 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-amber-600 rounded-full flex items-center justify-center">
                   <Wallet className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                 </div>
                 <div>
@@ -585,16 +585,16 @@ export default function DashboardPage() {
         <div className="jarvis-card rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-amber-400 to-amber-600 rounded-full flex items-center justify-center">
                 <Coins className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
               </div>
               <div>
                 <h3 className="text-white font-semibold text-sm sm:text-base">Ton Coins</h3>
-                <p className="text-lg sm:text-2xl font-bold text-yellow-400">{profile.total_jarvis_tokens.toLocaleString()} TON</p>
+                <p className="text-lg sm:text-2xl font-bold text-amber-300">{profile.total_jarvis_tokens.toLocaleString()} TON</p>
                 <p className="text-gray-300 text-xs sm:text-sm mb-2">$0.1 per TON</p>
                 <button
                   onClick={() => setShowTonModal(true)}
-                  className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 sm:px-4 rounded-full text-xs sm:text-sm font-semibold mt-2 transition-colors"
+                  className="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1 sm:px-4 rounded-full text-xs sm:text-sm font-semibold mt-2 transition-colors"
                 >
                   BUY TON
                 </button>
@@ -611,17 +611,17 @@ export default function DashboardPage() {
           </Link>
 
           <Link href="/dashboard/invest" className="jarvis-card rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center hover:scale-105 transition-transform">
-            <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-purple-400 mx-auto mb-2" />
+            <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-amber-400 mx-auto mb-2" />
             <p className="text-white font-semibold text-xs sm:text-sm">Stake USDT</p>
           </Link>
 
           <Link href="/dashboard/transfer" className="jarvis-card rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center hover:scale-105 transition-transform">
-            <Send className="h-6 w-6 sm:h-8 sm:w-8 text-blue-400 mx-auto mb-2" />
+            <Send className="h-6 w-6 sm:h-8 sm:w-8 text-amber-300 mx-auto mb-2" />
             <p className="text-white font-semibold text-xs sm:text-sm">Transfer</p>
           </Link>
 
           <Link href="/dashboard/withdraw" className="jarvis-card rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center hover:scale-105 transition-transform">
-            <ArrowDownLeft className="h-6 w-6 sm:h-8 sm:w-8 text-green-400 mx-auto mb-2" />
+            <ArrowDownLeft className="h-6 w-6 sm:h-8 sm:w-8 text-amber-400 mx-auto mb-2" />
             <p className="text-white font-semibold text-xs sm:text-sm">Withdraw</p>
           </Link>
 
@@ -646,12 +646,12 @@ export default function DashboardPage() {
 
           <div className="jarvis-card rounded-xl p-3 sm:p-4 flex items-center justify-between">
             <div className="flex items-center space-x-2 sm:space-x-3">
-              <Coins className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400" />
+              <Coins className="h-5 w-5 sm:h-6 sm:w-6 text-amber-300" />
               <div>
                 <p className="text-white font-semibold text-sm sm:text-base">TON Referral Coin</p>
                 <button
                   onClick={() => handleViewIncome('tokens')}
-                  className="text-blue-400 text-xs sm:text-sm hover:text-blue-300"
+                  className="text-amber-300 text-xs sm:text-sm hover:text-amber-200"
                 >
                   VIEW
                 </button>
@@ -664,12 +664,12 @@ export default function DashboardPage() {
 
           <div className="jarvis-card rounded-xl p-3 sm:p-4 flex items-center justify-between">
             <div className="flex items-center space-x-2 sm:space-x-3">
-              <Users className="h-5 w-5 sm:h-6 sm:w-6 text-purple-400" />
+              <Users className="h-5 w-5 sm:h-6 sm:w-6 text-amber-400" />
               <div>
                 <p className="text-white font-semibold text-sm sm:text-base">Referral Income</p>
                 <button
                   onClick={() => handleViewIncome('referral')}
-                  className="text-blue-400 text-xs sm:text-sm hover:text-blue-300"
+                  className="text-amber-300 text-xs sm:text-sm hover:text-amber-200"
                 >
                   VIEW
                 </button>
@@ -681,12 +681,12 @@ export default function DashboardPage() {
 
           <div className="jarvis-card rounded-xl p-3 sm:p-4 flex items-center justify-between">
             <div className="flex items-center space-x-2 sm:space-x-3">
-              <Coins className="h-5 w-5 sm:h-6 sm:w-6 text-blue-400" />
+              <Coins className="h-5 w-5 sm:h-6 sm:w-6 text-amber-300" />
               <div>
                 <p className="text-white font-semibold text-sm sm:text-base">Staking Income</p>
                 <button
                   onClick={() => handleViewIncome('staking')}
-                  className="text-blue-400 text-xs sm:text-sm hover:text-blue-300"
+                  className="text-amber-300 text-xs sm:text-sm hover:text-amber-200"
                 >
                   VIEW
                 </button>
@@ -702,7 +702,7 @@ export default function DashboardPage() {
                 <p className="text-white font-semibold text-sm sm:text-base">TON Staking Reward</p>
                 <button
                   onClick={() => handleViewIncome('staking-referral')}
-                  className="text-blue-400 text-xs sm:text-sm hover:text-blue-300"
+                  className="text-amber-300 text-xs sm:text-sm hover:text-amber-200"
                 >
                   VIEW
                 </button>

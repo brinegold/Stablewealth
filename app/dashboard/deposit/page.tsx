@@ -192,9 +192,9 @@ export default function ManualDepositPage() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pending':
-        return <Clock className="h-4 w-4 text-yellow-400" />
+        return <Clock className="h-4 w-4 text-amber-400" />
       case 'approved':
-        return <CheckCircle className="h-4 w-4 text-green-400" />
+        return <CheckCircle className="h-4 w-4 text-amber-400" />
       case 'rejected':
         return <AlertCircle className="h-4 w-4 text-red-400" />
       default:
@@ -205,9 +205,9 @@ export default function ManualDepositPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending':
-        return 'text-yellow-400'
+        return 'text-amber-400'
       case 'approved':
-        return 'text-green-400'
+        return 'text-amber-400'
       case 'rejected':
         return 'text-red-400'
       default:
@@ -228,7 +228,7 @@ export default function ManualDepositPage() {
       {/* Header */}
       <header className="border-b border-white/20 p-4">
         <div className="container mx-auto flex items-center justify-between">
-          <Link href="/dashboard" className="text-white hover:text-blue-300">
+          <Link href="/dashboard" className="text-white hover:text-amber-200">
             <ArrowLeft className="h-6 w-6" />
           </Link>
           <h1 className="text-xl font-bold text-white">Deposit</h1>
@@ -244,7 +244,7 @@ export default function ManualDepositPage() {
         )}
 
         {success && (
-          <div className="bg-green-500/20 border border-green-500 text-green-200 px-4 py-3 rounded-lg mb-4">
+          <div className="bg-amber-600/20 border border-amber-600 text-amber-200 px-4 py-3 rounded-lg mb-4">
             {success}
           </div>
         )}
@@ -252,7 +252,7 @@ export default function ManualDepositPage() {
         {/* Global Wallet Information */}
         <div className="jarvis-card rounded-2xl p-6 mb-6">
           <h3 className="text-white font-bold text-lg mb-4 flex items-center space-x-2">
-            <Wallet className="h-6 w-6 text-blue-400" />
+            <Wallet className="h-6 w-6 text-amber-300" />
             <span>Deposit Wallet Address</span>
           </h3>
 
@@ -269,7 +269,7 @@ export default function ManualDepositPage() {
                   <p className="text-white font-mono text-sm break-all flex-1 mr-2">{globalWalletAddress}</p>
                   <button
                     onClick={() => copyToClipboard(globalWalletAddress)}
-                    className="text-blue-400 hover:text-blue-300 flex-shrink-0"
+                    className="text-amber-300 hover:text-amber-200 flex-shrink-0"
                   >
                     {copied ? <CheckCircle className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
                   </button>
@@ -317,7 +317,7 @@ export default function ManualDepositPage() {
                   <select
                     value={selectedCurrency}
                     onChange={(e) => setSelectedCurrency(e.target.value)}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-amber-500 appearance-none"
                   >
                     <option value="USDT" className="bg-gray-800">USDT</option>
                   </select>
@@ -332,7 +332,7 @@ export default function ManualDepositPage() {
                   <select
                     value={selectedNetwork}
                     onChange={(e) => setSelectedNetwork(e.target.value)}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-amber-500 appearance-none"
                   >
                     <option value="BEP20" className="bg-gray-800">BEP20 (BSC)</option>
                   </select>
@@ -354,10 +354,10 @@ export default function ManualDepositPage() {
                   max={MAX_DEPOSIT}
                   step="0.01"
                   required
-                  className="w-full px-4 py-3 pl-12 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 pl-12 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                  <DollarSign className="h-5 w-5 text-green-500" />
+                  <DollarSign className="h-5 w-5 text-amber-500" />
                 </div>
               </div>
               <p className="text-gray-400 text-sm mt-2">
@@ -366,7 +366,7 @@ export default function ManualDepositPage() {
             </div>
 
             {depositAmount && parseFloat(depositAmount) >= MIN_DEPOSIT && (
-              <div className="bg-green-600/20 border border-green-500 rounded-lg p-4">
+              <div className="bg-amber-700/20 border border-amber-600 rounded-lg p-4">
                 <div className="flex justify-between text-sm text-white mb-2">
                   <span>Deposit Amount:</span>
                   <span>${depositAmount || '0.00'}</span>
@@ -392,13 +392,12 @@ export default function ManualDepositPage() {
                 onChange={(e) => setTxHash(e.target.value)}
                 placeholder="0x..."
                 required
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono text-sm"
               />
               <p className="text-gray-400 text-sm mt-2">
-                Enter the transaction hash after sending USDT to the wallet address above
+                Enter the transaction hash after sending USDT to the wallet address above. Make sure to copy the full hash (starts with 0x...).
               </p>
             </div>
-
             <button
               type="submit"
               disabled={isSubmitting || !txHash || !depositAmount}
@@ -446,7 +445,7 @@ export default function ManualDepositPage() {
                     <p>TX: {request.tx_hash.slice(0, 10)}...{request.tx_hash.slice(-8)}</p>
                     <p>Submitted: {new Date(request.created_at).toLocaleDateString()}</p>
                     {request.admin_notes && (
-                      <p className="text-yellow-300">Note: {request.admin_notes}</p>
+                      <p className="text-amber-300">Note: {request.admin_notes}</p>
                     )}
                   </div>
                 </div>
@@ -461,7 +460,7 @@ export default function ManualDepositPage() {
           className="jarvis-card rounded-xl p-4 flex items-center justify-between hover:bg-white/10 transition-colors mb-6"
         >
           <div className="flex items-center space-x-3">
-            <History className="h-6 w-6 text-blue-400" />
+            <History className="h-6 w-6 text-amber-300" />
             <span className="text-white font-semibold">DEPOSIT HISTORY</span>
           </div>
           <ExternalLink className="h-5 w-5 text-gray-400" />

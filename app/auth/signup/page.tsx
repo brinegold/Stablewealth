@@ -163,7 +163,7 @@ export default function SignUpPage() {
             <h2 className="text-3xl font-bold text-white">Join Stable Wealth</h2>
           </Link>
           <div className="flex items-center justify-end mb-4">
-            <Link href="/auth/signin" className="text-blue-300 hover:text-white transition-colors flex items-center">
+            <Link href="/auth/signin" className="text-amber-300 hover:text-white transition-colors flex items-center">
               <User className="h-4 w-4 mr-1" />
               Sign in
             </Link>
@@ -191,12 +191,12 @@ export default function SignUpPage() {
                 name="sponsorId"
                 value={formData.sponsorId}
                 onChange={handleChange}
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
                 placeholder="Enter sponsor referral code (optional)"
                 readOnly={!!searchParams.get('ref')}
               />
               {searchParams.get('ref') && (
-                <p className="text-green-400 text-sm mt-1">✓ Referral code automatically filled from URL</p>
+                <p className="text-amber-300 text-sm mt-1">✓ Referral code automatically filled from URL</p>
               )}
             </div>
 
@@ -210,7 +210,7 @@ export default function SignUpPage() {
                 value={formData.fullName}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
                 placeholder="Enter your Username"
               />
             </div>
@@ -225,7 +225,7 @@ export default function SignUpPage() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
                 placeholder="Enter email address"
               />
             </div>
@@ -256,7 +256,7 @@ export default function SignUpPage() {
 
             <div className="text-sm text-gray-300">
               By clicking on Sign-up button, you are agree to our{' '}
-              <Link href="/terms" className="text-blue-400 hover:underline">Terms and Conditions</Link>
+              <Link href="/terms" className="text-amber-300 hover:underline">Terms and Conditions</Link>
             </div>
 
             <button

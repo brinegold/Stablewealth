@@ -130,7 +130,7 @@ export default function TransferPage() {
       {/* Header */}
       <header className="border-b border-white/20 p-4">
         <div className="container mx-auto flex items-center justify-between">
-          <Link href="/dashboard" className="text-white hover:text-blue-300">
+          <Link href="/dashboard" className="text-white hover:text-amber-200">
             <ArrowLeft className="h-6 w-6" />
           </Link>
           <h1 className="text-xl font-bold text-white">Transfer</h1>
@@ -149,7 +149,7 @@ export default function TransferPage() {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
-                    <div className="w-16 h-16 bg-gradient-to-r from-blue-400 to-orange-500 rounded-2xl flex items-center justify-center">
+                    <div className="w-16 h-16 bg-gradient-to-r from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center">
                       <Wallet className="h-8 w-8 text-white" />
                     </div>
                     <div>
@@ -166,7 +166,7 @@ export default function TransferPage() {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
-                    <div className="w-16 h-16 bg-gradient-to-r from-blue-400 to-green-500 rounded-2xl flex items-center justify-center">
+                    <div className="w-16 h-16 bg-gradient-to-r from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center">
                       <Wallet className="h-8 w-8 text-white" />
                     </div>
                     <div>
@@ -193,7 +193,7 @@ export default function TransferPage() {
                       <p className="text-gray-300 text-sm">Main Wallet</p>
                       <p className="text-white font-bold">${profile?.main_wallet_balance.toFixed(2) || '0'}</p>
                     </div>
-                    <ArrowRight className="h-6 w-6 text-blue-400" />
+                    <ArrowRight className="h-6 w-6 text-amber-300" />
                     <div className="text-center">
                       <p className="text-gray-300 text-sm">Fund Wallet</p>
                       <p className="text-white font-bold">${profile?.fund_wallet_balance.toFixed(2) || '0'}</p>
@@ -214,7 +214,7 @@ export default function TransferPage() {
               )}
 
               {success && (
-                <div className="bg-green-500/20 border border-green-500 text-green-200 px-4 py-3 rounded-lg mb-4">
+                <div className="bg-amber-600/20 border border-amber-600 text-amber-200 px-4 py-3 rounded-lg mb-4">
                   {success}
                 </div>
               )}
@@ -229,7 +229,7 @@ export default function TransferPage() {
                     min="0.01"
                     step="0.01"
                     required
-                    className="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-lg text-white text-2xl text-center placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-lg text-white text-2xl text-center placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
                   />
                   <p className="text-center text-gray-300 text-sm mt-2">Amount in USD</p>
                 </div>
@@ -245,7 +245,7 @@ export default function TransferPage() {
                       onChange={(e) => setReceiverId(e.target.value)}
                       placeholder="Enter receiver's referral code"
                       required
-                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
                     />
                   </div>
                 )}
@@ -289,7 +289,7 @@ export default function TransferPage() {
           className="jarvis-card rounded-xl p-4 flex items-center justify-between hover:bg-white/10 transition-colors"
         >
           <div className="flex items-center space-x-3">
-            <History className="h-6 w-6 text-blue-400" />
+            <History className="h-6 w-6 text-amber-300" />
             <span className="text-white font-semibold">TRANSFER HISTORY</span>
           </div>
         </Link>

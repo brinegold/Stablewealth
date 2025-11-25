@@ -31,7 +31,7 @@ export default function InvestPage() {
       dailyPercentage: 3,
       tokensPerDollar: 100, // 1000 tokens for $10 minimum
       icon: TrendingUp,
-      color: 'from-green-400 to-blue-500'
+      color: 'from-amber-400 to-amber-600'
     }
   }
 
@@ -183,7 +183,7 @@ export default function InvestPage() {
       {/* Header */}
       <header className="border-b border-white/20 p-4">
         <div className="container mx-auto flex items-center justify-between">
-          <Link href="/dashboard" className="text-white hover:text-blue-300">
+          <Link href="/dashboard" className="text-white hover:text-amber-200">
             <ArrowLeft className="h-6 w-6" />
           </Link>
           <h1 className="text-xl font-bold text-white">User Invest</h1>
@@ -195,7 +195,7 @@ export default function InvestPage() {
         {/* Available Balance */}
         <div className="jarvis-card rounded-2xl p-6 mb-6 text-center">
           <h2 className="text-white text-lg mb-2">Available Fund Wallet</h2>
-          <p className="text-3xl font-bold text-green-400">${profile?.fund_wallet_balance.toFixed(2) || '0.00'}</p>
+          <p className="text-3xl font-bold text-amber-300">${profile?.fund_wallet_balance.toFixed(2) || '0.00'}</p>
         </div>
 
         {error && (
@@ -220,7 +220,7 @@ export default function InvestPage() {
               <div
                 key={key}
                 onClick={() => setSelectedPlan(key as 'A')}
-                className={`jarvis-card rounded-2xl p-6 cursor-pointer transition-all ${isSelected ? 'ring-2 ring-blue-400 bg-white/20' : 'hover:bg-white/10'
+                className={`jarvis-card rounded-2xl p-6 cursor-pointer transition-all ${isSelected ? 'ring-2 ring-amber-400 bg-white/20' : 'hover:bg-white/10'
                   }`}
               >
                 <div className="flex items-center justify-between">
@@ -231,11 +231,11 @@ export default function InvestPage() {
                     <div>
                       <h3 className="text-white font-bold text-lg">{plan.name}</h3>
                       <p className="text-gray-300">${plan.minAmount} to ${plan.maxAmount.toLocaleString()}</p>
-                      <p className="text-green-400 font-semibold">{plan.dailyPercentage}% Daily</p>
+                      <p className="text-amber-300 font-semibold">{plan.dailyPercentage}% Daily</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-yellow-400 font-bold">
+                    <p className="text-amber-300 font-bold">
                       100 TON per $10
                     </p>
                     <p className="text-gray-400 text-sm">Coins</p>
@@ -252,7 +252,7 @@ export default function InvestPage() {
                       min={plan.minAmount}
                       max={plan.maxAmount}
                       step="0.01"
-                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
                     />
                   </div>
                 )}
@@ -264,7 +264,7 @@ export default function InvestPage() {
         {/* Token Information */}
         <div className="jarvis-card rounded-2xl p-6 mb-6">
           <h3 className="text-white font-bold text-lg mb-4 flex items-center">
-            <Coins className="h-6 w-6 mr-2 text-yellow-400" />
+            <Coins className="h-6 w-6 mr-2 text-amber-300" />
             Ton Coin Information
           </h3>
           <div className="space-y-3">
@@ -274,9 +274,9 @@ export default function InvestPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-gray-300">Future Listing:</span>
-              <span className="text-green-400 font-semibold">$3.0 per TON</span>
+              <span className="text-amber-300 font-semibold">$3.0 per TON</span>
             </div>
-            <div className="bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-lg p-3 mt-4">
+            <div className="bg-gradient-to-r from-amber-600/20 to-amber-700/20 rounded-lg p-3 mt-4">
               <p className="text-center text-white text-sm">
                 🚀 <strong>Potential 30x Growth!</strong> Secure your coins now at discounted price.
               </p>
@@ -300,7 +300,7 @@ export default function InvestPage() {
           href="/dashboard/invest/history"
           className="jarvis-card rounded-xl p-4 flex items-center justify-center mt-4 hover:bg-white/10 transition-colors"
         >
-          <span className="text-blue-400 font-semibold">TRADE HISTORY</span>
+          <span className="text-amber-300 font-semibold">TRADE HISTORY</span>
         </Link>
 
         {/* Information */}

@@ -68,7 +68,7 @@ export default function SignInPage() {
             <h2 className="text-3xl font-bold text-white">Sign In to Stable Wealth</h2>
           </Link>
           <div className="flex items-center justify-end mb-4">
-            <Link href="/auth/signup" className="text-blue-300 hover:text-white transition-colors flex items-center">
+            <Link href="/auth/signup" className="text-amber-300 hover:text-white transition-colors flex items-center">
               <User className="h-4 w-4 mr-1" />
               Sign Up
             </Link>
@@ -97,7 +97,7 @@ export default function SignInPage() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
                 placeholder="Enter your email"
               />
             </div>
@@ -127,7 +127,7 @@ export default function SignInPage() {
             </div>
 
             <div className="text-right">
-              <Link href="/auth/forgot-password" className="text-purple-400 hover:text-purple-300 text-sm">
+              <Link href="/auth/forgot-password" className="text-amber-300 hover:text-amber-200 text-sm">
                 Forgot your password?
               </Link>
             </div>
