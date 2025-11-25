@@ -146,21 +146,21 @@ export default function SignUpPage() {
   return (
     <div className="min-h-screen jarvis-gradient flex items-center justify-center p-4">
       <div className="floating-shapes"></div>
-      
+
       <div className="relative z-10 w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center space-x-2 mb-6">
-            <Image 
-              src="/logo_300x300.png" 
-              alt="Jarvis Staking Logo" 
-              width={120} 
-              height={120} 
+            <Image
+              src="/logo_300x300.png"
+              alt="Jarvis Staking Logo"
+              width={120}
+              height={120}
               className="h-25 w-25"
               priority
               unoptimized={process.env.NODE_ENV === 'development'}
             />
-            <span className="text-2xl font-bold text-white">Jarvis Staking</span>
+            <h2 className="text-3xl font-bold text-white">Join Stable Wealth</h2>
           </Link>
           <div className="flex items-center justify-end mb-4">
             <Link href="/auth/signin" className="text-blue-300 hover:text-white transition-colors flex items-center">

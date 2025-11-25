@@ -4,11 +4,11 @@ import { useEffect, useState, lazy, Suspense } from 'react'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { useRouter } from 'next/navigation'
 import { createSupabaseClient } from '@/lib/supabase'
-import { 
-  Wallet, 
-  TrendingUp, 
-  Users, 
-  ArrowUpRight, 
+import {
+  Wallet,
+  TrendingUp,
+  Users,
+  ArrowUpRight,
   ArrowDownLeft,
   Send,
   Coins,
@@ -115,27 +115,27 @@ export default function DashboardPage() {
           .select('*')
           .eq('id', user?.id)
           .single(),
-        
+
         // Investment plans query
         supabase
           .from('investment_plans')
           .select('*')
           .eq('user_id', user?.id)
           .eq('is_active', true),
-        
+
         // JRC staking plans query
         supabase
           .from('jrc_staking_plans')
           .select('*')
           .eq('user_id', user?.id)
           .order('created_at', { ascending: false }),
-        
+
         // Profit distributions query (for staking income)
         supabase
           .from('profit_distributions')
           .select('profit_amount')
           .eq('user_id', user?.id),
-        
+
         // Legacy referral commissions query (fallback)
         supabase
           .from('referral_commissions')
@@ -155,7 +155,7 @@ export default function DashboardPage() {
       if (plansResult.status === 'fulfilled' && !plansResult.value.error) {
         plansData = plansResult.value.data || []
         setPlans(plansData)
-        
+
         // Calculate total profits from investment plans
         const calculatedProfits = plansData.reduce((sum: number, plan: any) => sum + (plan.total_profit_earned || 0), 0)
         setTotalProfits(calculatedProfits)
@@ -168,7 +168,7 @@ export default function DashboardPage() {
         const totalStakingIncome = distributionsData.reduce((sum: number, dist: any) => sum + (dist.profit_amount || 0), 0)
         console.log('Total staking income calculated:', totalStakingIncome)
         setStakingIncome(totalStakingIncome)
-        
+
         // If no profit distributions yet, fallback to investment plan profits
         if (totalStakingIncome === 0 && plansData.length > 0) {
           const fallbackIncome = plansData.reduce((sum: number, plan: any) => sum + (plan.total_profit_earned || 0), 0)
@@ -191,12 +191,12 @@ export default function DashboardPage() {
       if (jrcStakingResult.status === 'fulfilled' && !jrcStakingResult.value.error) {
         const jrcStakingData = jrcStakingResult.value.data || []
         setJrcStakingPlans(jrcStakingData)
-        
+
         // Calculate total JRC earned and staked
-        const totalJrcEarned = jrcStakingData.reduce((sum: number, plan: JrcStakingPlan) => 
+        const totalJrcEarned = jrcStakingData.reduce((sum: number, plan: JrcStakingPlan) =>
           sum + (plan.total_profit_earned || 0), 0)
         setTotalJrcEarned(totalJrcEarned)
-        
+
         const totalStaked = jrcStakingData
           .filter((plan: JrcStakingPlan) => plan.status === 'active')
           .reduce((sum: number, plan: JrcStakingPlan) => sum + (plan.amount || 0), 0)
@@ -214,7 +214,7 @@ export default function DashboardPage() {
             .from('referral_commissions')
             .select('commission_amount, jrc_commission, level, referred_id')
             .eq('referrer_id', user?.id),
-          
+
           // Direct referrals for team investment
           supabase
             .from('profiles')
@@ -227,11 +227,11 @@ export default function DashboardPage() {
           const commissions = referralStatsResult.value.data || []
           const totalUsdtEarned = commissions.reduce((sum, c) => sum + (c.commission_amount || 0), 0)
           const totalJrcEarned = commissions.reduce((sum, c) => sum + (c.jrc_commission || 0), 0)
-          
+
           setReferralCommissions(totalUsdtEarned)
           setReferralUsdtEarned(totalUsdtEarned)
           setReferralJrcEarned(totalJrcEarned)
-          
+
           // Count unique referrals from commissions
           const uniqueReferrals = new Set(commissions.map(c => c.referred_id)).size
           setTotalReferrals(uniqueReferrals)
@@ -248,16 +248,16 @@ export default function DashboardPage() {
         if (directReferralsResult.status === 'fulfilled' && !directReferralsResult.value.error) {
           const directReferrals = directReferralsResult.value.data || []
           setTotalReferrals(directReferrals.length) // Set actual direct referrals count
-          
+
           if (directReferrals.length > 0) {
             const referralIds = directReferrals.map(r => r.id)
-            
+
             // Get team investments in parallel
             const { data: teamInvestments } = await supabase
               .from('investment_plans')
               .select('investment_amount')
               .in('user_id', referralIds)
-            
+
             const totalTeamInvestment = teamInvestments?.reduce((sum, inv) => sum + inv.investment_amount, 0) || 0
             setTeamInvestment(totalTeamInvestment)
           }
@@ -274,7 +274,7 @@ export default function DashboardPage() {
   const handleViewIncome = async (incomeType: string) => {
     setSelectedIncomeType(incomeType)
     setIncomeData([])
-    
+
     try {
       switch (incomeType) {
         case 'trade':
@@ -284,12 +284,12 @@ export default function DashboardPage() {
             .select('*')
             .eq('user_id', user?.id)
             .order('created_at', { ascending: false })
-          
+
           if (!investError) {
             setIncomeData(investments || [])
           }
           break
-          
+
         case 'referral':
           // Fetch referral commissions
           const { data: commissions, error: commError } = await supabase
@@ -300,12 +300,12 @@ export default function DashboardPage() {
             `)
             .eq('referrer_id', user?.id)
             .order('created_at', { ascending: false })
-          
+
           if (!commError) {
             setIncomeData(commissions || [])
           }
           break
-          
+
         case 'tokens':
           // Fetch token transactions
           const { data: tokenTxs, error: tokenError } = await supabase
@@ -314,7 +314,7 @@ export default function DashboardPage() {
             .eq('user_id', user?.id)
             .in('transaction_type', ['referral_bonus', 'signup_bonus'])
             .order('created_at', { ascending: false })
-          
+
           if (!tokenError) {
             setIncomeData(tokenTxs || [])
           }
@@ -330,7 +330,7 @@ export default function DashboardPage() {
             `)
             .eq('user_id', user?.id)
             .order('distribution_date', { ascending: false })
-          
+
           if (!stakingError) {
             setIncomeData(stakingIncome || [])
           }
@@ -343,12 +343,12 @@ export default function DashboardPage() {
             .select('*')
             .eq('user_id', user?.id)
             .order('created_at', { ascending: false })
-          
+
           if (!jrcStakingError) {
             setIncomeData(stakingPlans || [])
           }
           break
-          
+
         default:
           setIncomeData([])
       }
@@ -356,7 +356,7 @@ export default function DashboardPage() {
       console.error('Error fetching income data:', error)
       setIncomeData([])
     }
-    
+
     setShowIncomeModal(true)
   }
 
@@ -408,7 +408,7 @@ export default function DashboardPage() {
 
       setJrcSuccess(data.message)
       setJrcAmount('')
-      
+
       // Close modal after 2 seconds
       setTimeout(() => {
         setShowJrcModal(false)
@@ -426,7 +426,7 @@ export default function DashboardPage() {
   if (!user) {
     return null
   }
-  
+
   // Show dashboard with default values while data loads
   if (!profile) {
     return (
@@ -450,11 +450,11 @@ export default function DashboardPage() {
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-2 sm:space-x-4">
             <div className="flex items-center space-x-1 sm:space-x-2">
-              <Image 
-                src="/logo_300x300.png" 
-                alt="Jarvis Staking Logo" 
-                width={128} 
-                height={128} 
+              <Image
+                src="/logo_300x300.png"
+                alt="Stable Wealth Logo"
+                width={128}
+                height={128}
                 className="!h-24 !w-24 sm:!h-32 sm:!w-32"
                 style={{ width: '96px', height: '96px' }}
                 priority
@@ -462,21 +462,21 @@ export default function DashboardPage() {
                 placeholder="blur"
                 blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
               />
-              <span className="text-lg sm:text-2xl font-bold text-white">Jarvis Staking</span>
+              <span className="text-lg sm:text-2xl font-bold text-white">Stable Wealth</span>
             </div>
             <div className="flex items-center">
-              <Image 
-                src="/logo_300x300.png" 
-                alt="Jarvis Staking Logo" 
-                width={64} 
-                height={64} 
+              <Image
+                src="/logo_300x300.png"
+                alt="Stable Wealth Logo"
+                width={64}
+                height={64}
                 className="!h-12 !w-12 sm:!h-16 sm:!w-16"
                 style={{ width: '48px', height: '48px' }}
                 unoptimized={process.env.NODE_ENV === 'development'}
               />
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-2 sm:space-x-4">
             <div className="text-white text-right hidden sm:block">
               <p className="text-sm text-gray-300">Welcome back</p>
@@ -485,18 +485,18 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-center space-x-1 sm:space-x-2">
               {/* Social Media Icons */}
-              <a 
-                href="https://youtube.com/@jarvisstaking" 
-                target="_blank" 
+              <a
+                href="https://youtube.com/@jarvisstaking"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="p-1.5 sm:p-2 text-white hover:bg-red-600/20 hover:text-red-400 rounded-full transition-all duration-300"
                 title="Follow us on YouTube"
               >
                 <Youtube className="h-4 w-4 sm:h-5 sm:w-5" />
               </a>
-              <a 
-                href="https://t.me/+vIW_s8xt3IdmNjg0" 
-                target="_blank" 
+              <a
+                href="https://t.me/+vIW_s8xt3IdmNjg0"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="p-1.5 sm:p-2 text-white hover:bg-blue-500/20 hover:text-blue-400 rounded-full transition-all duration-300"
                 title="Follow us on Telegram"
@@ -504,9 +504,9 @@ export default function DashboardPage() {
                 <Telegram className="h-4 w-4 sm:h-5 sm:w-5" />
               </a>
               {/* Existing buttons */}
-      
-              <a 
-                href="mailto:support@jarvisstaking.live" 
+
+              <a
+                href="mailto:support@jarvisstaking.live"
                 className="p-1.5 sm:p-2 text-white hover:bg-white/10 rounded-full"
                 title="Email us"
               >
@@ -527,15 +527,15 @@ export default function DashboardPage() {
             </div>
             <div className="text-right hidden sm:block">
               <div className="flex items-center space-x-2">
-                <Image 
-                src="/logo_300x300.png" 
-                alt="Jarvis Staking Logo" 
-                width={128} 
-                height={128} 
-                className="!h-24 !w-24 sm:!h-32 sm:!w-32"
-                style={{ width: '96px', height: '96px' }}
-                priority
-                unoptimized={process.env.NODE_ENV === 'development'}
+                <Image
+                  src="/logo_300x300.png"
+                  alt="Stable Wealth Logo"
+                  width={128}
+                  height={128}
+                  className="!h-24 !w-24 sm:!h-32 sm:!w-32"
+                  style={{ width: '96px', height: '96px' }}
+                  priority
+                  unoptimized={process.env.NODE_ENV === 'development'}
                 />
               </div>
 
@@ -592,7 +592,7 @@ export default function DashboardPage() {
                 <h3 className="text-white font-semibold text-sm sm:text-base">Jarvis Coins</h3>
                 <p className="text-lg sm:text-2xl font-bold text-yellow-400">{profile.total_jarvis_tokens.toLocaleString()} JRC</p>
                 <p className="text-gray-300 text-xs sm:text-sm mb-2">$0.1 per JRC</p>
-                <button 
+                <button
                   onClick={() => setShowJrcModal(true)}
                   className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 sm:px-4 rounded-full text-xs sm:text-sm font-semibold mt-2 transition-colors"
                 >
@@ -649,7 +649,7 @@ export default function DashboardPage() {
               <Coins className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400" />
               <div>
                 <p className="text-white font-semibold text-sm sm:text-base">JRC Referral Coin</p>
-                <button 
+                <button
                   onClick={() => handleViewIncome('tokens')}
                   className="text-blue-400 text-xs sm:text-sm hover:text-blue-300"
                 >
@@ -660,14 +660,14 @@ export default function DashboardPage() {
             <p className="text-white font-bold text-sm sm:text-base">{referralJrcEarned.toLocaleString()} JRC</p>
           </div>
 
-      
+
 
           <div className="jarvis-card rounded-xl p-3 sm:p-4 flex items-center justify-between">
             <div className="flex items-center space-x-2 sm:space-x-3">
               <Users className="h-5 w-5 sm:h-6 sm:w-6 text-purple-400" />
               <div>
                 <p className="text-white font-semibold text-sm sm:text-base">Referral Income</p>
-                <button 
+                <button
                   onClick={() => handleViewIncome('referral')}
                   className="text-blue-400 text-xs sm:text-sm hover:text-blue-300"
                 >
@@ -684,7 +684,7 @@ export default function DashboardPage() {
               <Coins className="h-5 w-5 sm:h-6 sm:w-6 text-blue-400" />
               <div>
                 <p className="text-white font-semibold text-sm sm:text-base">Staking Income</p>
-                <button 
+                <button
                   onClick={() => handleViewIncome('staking')}
                   className="text-blue-400 text-xs sm:text-sm hover:text-blue-300"
                 >
@@ -700,7 +700,7 @@ export default function DashboardPage() {
               <Users className="h-5 w-5 sm:h-6 sm:w-6 text-orange-400" />
               <div>
                 <p className="text-white font-semibold text-sm sm:text-base">Jarvis Staking Reward</p>
-                <button 
+                <button
                   onClick={() => handleViewIncome('staking-referral')}
                   className="text-blue-400 text-xs sm:text-sm hover:text-blue-300"
                 >
@@ -737,7 +737,7 @@ export default function DashboardPage() {
                   <p className="text-lg sm:text-2xl font-bold text-white">${(totalProfits || 0).toFixed(2)}</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-gray-300 text-xs sm:text-sm">Jarvis Staking</p>
+                  <p className="text-gray-300 text-xs sm:text-sm">Stable Wealth</p>
                   <p className="text-lg sm:text-2xl font-bold text-white">{(totalJrcStaked || 0).toLocaleString()} JRC</p>
                 </div>
               </div>

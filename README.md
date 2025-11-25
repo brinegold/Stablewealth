@@ -1,4 +1,4 @@
-# Jarvis Staking - Smart Crypto Growth Platform
+# Stable Wealth - Smart Crypto Growth Platform
 
 A comprehensive cryptocurrency investment platform built with Next.js, Supabase, and TypeScript. Features investment plans, referral system, staking, and automated profit distribution.
 
@@ -239,4 +239,4 @@ For support and questions:
 
 ---
 
-**Jarvis Staking Platform** - Revolutionizing cryptocurrency investments with smart automation and user-friendly design.
+**Stable Wealth Platform** - Revolutionizing cryptocurrency investments with smart automation and user-friendly design.

@@ -65,7 +65,7 @@ export default function JRCStakingPage() {
     setSuccess('')
 
     const stakingAmount = parseFloat(amount)
-    
+
     if (stakingAmount < 100) {
       setError('Minimum JRC staking amount is 100 JRC')
       setIsSubmitting(false)
@@ -126,7 +126,7 @@ export default function JRCStakingPage() {
       // Deduct from Jarvis coins
       const { error: tokenError } = await supabase
         .from('profiles')
-        .update({ 
+        .update({
           total_jarvis_tokens: profile.total_jarvis_tokens - stakingAmount
         })
         .eq('id', user?.id)
@@ -153,7 +153,7 @@ export default function JRCStakingPage() {
       setSuccess(`Successfully staked ${stakingAmount} JRC for ${selectedPeriod?.label} at ${selectedPeriod?.apy} APY!`)
       setAmount('')
       setStakingPeriod('')
-      
+
       // Update local profile state
       setProfile(prev => prev ? { ...prev, total_jarvis_tokens: prev.total_jarvis_tokens - stakingAmount } : null)
 
@@ -180,7 +180,7 @@ export default function JRCStakingPage() {
           <Link href="/dashboard" className="text-white hover:text-blue-300">
             <ArrowLeft className="h-6 w-6" />
           </Link>
-          <h1 className="text-xl font-bold text-white">JRC Staking</h1>
+          <h1 className="text-2xl font-bold text-white mb-4">Stable Wealth Staking</h1>
           <div></div>
         </div>
       </header>
@@ -292,7 +292,7 @@ export default function JRCStakingPage() {
         </div>
 
         {/* JRC Staking History Button */}
-        <Link 
+        <Link
           href="/dashboard/bnx-staking/history"
           className="jarvis-card rounded-xl p-4 flex items-center justify-between hover:bg-white/10 transition-colors"
         >
@@ -318,7 +318,7 @@ export default function JRCStakingPage() {
           <div className="bg-blue-600/20 border border-blue-500 rounded-lg p-4">
             <h4 className="text-blue-400 font-semibold mb-2">JRC Staking Benefits</h4>
             <p className="text-blue-200 text-sm">
-              Stake your JRC coins to earn higher APY rewards while supporting the Jarvis Staking ecosystem. 
+              Stake your JRC coins to earn higher APY rewards while supporting the Jarvis Staking ecosystem.
               Your staked coins contribute to platform liquidity and governance.
             </p>
           </div>

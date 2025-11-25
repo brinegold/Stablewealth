@@ -1,7 +1,7 @@
 # Performance Optimization Guide
 
 ## Overview
-This document outlines the performance optimizations implemented in the Jarvis Staking platform to ensure fast loading times and smooth user experience.
+This document outlines the performance optimizations implemented in the Stable Wealth platform to ensure fast loading times and smooth user experience.
 
 ## Implemented Optimizations
 
@@ -181,4 +181,4 @@ function DataComponent() {
 
 ## Conclusion
 
-These optimizations should significantly improve the loading speed and user experience of the Jarvis Staking platform. Regular monitoring and testing will help maintain optimal performance as the application grows.
+These optimizations should significantly improve the loading speed and user experience of the Stable Wealth platform. Regular monitoring and testing will help maintain optimal performance as the application grows.

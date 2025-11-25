@@ -1,6 +1,6 @@
 # Email Notification Setup Guide
 
-This guide explains how to configure email notifications for the Jarvis Staking Platform.
+This guide explains how to configure email notifications for the Stable Wealth Platform.
 
 ## Overview
 

@@ -1,7 +1,7 @@
 # Profit Distribution System
 
 ## Overview
-The Jarvis Staking platform includes a profit distribution system that distributes daily profits to users 24 hours after they invest in a plan.
+The Stable Wealth platform includes a profit distribution system that distributes daily profits to users 24 hours after they invest in a plan.
 
 ## How It Works
 

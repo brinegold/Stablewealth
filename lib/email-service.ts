@@ -38,11 +38,11 @@ class EmailService {
 
   constructor() {
     const emailConfig: EmailConfig = {
-      host: process.env.SMTP_HOST || 'mail.jarvisstaking.live',
+      host: process.env.SMTP_HOST || 'mail.stablewealth.live',
       port: parseInt(process.env.SMTP_PORT || '587'),
       secure: process.env.SMTP_SECURE === 'true' || true, // Use true for port 465, false for 587
       auth: {
-        user: process.env.SMTP_USER || 'admin@jarvisstaking.live',
+        user: process.env.SMTP_USER || 'admin@stablewealth.live',
         pass: process.env.SMTP_PASS || 'Josephnetx01@@@@'
       }
     }
@@ -72,17 +72,17 @@ class EmailService {
 
   private getEmailTemplate(data: TransactionEmailData): { subject: string; html: string } {
     const { transactionType, status, amount, currency, userName } = data
-    
+
     const statusColor = status === 'success' ? '#10B981' : status === 'failed' ? '#EF4444' : '#F59E0B'
     const statusText = status === 'success' ? 'Successful' : status === 'failed' ? 'Failed' : 'Pending'
-    
+
     const baseTemplate = `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Jarvis Staking Platform - Transaction Notification</title>
+        <title>Stable Wealth Platform - Transaction Notification</title>
         <style>
           body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -257,7 +257,7 @@ class EmailService {
       <body>
         <div class="email-container">
           <div class="email-header">
-            <h1>Jarvis Staking Platform</h1>
+            <h1>Stable Wealth Platform</h1>
             <h2>${this.getTransactionTitle(transactionType)} Notification</h2>
           </div>
 
@@ -282,7 +282,7 @@ class EmailService {
             ${this.getAdditionalContent(data)}
 
             <div class="email-footer">
-              <p class="footer-text">Thank you for choosing Jarvis Staking Platform.</p>
+              <p class="footer-text">Thank you for choosing Stable Wealth Platform.</p>
               <p class="footer-text">Should you require any assistance, please contact our support team.</p>
               <p class="footer-disclaimer">This is an automated message. Please do not reply to this email.</p>
             </div>
@@ -293,7 +293,7 @@ class EmailService {
     `
 
     return {
-      subject: `Jarvis Staking - ${this.getTransactionTitle(transactionType)} ${statusText}`,
+      subject: `Stable Wealth - ${this.getTransactionTitle(transactionType)} ${statusText}`,
       html: baseTemplate
     }
   }
@@ -505,7 +505,7 @@ class EmailService {
       const { subject, html } = this.getEmailTemplate(data)
 
       const mailOptions = {
-        from: `"Jarvis Staking Platform" <${process.env.SMTP_USER}>`,
+        from: `"Stable Wealth Platform" <${process.env.SMTP_USER}>`,
         to: data.userEmail,
         subject,
         html
@@ -592,14 +592,14 @@ class EmailService {
 
   private getWelcomeEmailTemplate(data: WelcomeEmailData): { subject: string; html: string } {
     const { userName, referralCode } = data
-    
+
     const html = `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Welcome to Jarvis Staking Platform</title>
+        <title>Welcome to Stable Wealth Platform</title>
         <style>
           body { font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f5f5f5; }
           .container { max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -620,15 +620,15 @@ class EmailService {
       <body>
         <div class="container">
           <div class="header">
-            <img src="https://www.jarvisstaking.live/_next/image?url=%2Flogo_300x300.png&w=128&q=75" alt="Jarvis Staking" class="logo">
-            <h1 style="color: white;">Welcome to Jarvis Staking Platform</h1>
+            <img src="https://www.stablewealth.live/_next/image?url=%2Flogo_300x300.png&w=128&q=75" alt="Stable Wealth" class="logo">
+            <h1 style="color: white;">Welcome to Stable Wealth Platform</h1>
             <p>Professional Cryptocurrency Staking Solutions</p>
           </div>
           
           <div class="welcome-content">
             <h2>Dear <span class="highlight">${userName}</span>,</h2>
             
-            <p>Thank you for registering with Jarvis Staking Platform. We are pleased to welcome you to our professional staking ecosystem designed for sophisticated cryptocurrency investors.</p>
+            <p>Thank you for registering with Stable Wealth Platform. We are pleased to welcome you to our professional staking ecosystem designed for sophisticated cryptocurrency investors.</p>
             
             <div class="feature-box">
               <div class="feature-title">USDT Staking Plan</div>
@@ -653,7 +653,7 @@ class EmailService {
             ` : ''}
             
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://jarvisstaking.live'}/dashboard" class="cta-button">
+              <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://stablewealth.live'}/dashboard" class="cta-button">
                 Access Your Dashboard
               </a>
             </div>
@@ -671,11 +671,11 @@ class EmailService {
             <p>Should you require assistance, our support team is available to address any inquiries. Please respond to this email or contact us through the platform interface.</p>
             
             <p>We look forward to serving your investment needs.</p>
-            <p><strong>Jarvis Staking Platform Management</strong></p>
+            <p><strong>Stable Wealth Platform Management</strong></p>
           </div>
           
           <div class="footer">
-            <p>© 2025 Jarvis Staking Platform. All rights reserved.</p>
+            <p>© 2025 Stable Wealth Platform. All rights reserved.</p>
             <p>This email was sent to you because you recently registered on our platform.</p>
           </div>
         </div>
@@ -684,7 +684,7 @@ class EmailService {
     `
 
     return {
-      subject: 'Welcome to Jarvis Staking Platform - Account Registration Confirmed',
+      subject: 'Welcome to Stable Wealth Platform - Account Registration Confirmed',
       html
     }
   }
@@ -694,7 +694,7 @@ class EmailService {
       const { subject, html } = this.getWelcomeEmailTemplate(data)
 
       const mailOptions = {
-        from: `"Jarvis Staking Platform" <${process.env.SMTP_USER}>`,
+        from: `"Stable Wealth Platform" <${process.env.SMTP_USER}>`,
         to: data.userEmail,
         subject,
         html

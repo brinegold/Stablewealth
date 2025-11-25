@@ -61,7 +61,7 @@ export default function ReferralPage() {
 
   const fetchData = async () => {
     if (isLoadingData) return // Prevent duplicate requests
-    
+
     setIsLoadingData(true)
     try {
       console.log('🚀 Starting optimized referral data fetch')
@@ -75,7 +75,7 @@ export default function ReferralPage() {
         console.warn('Database function not available, using fallback service')
         // Fallback to optimized service
         const fallbackStats = await optimizedReferralService.getReferralStats(user?.id || '')
-        
+
         setStats({
           total_referrals: fallbackStats.totalReferrals,
           total_commission: fallbackStats.totalUsdtEarned, // For backward compatibility
@@ -152,7 +152,7 @@ export default function ReferralPage() {
     if (!profile) return
 
     const referralLink = `${window.location.origin}/auth/signup?ref=${profile.referral_code}`
-    
+
     try {
       await navigator.clipboard.writeText(referralLink)
       setCopied(true)
@@ -217,7 +217,7 @@ export default function ReferralPage() {
           <Link href="/dashboard" className="text-white hover:text-blue-300">
             <ArrowLeft className="h-6 w-6" />
           </Link>
-          <h1 className="text-xl font-bold text-white">Referral Program</h1>
+          <h1 className="text-2xl font-bold text-white mb-4">Stable Wealth Referral Program</h1>
           <div></div>
         </div>
       </header>
@@ -252,7 +252,7 @@ export default function ReferralPage() {
             <Gift className="h-6 w-6 mr-2 text-yellow-400" />
             Your Referral Code
           </h3>
-          
+
           <div className="bg-white/10 rounded-lg p-4 mb-4">
             <p className="text-center text-2xl font-bold text-yellow-400 tracking-wider">
               {profile?.referral_code || 'Loading...'}
@@ -283,7 +283,7 @@ export default function ReferralPage() {
             <Users className="h-6 w-6 mr-2 text-blue-400" />
             Your Upline
           </h3>
-          
+
           {profile?.sponsor_id ? (
             <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg p-4">
               <p className="text-center text-white font-semibold">
@@ -308,7 +308,7 @@ export default function ReferralPage() {
             {referralLevels.map((level) => {
               // Find matching level stat if it exists
               const levelStat = stats?.level_stats?.find(ls => ls.level === level.level)
-              
+
               return (
                 <div key={level.level} className="p-3 bg-white/5 rounded-lg">
                   <div className="flex items-center justify-between mb-2">

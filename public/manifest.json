@@ -1,6 +1,6 @@
 {
-  "name": "Jarvis Staking - Smart Crypto Growth Platform",
-  "short_name": "Jarvis Staking",
+  "name": "Stable Wealth - Smart Crypto Growth Platform",
+  "short_name": "Stable Wealth",
   "description": "Revolutionary cryptocurrency investment platform offering secure, decentralized alternatives to traditional money.",
   "start_url": "/",
   "display": "standalone",
@@ -19,7 +19,11 @@
       "type": "image/png"
     }
   ],
-  "categories": ["finance", "business", "productivity"],
+  "categories": [
+    "finance",
+    "business",
+    "productivity"
+  ],
   "lang": "en",
   "dir": "ltr"
 }

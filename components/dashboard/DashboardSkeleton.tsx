@@ -10,19 +10,19 @@ export default function DashboardSkeleton() {
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-2 sm:space-x-4">
             <div className="flex items-center space-x-1 sm:space-x-2">
-              <Image 
-                src="/logo_300x300.png" 
-                alt="Jarvis Staking Logo" 
-                width={128} 
-                height={128} 
+              <Image
+                src="/logo_300x300.png"
+                alt="Jarvis Staking Logo"
+                width={128}
+                height={128}
                 className="!h-24 !w-24 sm:!h-32 sm:!w-32"
                 style={{ width: '96px', height: '96px' }}
                 priority
               />
-              <span className="text-lg sm:text-2xl font-bold text-white">Jarvis Staking</span>
+              <span className="text-lg sm:text-2xl font-bold text-white">Stable Wealth</span>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-2 sm:space-x-4">
             <div className="text-white text-right hidden sm:block">
               <div className="h-4 bg-white/20 rounded w-24 mb-1 animate-pulse"></div>
