@@ -28,7 +28,7 @@ export default function InvestPage() {
       name: 'USDT Staking',
       minAmount: 10,
       maxAmount: 50000,
-      dailyPercentage: 5,
+      dailyPercentage: 3,
       tokensPerDollar: 100, // 1000 tokens for $10 minimum
       icon: TrendingUp,
       color: 'from-green-400 to-blue-500'
@@ -154,7 +154,7 @@ export default function InvestPage() {
         // Don't fail the investment if referral processing fails
       }
 
-      setSuccess(`Successfully invested $${investAmount} in ${plan.name}! You earned ${coinsEarned.toLocaleString()} Jarvis Coins.`)
+      setSuccess(`Successfully invested $${investAmount} in ${plan.name}! You earned ${coinsEarned.toLocaleString()} Ton Coins.`)
       setAmount('')
       setSelectedPlan(null)
 
@@ -215,14 +215,13 @@ export default function InvestPage() {
           {Object.entries(plans).map(([key, plan]) => {
             const Icon = plan.icon
             const isSelected = selectedPlan === key
-            
+
             return (
               <div
                 key={key}
                 onClick={() => setSelectedPlan(key as 'A')}
-                className={`jarvis-card rounded-2xl p-6 cursor-pointer transition-all ${
-                  isSelected ? 'ring-2 ring-blue-400 bg-white/20' : 'hover:bg-white/10'
-                }`}
+                className={`jarvis-card rounded-2xl p-6 cursor-pointer transition-all ${isSelected ? 'ring-2 ring-blue-400 bg-white/20' : 'hover:bg-white/10'
+                  }`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
@@ -237,12 +236,12 @@ export default function InvestPage() {
                   </div>
                   <div className="text-right">
                     <p className="text-yellow-400 font-bold">
-                      100 JRC per $10
+                      100 TON per $10
                     </p>
                     <p className="text-gray-400 text-sm">Coins</p>
                   </div>
                 </div>
-                
+
                 {isSelected && (
                   <div className="mt-4 pt-4 border-t border-white/20">
                     <input
@@ -266,16 +265,16 @@ export default function InvestPage() {
         <div className="jarvis-card rounded-2xl p-6 mb-6">
           <h3 className="text-white font-bold text-lg mb-4 flex items-center">
             <Coins className="h-6 w-6 mr-2 text-yellow-400" />
-            Jarvis Coin Information
+            Ton Coin Information
           </h3>
           <div className="space-y-3">
             <div className="flex justify-between">
               <span className="text-gray-300">Current Price:</span>
-              <span className="text-white font-semibold">$0.1 per JRC</span>
+              <span className="text-white font-semibold">$0.1 per TON</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-300">Future Listing:</span>
-              <span className="text-green-400 font-semibold">$3.0 per JRC</span>
+              <span className="text-green-400 font-semibold">$3.0 per TON</span>
             </div>
             <div className="bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-lg p-3 mt-4">
               <p className="text-center text-white text-sm">
@@ -297,7 +296,7 @@ export default function InvestPage() {
         )}
 
         {/* Investment History */}
-        <Link 
+        <Link
           href="/dashboard/invest/history"
           className="jarvis-card rounded-xl p-4 flex items-center justify-center mt-4 hover:bg-white/10 transition-colors"
         >
@@ -312,7 +311,7 @@ export default function InvestPage() {
             <li>• Profits are added to your main wallet every hour</li>
             <li>• You can only withdraw profits, not principal</li>
             <li>• Multiple investments in different plans allowed</li>
-            <li>• Jarvis Coins are awarded instantly</li>
+            <li>• Ton Coins are awarded instantly</li>
           </ul>
         </div>
       </div>

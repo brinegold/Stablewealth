@@ -42,16 +42,16 @@ export default function HomePage() {
     <div className="min-h-screen jarvis-gradient relative overflow-hidden">
       {/* Floating Background Shapes */}
       <div className="floating-shapes"></div>
-      
+
       {/* Header */}
       <header className="relative z-10 container mx-auto px-4 py-6">
         <nav className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Image 
-              src="/logo_300x300.png" 
-              alt="Jarvis Staking Logo" 
-              width={128} 
-              height={128} 
+            <Image
+              src="/logo_300x300.png"
+              alt="Ton Staking Logo"
+              width={128}
+              height={128}
               className="!w-32 !h-32"
               style={{ width: '128px', height: '128px' }}
               priority
@@ -61,14 +61,14 @@ export default function HomePage() {
             />
           </div>
           <div className="flex items-center space-x-4">
-            <Link 
-              href="/auth/signin" 
+            <Link
+              href="/auth/signin"
               className="text-white hover:text-blue-200 transition-colors"
             >
               Sign In
             </Link>
-            <Link 
-              href="/auth/signup" 
+            <Link
+              href="/auth/signup"
               className="jarvis-button px-6 py-2 rounded-full text-white font-semibold"
             >
               Sign Up
@@ -87,24 +87,24 @@ export default function HomePage() {
             </span><br />
             Smart Crypto Growth !
           </h1>
-          
+
           <p className="text-xl text-gray-200 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Cryptocurrency is revolutionizing the world of finance — offering 
-            borderless, secure, and decentralized alternatives to traditional 
-            money. With strong long-term growth and increasing adoption, now 
+            Cryptocurrency is revolutionizing the world of finance — offering
+            borderless, secure, and decentralized alternatives to traditional
+            money. With strong long-term growth and increasing adoption, now
             is the perfect time to explore digital assets.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <Link 
-              href="/auth/signup" 
+            <Link
+              href="/auth/signup"
               className="jarvis-button px-8 py-4 rounded-full text-white font-semibold text-lg inline-flex items-center justify-center"
             >
               SIGN UP
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
-            <Link 
-              href="/auth/signin" 
+            <Link
+              href="/auth/signin"
               className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-purple-900 transition-all duration-300"
             >
               SIGN IN
@@ -120,7 +120,7 @@ export default function HomePage() {
               <h3 className="text-3xl font-bold text-white mb-3">USDT Staking</h3>
               <p className="text-gray-300 mb-4 text-lg">$10 to $50,000</p>
               <div className="text-4xl font-bold text-green-400 mb-4">5% Daily</div>
-              <p className="text-gray-300 mb-4 text-lg">100 JRC per $10</p>
+              <p className="text-gray-300 mb-4 text-lg">100 TON per $10</p>
               <div className="text-sm text-gray-400">
                 Current: $0.1/token<br />
                 Future: $3/token
@@ -151,7 +151,7 @@ export default function HomePage() {
       <footer className="relative z-10 border-t border-white/20 mt-20">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center text-gray-300">
-            <p>&copy; 2024 Jarvis Staking. All rights reserved.</p>
+            <p>&copy; 2024 Ton Staking. All rights reserved.</p>
             <p className="mt-2">Smart Crypto Growth Platform</p>
           </div>
         </div>

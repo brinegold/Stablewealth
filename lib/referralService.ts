@@ -16,13 +16,15 @@ export interface ReferralTransaction {
 
 export class DualReferralService {
   private supabase = createSupabaseClient()
-  
-  // 4-level referral commission structure for USDT staking
+
+  // 6-level referral commission structure for USDT staking
   private readonly commissionRates: ReferralCommissionRates[] = [
-    { level: 1, usdtRate: 5, jrcRate: 20 },   // Level 1: 5% USDT, 20% JRC
-    { level: 2, usdtRate: 3, jrcRate: 15 },   // Level 2: 3% USDT, 15% JRC
-    { level: 3, usdtRate: 2, jrcRate: 10 },   // Level 3: 2% USDT, 10% JRC
-    { level: 4, usdtRate: 1, jrcRate: 8 }     // Level 4: 1% USDT, 8% JRC
+    { level: 1, usdtRate: 10, jrcRate: 0 },   // Level 1: 10% USDT
+    { level: 2, usdtRate: 5, jrcRate: 0 },    // Level 2: 5% USDT
+    { level: 3, usdtRate: 3, jrcRate: 0 },    // Level 3: 3% USDT
+    { level: 4, usdtRate: 2, jrcRate: 0 },    // Level 4: 2% USDT
+    { level: 5, usdtRate: 1, jrcRate: 0 },    // Level 5: 1% USDT
+    { level: 6, usdtRate: 0.5, jrcRate: 0 }   // Level 6: 0.5% USDT
   ]
 
   /**
@@ -31,10 +33,10 @@ export class DualReferralService {
   async processDualReferralCommissions(transaction: ReferralTransaction): Promise<void> {
     try {
       console.log(`Processing dual referral commissions for user ${transaction.userId}, amount: ${transaction.amount}`)
-      
+
       // Get user's referral chain
       const referralChain = await this.getReferralChain(transaction.userId)
-      
+
       if (referralChain.length === 0) {
         console.log(`No referral chain found for user ${transaction.userId}`)
         return
@@ -44,7 +46,7 @@ export class DualReferralService {
       for (let i = 0; i < referralChain.length && i < this.commissionRates.length; i++) {
         const referrer = referralChain[i]
         const rates = this.commissionRates[i]
-        
+
         await this.payDualCommission(
           referrer.id,
           transaction.userId,
@@ -67,38 +69,38 @@ export class DualReferralService {
   private async getReferralChain(userId: string): Promise<any[]> {
     const chain: any[] = []
     let currentUserId = userId
-    
-    for (let level = 1; level <= 4; level++) {
+
+    for (let level = 1; level <= 6; level++) {
       // Find who referred this user (using sponsor_id which contains the referrer's referral_code)
       const { data: referralData, error } = await this.supabase
         .from('profiles')
         .select('sponsor_id')
         .eq('id', currentUserId)
         .single()
-      
+
       if (error || !referralData?.sponsor_id) {
         break
       }
-      
+
       // Get referrer details by matching referral_code with sponsor_id
       const { data: referrer, error: referrerError } = await this.supabase
         .from('profiles')
         .select('id, full_name, referral_code, main_wallet_balance, total_jarvis_tokens')
         .eq('referral_code', referralData.sponsor_id)
         .single()
-      
+
       if (referrerError || !referrer) {
         break
       }
-      
+
       chain.push({
         ...referrer,
         level
       })
-      
+
       currentUserId = referrer.id
     }
-    
+
     return chain
   }
 
@@ -118,7 +120,7 @@ export class DualReferralService {
       // Calculate commissions
       const usdtCommission = (transactionAmount * rates.usdtRate) / 100
       const jrcCommission = (jrcEarned * rates.jrcRate) / 100 // JRC coins based on actual JRC earned
-      
+
       console.log(`🧮 Commission Calculation for Level ${rates.level}:`)
       console.log(`   Transaction Amount: $${transactionAmount}`)
       console.log(`   JRC Earned: ${jrcEarned}`)
@@ -127,22 +129,22 @@ export class DualReferralService {
       console.log(`   USDT Commission: $${usdtCommission}`)
       console.log(`   JRC Commission: ${jrcCommission} JRC`)
       console.log(`   Paying to referrer: ${referrerId}`)
-      
+
       // Get current referrer balances
       const { data: referrer, error: referrerError } = await this.supabase
         .from('profiles')
         .select('main_wallet_balance, total_jarvis_tokens')
         .eq('id', referrerId)
         .single()
-      
+
       if (referrerError || !referrer) {
         throw new Error(`Failed to get referrer data: ${referrerError?.message}`)
       }
-      
+
       // Update referrer balances
       const newUsdtBalance = referrer.main_wallet_balance + usdtCommission
       const newJrcBalance = referrer.total_jarvis_tokens + jrcCommission
-      
+
       const { error: updateError } = await this.supabase
         .from('profiles')
         .update({
@@ -150,11 +152,11 @@ export class DualReferralService {
           total_jarvis_tokens: newJrcBalance
         })
         .eq('id', referrerId)
-      
+
       if (updateError) {
         throw new Error(`Failed to update referrer balances: ${updateError.message}`)
       }
-      
+
       // Create USDT commission transaction
       await this.createCommissionTransaction(
         referrerId,
@@ -165,7 +167,7 @@ export class DualReferralService {
         transactionType,
         planType
       )
-      
+
       // Create JRC commission transaction
       await this.createCommissionTransaction(
         referrerId,
@@ -176,7 +178,7 @@ export class DualReferralService {
         transactionType,
         planType
       )
-      
+
       // Create referral commission record (we'll create one record for USDT, JRC info will be in additional columns)
       await this.createReferralCommissionRecord(
         referrerId,
@@ -188,7 +190,7 @@ export class DualReferralService {
         planType,
         null // transaction_id - we'll handle this in the function
       )
-      
+
     } catch (error) {
       console.error(`Error paying dual commission to ${referrerId}:`, error)
       throw error
@@ -208,7 +210,7 @@ export class DualReferralService {
     planType?: string
   ): Promise<void> {
     const description = `Level ${level} ${currency} referral commission from ${transactionType}${planType ? ` (${planType})` : ''}`
-    
+
     const { error } = await this.supabase
       .from('transactions')
       .insert({
@@ -220,7 +222,7 @@ export class DualReferralService {
         description: description,
         created_at: new Date().toISOString()
       })
-    
+
     if (error) {
       throw new Error(`Failed to create ${currency} commission transaction: ${error.message}`)
     }
@@ -241,7 +243,7 @@ export class DualReferralService {
   ): Promise<void> {
     try {
       console.log(`💾 Saving referral commission: Level ${level}, USDT: ${usdtAmount}, JRC: ${jrcAmount}`)
-      
+
       // Insert with dual commission format
       const { error: insertError } = await this.supabase
         .from('referral_commissions')
@@ -260,7 +262,7 @@ export class DualReferralService {
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         })
-      
+
       if (insertError) {
         console.error('❌ Failed to create referral commission record:', insertError)
         throw insertError // Throw error to see what's wrong
@@ -284,23 +286,23 @@ export class DualReferralService {
       .select('referral_code')
       .eq('id', userId)
       .single()
-    
+
     if (userError || !userProfile?.referral_code) {
       console.error('Error fetching user referral code:', userError)
       return []
     }
-    
+
     // Then find all users who have this referral code as their sponsor_id
     const { data: referrals, error } = await this.supabase
       .from('profiles')
       .select('id, full_name, referral_code')
       .eq('sponsor_id', userProfile.referral_code)
-    
+
     if (error) {
       console.error('Error fetching direct referrals:', error)
       return []
     }
-    
+
     return referrals || []
   }
 
@@ -312,7 +314,7 @@ export class DualReferralService {
       const directReferrals = await this.getDirectReferrals(userId)
       return directReferrals.length
     }
-    
+
     // For deeper levels, we need to recursively count
     // Get user's referral code first
     const { data: userProfile, error: userError } = await this.supabase
@@ -320,16 +322,16 @@ export class DualReferralService {
       .select('referral_code')
       .eq('id', userId)
       .single()
-    
+
     if (userError || !userProfile?.referral_code) {
       return 0
     }
-    
+
     // Count referrals at the target level using recursive SQL
     // This counts users who are exactly 'targetLevel' levels deep in the referral chain
     let count = 0
     const directReferrals = await this.getDirectReferrals(userId)
-    
+
     if (targetLevel === 2) {
       // Count level 2: referrals of direct referrals
       for (const referral of directReferrals) {
@@ -344,12 +346,12 @@ export class DualReferralService {
         .select('referred_id')
         .eq('referrer_id', userId)
         .eq('level', targetLevel)
-      
+
       // Count unique referred users at this level
       const uniqueReferrals = new Set(commissions?.map(c => c.referred_id) || [])
       count = uniqueReferrals.size
     }
-    
+
     return count
   }
 
@@ -375,25 +377,25 @@ export class DualReferralService {
         .from('referral_commissions')
         .select('*')
         .eq('referrer_id', userId)
-      
+
       if (error) {
         throw new Error(`Failed to get referral stats: ${error.message}`)
       }
-      
+
       // Handle both old and new commission formats
       const totalUsdtEarned = commissions?.reduce((sum, c) => {
         return sum + (c.usdt_commission || c.commission_amount || 0)
       }, 0) || 0
       const totalJrcEarned = commissions?.reduce((sum, c) => sum + (c.jrc_commission || 0), 0) || 0
-      
+
       // Get actual referral counts by level
       const referralChain = await this.getReferralChain(userId)
       const directReferrals = await this.getDirectReferrals(userId)
-      
+
       // Calculate level statistics with actual referral counts
       const levelStats = await Promise.all(this.commissionRates.map(async (rate) => {
         const levelCommissions = commissions?.filter(c => c.level === rate.level) || []
-        
+
         // Count actual referrals at this level
         let referralCount = 0
         if (rate.level === 1) {
@@ -402,7 +404,7 @@ export class DualReferralService {
           // For deeper levels, we need to count referrals at that depth
           referralCount = await this.countReferralsAtLevel(userId, rate.level)
         }
-        
+
         return {
           level: rate.level,
           count: referralCount,
@@ -412,10 +414,10 @@ export class DualReferralService {
           jrcRate: rate.jrcRate
         }
       }))
-      
+
       // Get total referrals using the direct referrals method
       const allReferrals = await this.getDirectReferrals(userId)
-      
+
       return {
         totalUsdtEarned,
         totalJrcEarned,

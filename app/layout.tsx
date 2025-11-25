@@ -5,7 +5,7 @@ import { AuthProvider } from '@/components/providers/AuthProvider'
 import { ServerInitializer } from '@/components/ServerInitializer'
 import DashboardPreloader from '@/components/DashboardPreloader'
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
   preload: true,
@@ -13,12 +13,12 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'Jarvis Staking - Smart Crypto Growth Platform',
-  description: 'Invest in Future Smart Crypto Growth with Jarvis Staking. Revolutionary cryptocurrency investment platform offering secure, decentralized alternatives to traditional money.',
+  title: 'Ton Staking - Smart Crypto Growth Platform',
+  description: 'Invest in Future Smart Crypto Growth with Ton Staking. Revolutionary cryptocurrency investment platform offering secure, decentralized alternatives to traditional money.',
   keywords: ['crypto', 'staking', 'investment', 'blockchain', 'USDT', 'JRC', 'cryptocurrency'],
-  authors: [{ name: 'Jarvis Staking Team' }],
-  creator: 'Jarvis Staking',
-  publisher: 'Jarvis Staking',
+  authors: [{ name: 'Ton Staking Team' }],
+  creator: 'Ton Staking',
+  publisher: 'Ton Staking',
   formatDetection: {
     email: false,
     address: false,
