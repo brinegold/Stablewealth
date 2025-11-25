@@ -4,12 +4,12 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { useRouter } from 'next/navigation'
 import { createSupabaseClient } from '@/lib/supabase'
-import { 
-  Users, 
-  CreditCard, 
-  TrendingUp, 
-  AlertCircle, 
-  CheckCircle, 
+import {
+  Users,
+  CreditCard,
+  TrendingUp,
+  AlertCircle,
+  CheckCircle,
   XCircle,
   Eye,
   Settings,
@@ -196,7 +196,7 @@ export default function AdminDashboard() {
   const handleTokenCollection = async (action: 'scan_all' | 'collect_usdt' | 'collect_bnb', userId?: string) => {
     setIsCollecting(true)
     setCollectionResults('')
-    
+
     try {
       const response = await fetch('/api/admin/collect-tokens', {
         method: 'POST',
@@ -216,16 +216,16 @@ export default function AdminDashboard() {
             `💰 USDT Collections: ${results.usdtCollections.length}\n` +
             `⛽ BNB Collections: ${results.bnbCollections.length}\n` +
             `❌ Errors: ${results.errors.length}\n\n` +
-            (results.usdtCollections.length > 0 ? 
-              `USDT Collections:\n${results.usdtCollections.map((c: any) => 
-                `• ${c.amount} USDT - TX: ${c.txHash?.slice(0,10)}...`).join('\n')}\n\n` : '') +
-            (results.bnbCollections.length > 0 ? 
-              `BNB Collections:\n${results.bnbCollections.map((c: any) => 
-                `• ${c.amount} BNB - TX: ${c.txHash?.slice(0,10)}...`).join('\n')}\n\n` : '') +
-            (results.errors.length > 0 ? 
-              `Errors:\n${results.errors.slice(0,5).map((e: any) => 
+            (results.usdtCollections.length > 0 ?
+              `USDT Collections:\n${results.usdtCollections.map((c: any) =>
+                `• ${c.amount} USDT - TX: ${c.txHash?.slice(0, 10)}...`).join('\n')}\n\n` : '') +
+            (results.bnbCollections.length > 0 ?
+              `BNB Collections:\n${results.bnbCollections.map((c: any) =>
+                `• ${c.amount} BNB - TX: ${c.txHash?.slice(0, 10)}...`).join('\n')}\n\n` : '') +
+            (results.errors.length > 0 ?
+              `Errors:\n${results.errors.slice(0, 5).map((e: any) =>
                 `• ${e.error}`).join('\n')}` : '')
-          
+
           setCollectionResults(summary)
         } else {
           setCollectionResults(`✅ ${data.message}\nTX: ${data.txHash}`)
@@ -242,20 +242,20 @@ export default function AdminDashboard() {
   }
 
   const handleWithdrawalAction = async (withdrawalId: string, action: 'approve' | 'reject') => {
-    const loadingMessage = action === 'approve' 
-      ? 'Processing withdrawal on blockchain...' 
+    const loadingMessage = action === 'approve'
+      ? 'Processing withdrawal on blockchain...'
       : 'Rejecting withdrawal...';
-    
+
     // Show loading state
     const originalAlert = window.alert;
-    window.alert = () => {}; // Temporarily disable alerts
-    
+    window.alert = () => { }; // Temporarily disable alerts
+
     try {
       // Show processing message
       if (action === 'approve') {
         alert('Processing withdrawal on BSC blockchain. This may take a few moments...');
       }
-      
+
       const response = await fetch('/api/admin/approve-withdrawal', {
         method: 'POST',
         headers: {
@@ -278,7 +278,7 @@ export default function AdminDashboard() {
         } else {
           alert('✅ Withdrawal rejected successfully!')
         }
-        
+
         // Refresh data
         await fetchAdminData()
       } else {
@@ -287,7 +287,7 @@ export default function AdminDashboard() {
     } catch (error: any) {
       // Restore alert function
       window.alert = originalAlert;
-      
+
       console.error(`Error ${action}ing withdrawal:`, error)
       alert(`❌ Failed to ${action} withdrawal: ${error.message}`)
     }
@@ -323,8 +323,8 @@ export default function AdminDashboard() {
             <h1 className="text-2xl font-bold text-white">Admin Dashboard</h1>
           </div>
           <div className="flex items-center space-x-4">
-            <Link 
-              href="/dashboard" 
+            <Link
+              href="/dashboard"
               className="text-white hover:text-blue-300 flex items-center space-x-2"
             >
               <Eye className="h-5 w-5" />
@@ -414,38 +414,38 @@ export default function AdminDashboard() {
 
         {/* Navigation Tabs */}
         <div className="flex flex-wrap gap-4 mb-6">
-          <Link 
+          <Link
             href="/admin/withdrawals"
             className="jarvis-button px-6 py-3 rounded-lg text-white font-semibold"
           >
             Manage Withdrawals
           </Link>
-          <Link 
+          <Link
             href="/admin/deposit-requests"
             className="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg text-white font-semibold flex items-center space-x-2"
           >
             <CreditCard className="h-5 w-5" />
             <span>Deposit Requests</span>
           </Link>
-          <Link 
+          <Link
             href="/admin/users"
             className="jarvis-card px-6 py-3 rounded-lg text-white font-semibold hover:bg-white/10"
           >
             Manage Users
           </Link>
-          <Link 
+          <Link
             href="/admin/transactions"
             className="jarvis-card px-6 py-3 rounded-lg text-white font-semibold hover:bg-white/10"
           >
             View Transactions
           </Link>
-          <Link 
+          <Link
             href="/admin/investments"
             className="jarvis-card px-6 py-3 rounded-lg text-white font-semibold hover:bg-white/10"
           >
             Investment Plans
           </Link>
-          <Link 
+          <Link
             href="/admin/wallet-collection"
             className="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg text-white font-semibold flex items-center space-x-2"
           >
@@ -466,15 +466,15 @@ export default function AdminDashboard() {
             <CreditCard className="h-6 w-6" />
             <span>Manual Deposit System</span>
           </h2>
-          
-          <div className="bg-blue-600/20 border border-blue-500 rounded-lg p-4">
+
+          <div className="bg-amber-900/20 border border-amber-800 rounded-lg p-4">
             <h3 className="text-white font-semibold mb-2">System Update</h3>
             <p className="text-gray-300 text-sm mb-3">
-              The platform now uses a manual deposit approval system. Users submit deposit requests 
+              The platform now uses a manual deposit approval system. Users submit deposit requests
               which require admin verification and approval.
             </p>
             <div className="flex gap-4">
-              <Link 
+              <Link
                 href="/admin/deposit-requests"
                 className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-white font-semibold text-sm"
               >
@@ -490,7 +490,7 @@ export default function AdminDashboard() {
             <Wallet className="h-6 w-6" />
             <span>Token Collection Management</span>
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <button
               onClick={() => handleTokenCollection('scan_all')}
@@ -500,7 +500,7 @@ export default function AdminDashboard() {
               <Scan className="h-5 w-5" />
               <span>{isCollecting ? 'Scanning...' : 'Scan & Collect All'}</span>
             </button>
-            
+
             <button
               onClick={() => handleTokenCollection('collect_usdt')}
               disabled={isCollecting}
@@ -509,7 +509,7 @@ export default function AdminDashboard() {
               <Coins className="h-5 w-5" />
               <span>{isCollecting ? 'Collecting...' : 'Collect All USDT'}</span>
             </button>
-            
+
             <button
               onClick={() => handleTokenCollection('collect_bnb')}
               disabled={isCollecting}
@@ -519,7 +519,7 @@ export default function AdminDashboard() {
               <span>{isCollecting ? 'Collecting...' : 'Collect All BNB'}</span>
             </button>
           </div>
-          
+
           {collectionResults && (
             <div className="bg-gray-800/50 border border-gray-600 rounded-lg p-4">
               <h3 className="text-white font-semibold mb-2">Collection Results:</h3>
@@ -528,8 +528,8 @@ export default function AdminDashboard() {
               </pre>
             </div>
           )}
-          
-          <div className="bg-blue-600/20 border border-blue-500 rounded-lg p-4 mt-4">
+
+          <div className="bg-amber-900/20 border border-amber-800 rounded-lg p-4 mt-4">
             <h4 className="text-white font-semibold mb-2">Collection Information</h4>
             <div className="text-sm text-gray-300 space-y-1">
               <p>• <strong>Scan & Collect All:</strong> Scans all user wallets and collects both USDT + BNB automatically</p>
@@ -543,7 +543,7 @@ export default function AdminDashboard() {
         {/* Pending Withdrawals */}
         <div className="jarvis-card rounded-2xl p-6">
           <h2 className="text-2xl font-bold text-white mb-6">Pending Withdrawals</h2>
-          
+
           {pendingWithdrawals.length === 0 ? (
             <div className="text-center py-8">
               <CheckCircle className="h-16 w-16 text-green-400 mx-auto mb-4" />

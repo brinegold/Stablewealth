@@ -74,7 +74,7 @@ export default function WithdrawHistoryPage() {
     switch (status) {
       case 'completed': return 'text-green-400 bg-green-500/20'
       case 'pending': return 'text-yellow-400 bg-yellow-500/20'
-      case 'processing': return 'text-blue-400 bg-blue-500/20'
+      case 'processing': return 'text-amber-400 bg-amber-800/20'
       case 'failed': return 'text-red-400 bg-red-500/20'
       case 'rejected': return 'text-red-400 bg-red-500/20'
       default: return 'text-gray-400 bg-gray-500/20'
@@ -91,7 +91,7 @@ export default function WithdrawHistoryPage() {
     })
   }
 
-  const filteredWithdrawals = withdrawals.filter(withdrawal => 
+  const filteredWithdrawals = withdrawals.filter(withdrawal =>
     filter === 'all' || withdrawal.status === filter
   )
 
@@ -164,11 +164,10 @@ export default function WithdrawHistoryPage() {
             <button
               key={status}
               onClick={() => setFilter(status as any)}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                filter === status
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-white/10 text-gray-300 hover:bg-white/20'
-              }`}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${filter === status
+                ? 'bg-amber-800 text-white'
+                : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                }`}
             >
               {status.charAt(0).toUpperCase() + status.slice(1)}
               {status !== 'all' && (
@@ -189,13 +188,13 @@ export default function WithdrawHistoryPage() {
                 {filter === 'all' ? 'No Withdrawal History' : `No ${filter} withdrawals`}
               </h3>
               <p className="text-gray-300 mb-4">
-                {filter === 'all' 
-                  ? "You haven't made any withdrawals yet." 
+                {filter === 'all'
+                  ? "You haven't made any withdrawals yet."
                   : `No withdrawals with ${filter} status found.`
                 }
               </p>
               {filter === 'all' && (
-                <Link 
+                <Link
                   href="/dashboard/withdraw"
                   className="jarvis-button px-6 py-2 rounded-lg text-white font-semibold"
                 >
@@ -222,7 +221,7 @@ export default function WithdrawHistoryPage() {
                         {withdrawal.status.toUpperCase()}
                       </span>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                       <div>
                         <p className="text-gray-400">Transaction ID</p>
@@ -264,15 +263,15 @@ export default function WithdrawHistoryPage() {
                         </p>
                       </div>
                     )}
-                    
+
                     {withdrawal.status === 'processing' && (
-                      <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-                        <p className="text-blue-400 text-sm">
+                      <div className="mt-4 p-3 bg-amber-800/10 border border-amber-800/30 rounded-lg">
+                        <p className="text-amber-400 text-sm">
                           🔄 Your withdrawal is being processed. Funds will be sent to your wallet shortly.
                         </p>
                       </div>
                     )}
-                    
+
                     {withdrawal.status === 'failed' && (
                       <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
                         <p className="text-red-400 text-sm">
@@ -280,7 +279,7 @@ export default function WithdrawHistoryPage() {
                         </p>
                       </div>
                     )}
-                    
+
                     {withdrawal.status === 'rejected' && (
                       <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
                         <p className="text-red-400 text-sm">
@@ -302,7 +301,7 @@ export default function WithdrawHistoryPage() {
         {/* Quick Action */}
         {withdrawals.length > 0 && (
           <div className="mt-8 text-center">
-            <Link 
+            <Link
               href="/dashboard/withdraw"
               className="jarvis-button px-8 py-3 rounded-lg text-white font-semibold"
             >

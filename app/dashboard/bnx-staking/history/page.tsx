@@ -53,7 +53,7 @@ export default function JRCStakingHistoryPage() {
         .order('created_at', { ascending: false })
 
       if (error) throw error
-      
+
       // Transform transaction data to JRC staking records format
       const transformedData = (data || []).map(transaction => ({
         id: transaction.id,
@@ -97,7 +97,7 @@ export default function JRCStakingHistoryPage() {
     const start = new Date(startDate)
     const end = new Date(start.getTime() + (period * 24 * 60 * 60 * 1000))
     const now = new Date()
-    
+
     if (now < end) return 'active'
     return 'completed'
   }
@@ -114,7 +114,7 @@ export default function JRCStakingHistoryPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'text-green-400 bg-green-500/20'
-      case 'completed': return 'text-blue-400 bg-blue-500/20'
+      case 'completed': return 'text-amber-400 bg-amber-800/20'
       case 'withdrawn': return 'text-gray-400 bg-gray-500/20'
       default: return 'text-gray-400 bg-gray-500/20'
     }
@@ -132,14 +132,14 @@ export default function JRCStakingHistoryPage() {
     const start = new Date(startDate).getTime()
     const end = new Date(endDate).getTime()
     const now = Date.now()
-    
+
     if (now >= end) return 100
     if (now <= start) return 0
-    
+
     return ((now - start) / (end - start)) * 100
   }
 
-  const filteredRecords = stakingRecords.filter(record => 
+  const filteredRecords = stakingRecords.filter(record =>
     filter === 'all' || record.status === filter
   )
 
@@ -214,11 +214,10 @@ export default function JRCStakingHistoryPage() {
             <button
               key={status}
               onClick={() => setFilter(status as any)}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                filter === status
-                  ? 'bg-orange-500 text-white'
-                  : 'bg-white/10 text-gray-300 hover:bg-white/20'
-              }`}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${filter === status
+                ? 'bg-orange-500 text-white'
+                : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                }`}
             >
               {status.charAt(0).toUpperCase() + status.slice(1)}
               {status !== 'all' && (
@@ -241,13 +240,13 @@ export default function JRCStakingHistoryPage() {
                 {filter === 'all' ? 'No JRV Staking History' : `No ${filter} JRV stakes`}
               </h3>
               <p className="text-gray-300 mb-4">
-                {filter === 'all' 
-                  ? "You haven't staked any JRV tokens yet." 
+                {filter === 'all'
+                  ? "You haven't staked any JRV tokens yet."
                   : `No JRV stakes with ${filter} status found.`
                 }
               </p>
               {filter === 'all' && (
-                <Link 
+                <Link
                   href="/dashboard/bnx-staking"
                   className="jarvis-button px-6 py-2 rounded-lg text-white font-semibold"
                 >
@@ -258,7 +257,7 @@ export default function JRCStakingHistoryPage() {
           ) : (
             filteredRecords.map((record) => {
               const progress = calculateProgress(record.start_date, record.end_date)
-              
+
               return (
                 <div key={record.id} className="jarvis-card rounded-xl p-6">
                   <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
@@ -279,7 +278,7 @@ export default function JRCStakingHistoryPage() {
                           {record.status.toUpperCase()}
                         </span>
                       </div>
-                      
+
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
                         <div>
                           <p className="text-gray-400">Staked Amount</p>
@@ -307,7 +306,7 @@ export default function JRCStakingHistoryPage() {
                             <span className="text-white">{progress.toFixed(1)}%</span>
                           </div>
                           <div className="w-full bg-gray-700 rounded-full h-2">
-                            <div 
+                            <div
                               className="bg-gradient-to-r from-yellow-400 to-orange-500 h-2 rounded-full transition-all duration-300"
                               style={{ width: `${Math.min(progress, 100)}%` }}
                             ></div>
@@ -323,10 +322,10 @@ export default function JRCStakingHistoryPage() {
                           </p>
                         </div>
                       )}
-                      
+
                       {record.status === 'completed' && (
-                        <div className="p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-                          <p className="text-blue-400 text-sm">
+                        <div className="p-3 bg-amber-800/10 border border-amber-800/30 rounded-lg">
+                          <p className="text-amber-400 text-sm">
                             ✅ Staking period completed. Total earned: {record.total_earned.toLocaleString()} JRV
                           </p>
                         </div>
@@ -362,7 +361,7 @@ export default function JRCStakingHistoryPage() {
               <div className="text-center">
                 <p className="text-gray-400 text-sm">Average APY</p>
                 <p className="text-2xl font-bold text-yellow-400">
-                  {stakingRecords.length > 0 
+                  {stakingRecords.length > 0
                     ? (stakingRecords.reduce((sum, r) => sum + r.apy, 0) / stakingRecords.length).toFixed(1)
                     : '0'
                   }%
@@ -387,7 +386,7 @@ export default function JRCStakingHistoryPage() {
         {/* Quick Action */}
         {stakingRecords.length > 0 && (
           <div className="mt-8 text-center">
-            <Link 
+            <Link
               href="/dashboard/bnx-staking"
               className="jarvis-button px-8 py-3 rounded-lg text-white font-semibold"
             >

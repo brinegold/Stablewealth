@@ -87,7 +87,7 @@ export default function TransferHistoryPage() {
   }
 
   const getTransferIcon = (type: string) => {
-    return type === 'received' 
+    return type === 'received'
       ? <ArrowDown className="h-6 w-6 text-green-400" />
       : <Send className="h-6 w-6 text-blue-400" />
   }
@@ -181,16 +181,15 @@ export default function TransferHistoryPage() {
             <button
               key={filterType}
               onClick={() => setFilter(filterType as any)}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                filter === filterType
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-white/10 text-gray-300 hover:bg-white/20'
-              }`}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${filter === filterType
+                ? 'bg-amber-800 text-white'
+                : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                }`}
             >
               {filterType.charAt(0).toUpperCase() + filterType.slice(1)}
               {filterType !== 'all' && (
                 <span className="ml-2 bg-white/20 px-2 py-1 rounded-full text-xs">
-                  {filterType === 'sent' || filterType === 'received' 
+                  {filterType === 'sent' || filterType === 'received'
                     ? transfers.filter(t => getTransferType(t) === filterType).length
                     : transfers.filter(t => t.status === filterType).length
                   }
@@ -209,13 +208,13 @@ export default function TransferHistoryPage() {
                 {filter === 'all' ? 'No Transfer History' : `No ${filter} transfers`}
               </h3>
               <p className="text-gray-300 mb-4">
-                {filter === 'all' 
-                  ? "You haven't made any transfers yet." 
+                {filter === 'all'
+                  ? "You haven't made any transfers yet."
                   : `No ${filter} transfers found.`
                 }
               </p>
               {filter === 'all' && (
-                <Link 
+                <Link
                   href="/dashboard/transfer"
                   className="jarvis-button px-6 py-2 rounded-lg text-white font-semibold"
                 >
@@ -237,9 +236,8 @@ export default function TransferHistoryPage() {
                             <h3 className="text-lg font-semibold text-white">
                               ${transfer.amount.toFixed(2)} USDT
                             </h3>
-                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                              transferType === 'received' ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'
-                            }`}>
+                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${transferType === 'received' ? 'bg-green-500/20 text-green-400' : 'bg-amber-800/20 text-amber-400'
+                              }`}>
                               {transferType.toUpperCase()}
                             </span>
                           </div>
@@ -251,7 +249,7 @@ export default function TransferHistoryPage() {
                           {transfer.status.toUpperCase()}
                         </span>
                       </div>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                         <div>
                           <p className="text-gray-400">Transaction ID</p>
@@ -289,7 +287,7 @@ export default function TransferHistoryPage() {
                           </p>
                         </div>
                       )}
-                      
+
                       {transfer.status === 'failed' && (
                         <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
                           <p className="text-red-400 text-sm">
@@ -312,7 +310,7 @@ export default function TransferHistoryPage() {
         {/* Quick Action */}
         {transfers.length > 0 && (
           <div className="mt-8 text-center">
-            <Link 
+            <Link
               href="/dashboard/transfer"
               className="jarvis-button px-8 py-3 rounded-lg text-white font-semibold"
             >

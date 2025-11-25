@@ -498,7 +498,7 @@ export default function DashboardPage() {
                 href="https://t.me/+vIW_s8xt3IdmNjg0"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-1.5 sm:p-2 text-white hover:bg-blue-500/20 hover:text-blue-400 rounded-full transition-all duration-300"
+                className="p-1.5 sm:p-2 text-white hover:bg-amber-800/20 hover:text-amber-400 rounded-full transition-all duration-300"
                 title="Follow us on Telegram"
               >
                 <Telegram className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -544,7 +544,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Staking Notice */}
-        <div className="bg-blue-600/20 border border-blue-500 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 overflow-hidden">
+        <div className="bg-amber-900/20 border border-amber-800 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 overflow-hidden">
           <div className="whitespace-nowrap animate-marquee">
             <p className="text-white inline-block">Staking Started from 10 USDT: Earn 3% daily on USDT and TON. Referral Commission up to 10 Levels</p>
           </div>

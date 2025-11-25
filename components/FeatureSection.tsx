@@ -14,7 +14,7 @@ export default function FeatureSection() {
       </div>
 
       <div className="text-center">
-        <div className="bg-blue-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="bg-amber-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
           <Users className="h-8 w-8 text-white" />
         </div>
         <h3 className="text-xl font-semibold text-white mb-2">4-Level Referrals</h3>

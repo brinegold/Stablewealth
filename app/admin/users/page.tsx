@@ -4,9 +4,9 @@ import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { useRouter } from 'next/navigation'
 import { createSupabaseClient } from '@/lib/supabase'
-import { 
-  ArrowLeft, 
-  Users, 
+import {
+  ArrowLeft,
+  Users,
   Search,
   Filter,
   Edit,
@@ -58,14 +58,14 @@ export default function UsersManagement() {
   const [addFundsAmount, setAddFundsAmount] = useState('')
   const [addFundsNotes, setAddFundsNotes] = useState('')
   const [isAddingFunds, setIsAddingFunds] = useState(false)
-  
+
   // Deduct Funds Modal State
   const [showDeductFundsModal, setShowDeductFundsModal] = useState(false)
   const [deductFundsUser, setDeductFundsUser] = useState<UserProfile | null>(null)
   const [deductFundsAmount, setDeductFundsAmount] = useState('')
   const [deductFundsNotes, setDeductFundsNotes] = useState('')
   const [isDeductingFunds, setIsDeductingFunds] = useState(false)
-  
+
   // Jarvis Token Management Modal State
   const [showJarvisModal, setShowJarvisModal] = useState(false)
   const [jarvisUser, setJarvisUser] = useState<UserProfile | null>(null)
@@ -73,11 +73,11 @@ export default function UsersManagement() {
   const [jarvisNotes, setJarvisNotes] = useState('')
   const [jarvisAction, setJarvisAction] = useState<'add' | 'deduct'>('add')
   const [isManagingJarvis, setIsManagingJarvis] = useState(false)
-  
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1)
   const [usersPerPage] = useState(50)
-  
+
   const supabase = createSupabaseClient()
 
   const checkAdminAndFetch = useCallback(async () => {
@@ -115,18 +115,18 @@ export default function UsersManagement() {
       // Fetch user emails from API endpoint
       const userIds = usersData?.map(user => user.id) || []
       let emailMap = new Map<string, { email?: string; last_sign_in_at?: string }>()
-      
+
       try {
         const emailResponse = await fetch('/api/admin/get-user-emails', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userIds })
         })
-        
+
         if (emailResponse.ok) {
           const emailData = await emailResponse.json()
           emailMap = new Map(emailData.users?.map((user: any) => [
-            user.id, 
+            user.id,
             { email: user.email, last_sign_in_at: user.last_sign_in_at }
           ]) || [])
         }
@@ -177,51 +177,51 @@ export default function UsersManagement() {
       // Calculate USDT team volume for each user
       const calculateTeamVolume = (userId: string, userReferralCode: string) => {
         if (!userReferralCode) return 0
-        
+
         // Get all team members - try both possible relationships
         // Method 1: sponsor_id matches referral_code
         let teamMembers = usersData?.filter(u => u.sponsor_id === userReferralCode) || []
-        
+
         // Method 2: If no results, try sponsor_id matches userId (fallback)
         if (teamMembers.length === 0) {
           teamMembers = usersData?.filter(u => u.sponsor_id === userId) || []
         }
-        
+
         // Calculate total investments of team members
         let teamVolume = 0
         teamMembers.forEach(member => {
           const memberInvestment = investmentMap.get(member.id) || 0
           teamVolume += memberInvestment
-          
+
           // Recursively calculate volume from sub-teams (multi-level)
           if (member.referral_code) {
             const subTeamVolume = calculateSubTeamVolume(member.id, member.referral_code)
             teamVolume += subTeamVolume
           }
         })
-        
+
         // Debug logging for users with team members
         if (teamMembers.length > 0) {
           console.log(`User ${userId} (${userReferralCode}) has ${teamMembers.length} team members with total volume: $${teamVolume}`)
           console.log('Team members:', teamMembers.map(m => ({ id: m.id, referral_code: m.referral_code, investment: investmentMap.get(m.id) || 0 })))
         }
-        
+
         return teamVolume
       }
 
       const calculateSubTeamVolume = (userId: string, userReferralCode: string): number => {
         if (!userReferralCode) return 0
-        
+
         // Get sub-team members using referral_code
         let subTeamMembers = usersData?.filter(u => u.sponsor_id === userReferralCode) || []
-        
+
         // Fallback to userId if no results
         if (subTeamMembers.length === 0) {
           subTeamMembers = usersData?.filter(u => u.sponsor_id === userId) || []
         }
-        
+
         let subVolume = 0
-        
+
         subTeamMembers.forEach(member => {
           const memberInvestment = investmentMap.get(member.id) || 0
           subVolume += memberInvestment
@@ -230,7 +230,7 @@ export default function UsersManagement() {
             subVolume += calculateSubTeamVolume(member.id, member.referral_code)
           }
         })
-        
+
         return subVolume
       }
 
@@ -241,9 +241,9 @@ export default function UsersManagement() {
           .from('profiles')
           .select('sponsor_id')
           .not('sponsor_id', 'is', null)
-        
+
         if (fallbackError) throw fallbackError
-        
+
         // Create referral count map
         const referralCountMap = new Map()
         referralData?.forEach(ref => {
@@ -256,7 +256,7 @@ export default function UsersManagement() {
         var processedUsers = usersData?.map((user, index) => {
           const authData = emailMap.get(user.id)
           const teamVolume = calculateTeamVolume(user.id, user.referral_code)
-          
+
           // Debug log for first few users
           if (index < 5) {
             console.log(`Processing user ${index + 1}:`, {
@@ -267,7 +267,7 @@ export default function UsersManagement() {
               team_volume: teamVolume
             })
           }
-          
+
           return {
             ...user,
             user_email: authData?.email || user.id, // Use email from auth.users or fallback to user_id
@@ -281,11 +281,11 @@ export default function UsersManagement() {
       } else {
         // Use RPC result if available
         const referralCountMap = new Map(referralCounts?.map((rc: { referral_code: string; count: number }) => [rc.referral_code, rc.count]) || [])
-        
+
         var processedUsers = usersData?.map((user, index) => {
           const authData = emailMap.get(user.id)
           const teamVolume = calculateTeamVolume(user.id, user.referral_code)
-          
+
           // Debug log for first few users
           if (index < 5) {
             console.log(`Processing user ${index + 1} (RPC branch):`, {
@@ -296,7 +296,7 @@ export default function UsersManagement() {
               team_volume: teamVolume
             })
           }
-          
+
           return {
             ...user,
             user_email: authData?.email || user.id, // Use email from auth.users or fallback to user_id
@@ -328,7 +328,7 @@ export default function UsersManagement() {
 
     // Apply search filter
     if (searchTerm) {
-      filtered = filtered.filter(user => 
+      filtered = filtered.filter(user =>
         user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.user_email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.referral_code?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -359,7 +359,7 @@ export default function UsersManagement() {
   const handleUserAction = async (userId: string, action: 'ban' | 'unban' | 'make_admin' | 'remove_admin') => {
     try {
       let updateData: any = {}
-      
+
       switch (action) {
         case 'ban':
           updateData = { is_banned: true }
@@ -672,7 +672,7 @@ export default function UsersManagement() {
               </div>
             )}
           </div>
-          
+
           {filteredUsers.length === 0 ? (
             <div className="text-center py-8">
               <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
@@ -684,137 +684,137 @@ export default function UsersManagement() {
                 {filteredUsers
                   .slice((currentPage - 1) * usersPerPage, currentPage * usersPerPage)
                   .map((userProfile) => (
-                <div key={userProfile.id} className="bg-white/5 rounded-lg p-4 border border-white/10">
-                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-4 mb-3">
-                        <div>
-                          <div className="flex items-center space-x-2">
-                            <p className="text-white font-semibold">{userProfile.full_name || 'N/A'}</p>
-                            {userProfile.is_admin && (
-                              <span className="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded-full">Admin</span>
-                            )}
-                            {userProfile.is_banned && (
-                              <span className="px-2 py-1 bg-red-500/20 text-red-400 text-xs rounded-full">Banned</span>
-                            )}
+                    <div key={userProfile.id} className="bg-white/5 rounded-lg p-4 border border-white/10">
+                      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-4 mb-3">
+                            <div>
+                              <div className="flex items-center space-x-2">
+                                <p className="text-white font-semibold">{userProfile.full_name || 'N/A'}</p>
+                                {userProfile.is_admin && (
+                                  <span className="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded-full">Admin</span>
+                                )}
+                                {userProfile.is_banned && (
+                                  <span className="px-2 py-1 bg-red-500/20 text-red-400 text-xs rounded-full">Banned</span>
+                                )}
+                              </div>
+                              <p className="text-gray-400 text-sm">{userProfile.user_email || 'N/A'}</p>
+                              <p className="text-gray-400 text-xs">ID: {userProfile.referral_code || 'N/A'}</p>
+                            </div>
                           </div>
-                          <p className="text-gray-400 text-sm">{userProfile.user_email || 'N/A'}</p>
-                          <p className="text-gray-400 text-xs">ID: {userProfile.referral_code || 'N/A'}</p>
+
+                          <div className="grid grid-cols-2 md:grid-cols-6 gap-4 text-sm">
+                            <div>
+                              <p className="text-gray-400">Main Wallet</p>
+                              <p className="text-white font-semibold">${userProfile.main_wallet_balance.toFixed(2)}</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-400">Fund Wallet</p>
+                              <p className="text-white">${userProfile.fund_wallet_balance.toFixed(2)}</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-400">JRV Tokens</p>
+                              <p className="text-yellow-400">{(userProfile.total_jarvis_tokens || 0).toLocaleString()}</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-400">Investments</p>
+                              <p className="text-green-400">${userProfile.total_investments.toFixed(2)}</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-400">Team Volume</p>
+                              <p className="text-purple-400">${userProfile.usdt_team_volume.toFixed(2)}</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-400">Referrals</p>
+                              <p className="text-blue-400">{userProfile.referral_count}</p>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 md:grid-cols-6 gap-4 text-sm">
-                        <div>
-                          <p className="text-gray-400">Main Wallet</p>
-                          <p className="text-white font-semibold">${userProfile.main_wallet_balance.toFixed(2)}</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-400">Fund Wallet</p>
-                          <p className="text-white">${userProfile.fund_wallet_balance.toFixed(2)}</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-400">JRV Tokens</p>
-                          <p className="text-yellow-400">{(userProfile.total_jarvis_tokens || 0).toLocaleString()}</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-400">Investments</p>
-                          <p className="text-green-400">${userProfile.total_investments.toFixed(2)}</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-400">Team Volume</p>
-                          <p className="text-purple-400">${userProfile.usdt_team_volume.toFixed(2)}</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-400">Referrals</p>
-                          <p className="text-blue-400">{userProfile.referral_count}</p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        onClick={() => openUserModal(userProfile)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1"
-                      >
-                        <Eye className="h-4 w-4" />
-                        <span>View</span>
-                      </button>
-                      
-                      <button
-                        onClick={() => openAddFundsModal(userProfile)}
-                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1"
-                      >
-                        <Plus className="h-4 w-4" />
-                        <span>Add Funds</span>
-                      </button>
-                      
-                      <button
-                        onClick={() => openDeductFundsModal(userProfile)}
-                        className="bg-orange-600 hover:bg-orange-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1"
-                      >
-                        <Minus className="h-4 w-4" />
-                        <span>Deduct Funds</span>
-                      </button>
-                      
-                      <button
-                        onClick={() => openJarvisModal(userProfile, 'add')}
-                        className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1"
-                      >
-                        <Coins className="h-4 w-4" />
-                        <span>Add JRV</span>
-                      </button>
-                      
-                      <button
-                        onClick={() => openJarvisModal(userProfile, 'deduct')}
-                        className="bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1"
-                      >
-                        <Minus className="h-4 w-4" />
-                        <span>Deduct JRV</span>
-                      </button>
-                      
-                      {userProfile.is_admin ? (
-                        <button
-                          onClick={() => handleUserAction(userProfile.id, 'remove_admin')}
-                          className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1"
-                        >
-                          <UserMinus className="h-4 w-4" />
-                          <span>Unadmin</span>
-                        </button>
-                      ) : (
-                        <>
-                          {userProfile.is_banned ? (
+
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            onClick={() => openUserModal(userProfile)}
+                            className="bg-amber-900 hover:bg-amber-950 text-white px-3 py-2 rounded-lg flex items-center space-x-1"
+                          >
+                            <Eye className="h-4 w-4" />
+                            <span>View</span>
+                          </button>
+
+                          <button
+                            onClick={() => openAddFundsModal(userProfile)}
+                            className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1"
+                          >
+                            <Plus className="h-4 w-4" />
+                            <span>Add Funds</span>
+                          </button>
+
+                          <button
+                            onClick={() => openDeductFundsModal(userProfile)}
+                            className="bg-orange-600 hover:bg-orange-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1"
+                          >
+                            <Minus className="h-4 w-4" />
+                            <span>Deduct Funds</span>
+                          </button>
+
+                          <button
+                            onClick={() => openJarvisModal(userProfile, 'add')}
+                            className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1"
+                          >
+                            <Coins className="h-4 w-4" />
+                            <span>Add JRV</span>
+                          </button>
+
+                          <button
+                            onClick={() => openJarvisModal(userProfile, 'deduct')}
+                            className="bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1"
+                          >
+                            <Minus className="h-4 w-4" />
+                            <span>Deduct JRV</span>
+                          </button>
+
+                          {userProfile.is_admin ? (
                             <button
-                              onClick={() => handleUserAction(userProfile.id, 'unban')}
-                              className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1"
+                              onClick={() => handleUserAction(userProfile.id, 'remove_admin')}
+                              className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1"
                             >
-                              <CheckCircle className="h-4 w-4" />
-                              <span>Unban</span>
+                              <UserMinus className="h-4 w-4" />
+                              <span>Unadmin</span>
                             </button>
                           ) : (
-                            <button
-                              onClick={() => handleUserAction(userProfile.id, 'ban')}
-                              className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1"
-                            >
-                              <Ban className="h-4 w-4" />
-                              <span>Ban</span>
-                            </button>
+                            <>
+                              {userProfile.is_banned ? (
+                                <button
+                                  onClick={() => handleUserAction(userProfile.id, 'unban')}
+                                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1"
+                                >
+                                  <CheckCircle className="h-4 w-4" />
+                                  <span>Unban</span>
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => handleUserAction(userProfile.id, 'ban')}
+                                  className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1"
+                                >
+                                  <Ban className="h-4 w-4" />
+                                  <span>Ban</span>
+                                </button>
+                              )}
+
+                              <button
+                                onClick={() => handleUserAction(userProfile.id, 'make_admin')}
+                                className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1"
+                              >
+                                <Edit className="h-4 w-4" />
+                                <span>Admin</span>
+                              </button>
+                            </>
                           )}
-                          
-                          <button
-                            onClick={() => handleUserAction(userProfile.id, 'make_admin')}
-                            className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1"
-                          >
-                            <Edit className="h-4 w-4" />
-                            <span>Admin</span>
-                          </button>
-                        </>
-                      )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-                ))}
+                  ))}
               </div>
-              
+
               {/* Pagination Controls */}
               {filteredUsers.length > usersPerPage && (
                 <div className="flex items-center justify-between mt-6 pt-6 border-t border-white/10">
@@ -826,7 +826,7 @@ export default function UsersManagement() {
                     >
                       Previous
                     </button>
-                    
+
                     <div className="flex items-center space-x-1">
                       {Array.from({ length: Math.ceil(filteredUsers.length / usersPerPage) }, (_, i) => i + 1)
                         .filter(page => {
@@ -839,7 +839,7 @@ export default function UsersManagement() {
                         .map((page, index, array) => {
                           const prevPage = array[index - 1]
                           const showEllipsis = prevPage && page - prevPage > 1
-                          
+
                           return (
                             <div key={page} className="flex items-center">
                               {showEllipsis && (
@@ -847,11 +847,10 @@ export default function UsersManagement() {
                               )}
                               <button
                                 onClick={() => setCurrentPage(page)}
-                                className={`px-3 py-2 rounded-lg transition-colors ${
-                                  currentPage === page
-                                    ? 'bg-blue-600 text-white'
+                                className={`px-3 py-2 rounded-lg transition-colors ${currentPage === page
+                                    ? 'bg-amber-900 text-white'
                                     : 'bg-white/10 text-white hover:bg-white/20'
-                                }`}
+                                  }`}
                               >
                                 {page}
                               </button>
@@ -859,7 +858,7 @@ export default function UsersManagement() {
                           )
                         })}
                     </div>
-                    
+
                     <button
                       onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredUsers.length / usersPerPage)))}
                       disabled={currentPage === Math.ceil(filteredUsers.length / usersPerPage)}
@@ -868,7 +867,7 @@ export default function UsersManagement() {
                       Next
                     </button>
                   </div>
-                  
+
                   <div className="text-gray-300 text-sm">
                     Page {currentPage} of {Math.ceil(filteredUsers.length / usersPerPage)}
                   </div>
@@ -892,7 +891,7 @@ export default function UsersManagement() {
                 <XCircle className="h-6 w-6" />
               </button>
             </div>
-            
+
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -922,7 +921,7 @@ export default function UsersManagement() {
                 <div>
                   <p className="text-gray-400 text-sm">Last Login</p>
                   <p className="text-white">
-                    {selectedUser.last_sign_in_at 
+                    {selectedUser.last_sign_in_at
                       ? new Date(selectedUser.last_sign_in_at).toLocaleDateString()
                       : 'Never'
                     }
@@ -996,7 +995,7 @@ export default function UsersManagement() {
                 <XCircle className="h-6 w-6" />
               </button>
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <p className="text-gray-400 text-sm mb-2">User</p>
@@ -1006,7 +1005,7 @@ export default function UsersManagement() {
                   <p className="text-gray-400 text-sm">Current Balance: ${addFundsUser.main_wallet_balance.toFixed(2)}</p>
                 </div>
               </div>
-              
+
               <div>
                 <label className="block text-gray-400 text-sm mb-2">
                   Amount to Add ($)
@@ -1025,7 +1024,7 @@ export default function UsersManagement() {
                   />
                 </div>
               </div>
-              
+
               <div>
                 <label className="block text-gray-400 text-sm mb-2">
                   Admin Notes (Optional)
@@ -1039,7 +1038,7 @@ export default function UsersManagement() {
                   disabled={isAddingFunds}
                 />
               </div>
-              
+
               <div className="flex space-x-3 pt-4">
                 <button
                   onClick={closeAddFundsModal}
@@ -1085,7 +1084,7 @@ export default function UsersManagement() {
                 <XCircle className="h-6 w-6" />
               </button>
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <p className="text-gray-400 text-sm mb-2">User</p>
@@ -1095,7 +1094,7 @@ export default function UsersManagement() {
                   <p className="text-gray-400 text-sm">Current Balance: ${deductFundsUser.main_wallet_balance.toFixed(2)}</p>
                 </div>
               </div>
-              
+
               <div>
                 <label className="block text-gray-400 text-sm mb-2">
                   Amount to Deduct ($)
@@ -1116,7 +1115,7 @@ export default function UsersManagement() {
                 </div>
                 <p className="text-xs text-gray-500 mt-1">Maximum: ${deductFundsUser.main_wallet_balance.toFixed(2)}</p>
               </div>
-              
+
               <div>
                 <label className="block text-gray-400 text-sm mb-2">
                   Admin Notes (Optional)
@@ -1130,7 +1129,7 @@ export default function UsersManagement() {
                   disabled={isDeductingFunds}
                 />
               </div>
-              
+
               <div className="flex space-x-3 pt-4">
                 <button
                   onClick={closeDeductFundsModal}
@@ -1178,7 +1177,7 @@ export default function UsersManagement() {
                 <XCircle className="h-6 w-6" />
               </button>
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <p className="text-gray-400 text-sm mb-2">User</p>
@@ -1188,7 +1187,7 @@ export default function UsersManagement() {
                   <p className="text-gray-400 text-sm">Current JRV Tokens: {(jarvisUser.total_jarvis_tokens || 0).toLocaleString()}</p>
                 </div>
               </div>
-              
+
               <div>
                 <label className="block text-gray-400 text-sm mb-2">
                   Amount to {jarvisAction === 'add' ? 'Add' : 'Deduct'}
@@ -1210,7 +1209,7 @@ export default function UsersManagement() {
                   <p className="text-xs text-gray-500 mt-1">Maximum: {(jarvisUser.total_jarvis_tokens || 0).toLocaleString()}</p>
                 )}
               </div>
-              
+
               <div>
                 <label className="block text-gray-400 text-sm mb-2">
                   Admin Notes (Optional)
@@ -1224,7 +1223,7 @@ export default function UsersManagement() {
                   disabled={isManagingJarvis}
                 />
               </div>
-              
+
               <div className="flex space-x-3 pt-4">
                 <button
                   onClick={closeJarvisModal}

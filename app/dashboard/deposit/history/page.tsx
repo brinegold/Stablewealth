@@ -86,7 +86,7 @@ export default function DepositHistoryPage() {
     })
   }
 
-  const filteredDeposits = deposits.filter(deposit => 
+  const filteredDeposits = deposits.filter(deposit =>
     filter === 'all' || deposit.status === filter
   )
 
@@ -159,11 +159,10 @@ export default function DepositHistoryPage() {
             <button
               key={status}
               onClick={() => setFilter(status as any)}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                filter === status
-                  ? 'bg-blue-500 text-white'
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${filter === status
+                  ? 'bg-amber-800 text-white'
                   : 'bg-white/10 text-gray-300 hover:bg-white/20'
-              }`}
+                }`}
             >
               {status.charAt(0).toUpperCase() + status.slice(1)}
               {status !== 'all' && (
@@ -184,13 +183,13 @@ export default function DepositHistoryPage() {
                 {filter === 'all' ? 'No Deposit History' : `No ${filter} deposits`}
               </h3>
               <p className="text-gray-300 mb-4">
-                {filter === 'all' 
-                  ? "You haven't made any deposits yet." 
+                {filter === 'all'
+                  ? "You haven't made any deposits yet."
                   : `No deposits with ${filter} status found.`
                 }
               </p>
               {filter === 'all' && (
-                <Link 
+                <Link
                   href="/dashboard/deposit"
                   className="jarvis-button px-6 py-2 rounded-lg text-white font-semibold"
                 >
@@ -217,7 +216,7 @@ export default function DepositHistoryPage() {
                         {deposit.status.toUpperCase()}
                       </span>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                       <div>
                         <p className="text-gray-400">Transaction ID</p>
@@ -248,7 +247,7 @@ export default function DepositHistoryPage() {
         {/* Quick Action */}
         {deposits.length > 0 && (
           <div className="mt-8 text-center">
-            <Link 
+            <Link
               href="/dashboard/deposit"
               className="jarvis-button px-8 py-3 rounded-lg text-white font-semibold"
             >

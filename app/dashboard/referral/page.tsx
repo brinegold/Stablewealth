@@ -343,25 +343,25 @@ export default function ReferralPage() {
           <h3 className="text-white font-bold text-lg mb-4">How Referrals Work</h3>
           <div className="space-y-3 text-gray-300 text-sm">
             <div className="flex items-start space-x-3">
-              <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-6 h-6 bg-amber-800 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-white text-xs font-bold">1</span>
               </div>
               <p>Share your referral code with friends and family</p>
             </div>
             <div className="flex items-start space-x-3">
-              <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-6 h-6 bg-amber-800 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-white text-xs font-bold">2</span>
               </div>
               <p>When they invest or stake, you earn dual commissions in both USDT and TON coins</p>
             </div>
             <div className="flex items-start space-x-3">
-              <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-6 h-6 bg-amber-800 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-white text-xs font-bold">3</span>
               </div>
               <p>Earn from 10 levels deep - build your network and maximize earnings</p>
             </div>
             <div className="flex items-start space-x-3">
-              <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-6 h-6 bg-amber-800 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-white text-xs font-bold">4</span>
               </div>
               <p>USDT commissions go to your main wallet, TON coins are added to your coin balance</p>

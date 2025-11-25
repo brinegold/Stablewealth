@@ -51,7 +51,7 @@ export default function StakingHistoryPage() {
         .order('created_at', { ascending: false })
 
       if (error) throw error
-      
+
       // Transform transaction data to staking records format
       const transformedData = (data || []).map(transaction => ({
         id: transaction.id,
@@ -94,7 +94,7 @@ export default function StakingHistoryPage() {
     const start = new Date(startDate)
     const end = new Date(start.getTime() + (period * 24 * 60 * 60 * 1000))
     const now = new Date()
-    
+
     if (now < end) return 'active'
     return 'completed'
   }
@@ -102,7 +102,7 @@ export default function StakingHistoryPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'text-green-400 bg-green-500/20'
-      case 'completed': return 'text-blue-400 bg-blue-500/20'
+      case 'completed': return 'text-amber-400 bg-amber-800/20'
       case 'withdrawn': return 'text-gray-400 bg-gray-500/20'
       default: return 'text-gray-400 bg-gray-500/20'
     }
@@ -184,7 +184,7 @@ export default function StakingHistoryPage() {
               <Coins className="h-16 w-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-white mb-2">No Staking History</h3>
               <p className="text-gray-300 mb-4">You haven't made any staking transactions yet.</p>
-              <Link 
+              <Link
                 href="/dashboard/staking"
                 className="jarvis-button px-6 py-2 rounded-lg text-white font-semibold"
               >
@@ -205,7 +205,7 @@ export default function StakingHistoryPage() {
                         {record.status.toUpperCase()}
                       </span>
                     </div>
-                    
+
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                       <div>
                         <p className="text-gray-400">Period</p>

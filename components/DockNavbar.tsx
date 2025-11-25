@@ -3,10 +3,10 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { 
-  TrendingUp, 
-  Coins, 
-  Settings, 
+import {
+  TrendingUp,
+  Coins,
+  Settings,
   LogOut,
   Home,
   Wallet,
@@ -82,7 +82,7 @@ export default function DockNavbar({ onSignOut }: DockNavbarProps) {
                 const Icon = item.icon
                 const active = isActive(item.href)
                 const isHovered = hoveredItem === item.href
-                
+
                 return (
                   <Link
                     key={item.href}
@@ -106,8 +106,8 @@ export default function DockNavbar({ onSignOut }: DockNavbarProps) {
                     {/* Icon container */}
                     <div className={`
                       relative p-2 md:p-3 rounded-xl transition-all duration-300 ease-out
-                      ${active 
-                        ? 'bg-blue-500/30 text-blue-300 scale-110' 
+                      ${active
+                        ? 'bg-amber-800/30 text-amber-300 scale-110'
                         : 'text-white/70 hover:text-white hover:bg-white/10'
                       }
                       ${isHovered ? 'md:scale-125 md:-translate-y-1' : ''}
@@ -117,10 +117,10 @@ export default function DockNavbar({ onSignOut }: DockNavbarProps) {
                         h-6 w-6 md:h-7 md:w-7 transition-all duration-300
                         ${active ? 'drop-shadow-lg' : ''}
                       `} />
-                      
+
                       {/* Active indicator */}
                       {active && (
-                        <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-400 rounded-full animate-pulse"></div>
+                        <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-amber-400 rounded-full animate-pulse"></div>
                       )}
                     </div>
                   </Link>

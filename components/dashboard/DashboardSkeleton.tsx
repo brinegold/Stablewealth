@@ -48,8 +48,8 @@ export default function DashboardSkeleton() {
         </div>
 
         {/* Staking Notice Skeleton */}
-        <div className="bg-blue-600/20 border border-blue-500 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
-          <div className="h-4 bg-blue-400/30 rounded w-full animate-pulse"></div>
+        <div className="bg-amber-900/20 border border-amber-800 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+          <div className="h-4 bg-amber-400/30 rounded w-full animate-pulse"></div>
         </div>
 
         {/* Wallet Cards Skeleton */}
@@ -107,7 +107,7 @@ export default function DashboardSkeleton() {
                 <div className="h-5 w-5 sm:h-6 sm:w-6 bg-white/20 rounded animate-pulse"></div>
                 <div>
                   <div className="h-4 bg-white/20 rounded w-24 mb-1 animate-pulse"></div>
-                  <div className="h-3 bg-blue-400/30 rounded w-12 animate-pulse"></div>
+                  <div className="h-3 bg-amber-400/30 rounded w-12 animate-pulse"></div>
                 </div>
               </div>
               <div className="h-4 bg-white/20 rounded w-16 animate-pulse"></div>

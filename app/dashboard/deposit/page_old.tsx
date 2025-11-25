@@ -108,7 +108,7 @@ export default function DepositPage() {
         setSuccess(`Deposit processed successfully! Amount: $${data.amount.toFixed(2)} (Fee: $${data.fee.toFixed(2)})`)
         setTxHash('')
         setDepositAmount('')
-        
+
         // Redirect to dashboard after 3 seconds
         setTimeout(() => {
           router.push('/dashboard')
@@ -160,9 +160,9 @@ export default function DepositPage() {
               <p className="text-white font-mono text-sm break-all">{walletInfo.address}</p>
             </div>
             <div className="text-center">
-              <img 
-                src={walletInfo.qrCode} 
-                alt="Wallet QR Code" 
+              <img
+                src={walletInfo.qrCode}
+                alt="Wallet QR Code"
                 className="mx-auto mb-2 rounded-lg"
                 width={150}
                 height={150}
@@ -187,7 +187,7 @@ export default function DepositPage() {
         {/* Transaction Hash Input */}
         <div className="jarvis-card rounded-2xl p-6 mb-6">
           <h3 className="text-white font-bold text-lg mb-4">Submit Deposit Transaction</h3>
-          
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-white text-sm font-medium mb-2">
@@ -266,7 +266,7 @@ export default function DepositPage() {
               </p>
             </div>
 
-            <div className="bg-blue-600/20 border border-blue-500 rounded-lg p-4">
+            <div className="bg-amber-900/20 border border-amber-800 rounded-lg p-4">
               <h4 className="text-white font-semibold mb-2">Fee Information</h4>
               <div className="text-sm text-gray-300 space-y-1">
                 <p>• Deposit Fee: 1% of deposit amount</p>
@@ -288,7 +288,7 @@ export default function DepositPage() {
         </div>
 
         {/* Deposit History Button */}
-        <Link 
+        <Link
           href="/dashboard/deposit/history"
           className="jarvis-card rounded-xl p-4 flex items-center justify-between hover:bg-white/10 transition-colors"
         >

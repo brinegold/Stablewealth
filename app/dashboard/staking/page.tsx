@@ -172,7 +172,7 @@ export default function StakingPage() {
         </div>
 
         {/* Staking Notice */}
-        <div className="bg-blue-600/20 border border-blue-500 rounded-lg p-4 mb-6">
+        <div className="bg-amber-900/20 border border-amber-800 rounded-lg p-4 mb-6">
           <p className="text-white text-center">Staking has started from $50.</p>
         </div>
 

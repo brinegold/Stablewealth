@@ -51,13 +51,13 @@ export default function InvestHistoryPage() {
         .order('created_at', { ascending: false })
 
       if (error) throw error
-      
+
       // Transform data to include status
       const transformedData = (data || []).map(investment => ({
         ...investment,
         status: investment.is_active ? 'active' : 'completed'
       }))
-      
+
       setInvestments(transformedData)
     } catch (error) {
       console.error('Error fetching investment history:', error)
@@ -71,7 +71,7 @@ export default function InvestHistoryPage() {
       case 'A':
         return { name: 'Starter Plan', color: 'text-green-400', bgColor: 'bg-green-500/20' }
       case 'B':
-        return { name: 'Growth Plan', color: 'text-blue-400', bgColor: 'bg-blue-500/20' }
+        return { name: 'Growth Plan', color: 'text-amber-400', bgColor: 'bg-amber-800/20' }
       case 'C':
         return { name: 'Premium Plan', color: 'text-purple-400', bgColor: 'bg-purple-500/20' }
       default:
@@ -91,7 +91,7 @@ export default function InvestHistoryPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'text-green-400 bg-green-500/20'
-      case 'completed': return 'text-blue-400 bg-blue-500/20'
+      case 'completed': return 'text-amber-400 bg-amber-800/20'
       case 'cancelled': return 'text-red-400 bg-red-500/20'
       default: return 'text-gray-400 bg-gray-500/20'
     }
@@ -112,7 +112,7 @@ export default function InvestHistoryPage() {
     return ((investment.total_profit_earned / investment.investment_amount) * 100)
   }
 
-  const filteredInvestments = investments.filter(investment => 
+  const filteredInvestments = investments.filter(investment =>
     filter === 'all' || investment.status === filter
   )
 
@@ -172,11 +172,10 @@ export default function InvestHistoryPage() {
             <button
               key={status}
               onClick={() => setFilter(status as any)}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                filter === status
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-white/10 text-gray-300 hover:bg-white/20'
-              }`}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${filter === status
+                ? 'bg-amber-800 text-white'
+                : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                }`}
             >
               {status.charAt(0).toUpperCase() + status.slice(1)}
               {status !== 'all' && (
@@ -197,13 +196,13 @@ export default function InvestHistoryPage() {
                 {filter === 'all' ? 'No Investment History' : `No ${filter} investments`}
               </h3>
               <p className="text-gray-300 mb-4">
-                {filter === 'all' 
-                  ? "You haven't made any investments yet." 
+                {filter === 'all'
+                  ? "You haven't made any investments yet."
                   : `No ${filter} investments found.`
                 }
               </p>
               {filter === 'all' && (
-                <Link 
+                <Link
                   href="/dashboard/invest"
                   className="jarvis-button px-6 py-2 rounded-lg text-white font-semibold"
                 >
@@ -215,7 +214,7 @@ export default function InvestHistoryPage() {
             filteredInvestments.map((investment) => {
               const planDetails = getPlanDetails(investment.plan_type)
               const roi = calculateROI(investment)
-              
+
               return (
                 <div key={investment.id} className="jarvis-card rounded-xl p-6">
                   <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
@@ -225,9 +224,9 @@ export default function InvestHistoryPage() {
                         <div>
                           <div className="flex items-center space-x-2">
                             <h3 className="text-lg font-semibold text-white">
-                             ${investment.investment_amount.toFixed(2)}
+                              ${investment.investment_amount.toFixed(2)}
                             </h3>
-                         
+
                           </div>
                           <p className="text-sm text-gray-300">
                             Daily: {investment.daily_percentage}% • ROI: {roi.toFixed(1)}%
@@ -237,7 +236,7 @@ export default function InvestHistoryPage() {
                           {investment.status.toUpperCase()}
                         </span>
                       </div>
-                      
+
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
                           <p className="text-gray-400">Investment</p>
@@ -265,7 +264,7 @@ export default function InvestHistoryPage() {
                             <span className="text-white">{roi.toFixed(1)}% ROI</span>
                           </div>
                           <div className="w-full bg-gray-700 rounded-full h-2">
-                            <div 
+                            <div
                               className="bg-gradient-to-r from-blue-500 to-green-500 h-2 rounded-full transition-all duration-300"
                               style={{ width: `${Math.min(roi, 100)}%` }}
                             ></div>
@@ -281,10 +280,10 @@ export default function InvestHistoryPage() {
                           </p>
                         </div>
                       )}
-                      
+
                       {investment.status === 'completed' && (
-                        <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-                          <p className="text-blue-400 text-sm">
+                        <div className="mt-4 p-3 bg-amber-800/10 border border-amber-800/30 rounded-lg">
+                          <p className="text-amber-400 text-sm">
                             ✅ Investment completed successfully. Total profit: ${(investment.total_profit_earned || 0).toFixed(2)}
                           </p>
                         </div>
@@ -311,7 +310,7 @@ export default function InvestHistoryPage() {
         {/* Quick Action */}
         {investments.length > 0 && (
           <div className="mt-8 text-center">
-            <Link 
+            <Link
               href="/dashboard/invest"
               className="jarvis-button px-8 py-3 rounded-lg text-white font-semibold"
             >

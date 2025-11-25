@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { useRouter } from 'next/navigation'
 import { createSupabaseClient } from '@/lib/supabase'
-import { 
-  ArrowLeft, 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
+import {
+  ArrowLeft,
+  CheckCircle,
+  XCircle,
+  Clock,
   Search,
   Filter,
   Download,
@@ -154,7 +154,7 @@ export default function WithdrawalsManagement() {
     }
 
     if (searchTerm) {
-      filtered = filtered.filter(w => 
+      filtered = filtered.filter(w =>
         w.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
         w.user_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
         w.wallet_address.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -169,7 +169,7 @@ export default function WithdrawalsManagement() {
 
   const handleWithdrawalAction = async (withdrawalId: string, action: 'approve' | 'reject') => {
     setProcessingId(withdrawalId)
-    
+
     try {
       const response = await fetch('/api/admin/approve-withdrawal', {
         method: 'POST',
@@ -190,7 +190,7 @@ export default function WithdrawalsManagement() {
         } else {
           alert('✅ Withdrawal rejected successfully!')
         }
-        
+
         await fetchWithdrawals()
       } else {
         throw new Error(data.error || `Failed to ${action} withdrawal`)
@@ -324,7 +324,7 @@ export default function WithdrawalsManagement() {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center space-x-4">
-                          <div className="bg-blue-600/20 rounded-lg p-3 border border-blue-500/30">
+                          <div className="bg-amber-900/20 rounded-lg p-3 border border-amber-800/30">
                             <div>
                               <p className="text-white font-semibold text-lg">{withdrawal.username}</p>
                               <p className="text-blue-300 text-sm font-medium">{withdrawal.user_email}</p>
@@ -339,7 +339,7 @@ export default function WithdrawalsManagement() {
                           <span className="capitalize">{withdrawal.status}</span>
                         </div>
                       </div>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                         <div>
                           <p className="text-gray-400">Withdrawal Amount</p>
@@ -366,7 +366,7 @@ export default function WithdrawalsManagement() {
                         </div>
                       </div>
                     </div>
-                    
+
                     {withdrawal.status === 'pending' && (
                       <div className="flex space-x-2">
                         <button
@@ -429,11 +429,10 @@ export default function WithdrawalsManagement() {
                       <button
                         key={pageNumber}
                         onClick={() => setCurrentPage(pageNumber)}
-                        className={`px-3 py-2 text-sm font-medium rounded-lg ${
-                          currentPage === pageNumber
-                            ? 'bg-blue-600 text-white'
+                        className={`px-3 py-2 text-sm font-medium rounded-lg ${currentPage === pageNumber
+                            ? 'bg-amber-900 text-white'
                             : 'text-white bg-white/10 hover:bg-white/20'
-                        }`}
+                          }`}
                       >
                         {pageNumber}
                       </button>

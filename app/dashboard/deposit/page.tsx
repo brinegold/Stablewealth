@@ -33,7 +33,7 @@ export default function ManualDepositPage() {
   const [loadingWallet, setLoadingWallet] = useState(true)
   const [recentRequests, setRecentRequests] = useState<DepositRequest[]>([])
   const [copied, setCopied] = useState(false)
-  
+
   const supabase = createSupabaseClient()
 
   // Deposit limits
@@ -151,12 +151,12 @@ export default function ManualDepositPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          txHash, 
-          amount, 
+        body: JSON.stringify({
+          txHash,
+          amount,
           currency: selectedCurrency,
           network: selectedNetwork,
-          userId: user?.id 
+          userId: user?.id
         })
       })
 
@@ -169,10 +169,10 @@ export default function ManualDepositPage() {
         setSuccess(`Deposit request submitted successfully! Your request is now pending admin approval. Request ID: ${data.requestId}`)
         setTxHash('')
         setDepositAmount('')
-        
+
         // Refresh recent requests
         fetchRecentRequests()
-        
+
         // Scroll to top to show success message
         window.scrollTo({ top: 0, behavior: 'smooth' })
       } else {
@@ -255,7 +255,7 @@ export default function ManualDepositPage() {
             <Wallet className="h-6 w-6 text-blue-400" />
             <span>Deposit Wallet Address</span>
           </h3>
-          
+
           {loadingWallet ? (
             <div className="text-center py-4">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
@@ -275,8 +275,8 @@ export default function ManualDepositPage() {
                   </button>
                 </div>
               </div>
-              
-              <div className="bg-blue-600/20 border border-blue-500 rounded-lg p-4">
+
+              <div className="bg-amber-900/20 border border-amber-800 rounded-lg p-4">
                 <h4 className="text-white font-semibold mb-2 flex items-center space-x-2">
                   <AlertCircle className="h-5 w-5" />
                   <span>Important Instructions</span>
@@ -300,8 +300,8 @@ export default function ManualDepositPage() {
         {/* Deposit Request Form */}
         <div className="jarvis-card rounded-2xl p-6 mb-6">
           <h3 className="text-white font-bold text-lg mb-4">Submit Deposit Request</h3>
-          
-          <form 
+
+          <form
             onSubmit={(e) => {
               console.log('📝 Form onSubmit triggered!')
               handleSubmit(e)
@@ -323,7 +323,7 @@ export default function ManualDepositPage() {
                   </select>
                 </div>
               </div>
-              
+
               <div>
                 <label className="block text-white text-sm font-medium mb-2">
                   Network
@@ -409,7 +409,7 @@ export default function ManualDepositPage() {
                 console.log('🔍 txHash:', txHash)
                 console.log('🔍 depositAmount:', depositAmount)
                 console.log('🔍 Button disabled?', isSubmitting || !txHash || !depositAmount)
-                
+
                 if (isSubmitting || !txHash || !depositAmount) {
                   console.log('❌ Button is disabled - form will not submit')
                   if (!txHash) console.log('❌ Missing transaction hash')
@@ -422,7 +422,7 @@ export default function ManualDepositPage() {
             >
               {isSubmitting ? 'Submitting Request...' : 'SUBMIT DEPOSIT REQUEST'}
             </button>
-            
+
           </form>
         </div>
 
@@ -456,7 +456,7 @@ export default function ManualDepositPage() {
         )}
 
         {/* Deposit History Button */}
-        <Link 
+        <Link
           href="/dashboard/deposit/history"
           className="jarvis-card rounded-xl p-4 flex items-center justify-between hover:bg-white/10 transition-colors mb-6"
         >

@@ -228,7 +228,7 @@ export default function InvestmentsManagement() {
   const getPlanColor = (planType: string) => {
     switch (planType) {
       case 'A': return 'text-green-400 bg-green-400/20'
-      case 'B': return 'text-blue-400 bg-blue-400/20'
+      case 'B': return 'text-amber-400 bg-amber-400/20'
       case 'C': return 'text-purple-400 bg-purple-400/20'
       default: return 'text-gray-400 bg-gray-400/20'
     }
@@ -237,7 +237,7 @@ export default function InvestmentsManagement() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'text-green-400 bg-green-400/20'
-      case 'completed': return 'text-blue-400 bg-blue-400/20'
+      case 'completed': return 'text-amber-400 bg-amber-400/20'
       case 'cancelled': return 'text-red-400 bg-red-400/20'
       default: return 'text-gray-400 bg-gray-400/20'
     }
@@ -319,7 +319,7 @@ export default function InvestmentsManagement() {
           </div>
           <div className="jarvis-card rounded-xl p-4">
             <div className="flex items-center space-x-2 mb-2">
-              <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+              <div className="w-3 h-3 bg-amber-400 rounded-full"></div>
               <p className="text-white font-semibold">Plan B</p>
             </div>
             <p className="text-gray-400 text-sm">$51 - $500 • 4% Daily</p>
@@ -355,7 +355,7 @@ export default function InvestmentsManagement() {
             </div>
             <div className="space-y-3">
               <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-blue-400 rounded-full"></div>
+                <div className="w-4 h-4 bg-amber-400 rounded-full"></div>
                 <h4 className="text-white font-semibold">Plan B - Growth</h4>
               </div>
               <div className="text-sm space-y-1">

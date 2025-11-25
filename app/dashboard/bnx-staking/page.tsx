@@ -315,9 +315,9 @@ export default function TonStakingPage() {
             </ul>
           </div>
 
-          <div className="bg-blue-600/20 border border-blue-500 rounded-lg p-4">
-            <h4 className="text-blue-400 font-semibold mb-2">TON Staking Benefits</h4>
-            <p className="text-blue-200 text-sm">
+          <div className="bg-amber-900/20 border border-amber-800 rounded-lg p-4">
+            <h4 className="text-amber-400 font-semibold mb-2">TON Staking Benefits</h4>
+            <p className="text-amber-200 text-sm">
               Stake your TON coins to earn higher APY rewards while supporting the Jarvis Staking ecosystem.
               Your staked coins contribute to platform liquidity and governance.
             </p>

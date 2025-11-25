@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { useRouter } from 'next/navigation'
 import { createSupabaseClient } from '@/lib/supabase'
-import { 
+import {
   Search,
   Wallet,
   Coins,
@@ -53,7 +53,7 @@ export default function WalletCollectionPage() {
   const [isLoadingBalance, setIsLoadingBalance] = useState(false)
   const [manualWalletAddress, setManualWalletAddress] = useState('')
   const [collectionMode, setCollectionMode] = useState<'user' | 'manual'>('user')
-  
+
   const supabase = createSupabaseClient()
 
   useEffect(() => {
@@ -101,7 +101,7 @@ export default function WalletCollectionPage() {
       // Fetch emails separately
       const emailResponse = await fetch('/api/admin/get-user-emails')
       const emailData = await emailResponse.json()
-      
+
       const usersWithEmails = profiles.map(profile => ({
         ...profile,
         email: emailData.emails?.[profile.id] || profile.id
@@ -113,7 +113,7 @@ export default function WalletCollectionPage() {
     }
   }
 
-  const filteredUsers = users.filter(user => 
+  const filteredUsers = users.filter(user =>
     user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.id.toLowerCase().includes(searchTerm.toLowerCase())
@@ -123,7 +123,7 @@ export default function WalletCollectionPage() {
     setIsLoadingBalance(true)
     setWalletBalance(null)
     setCollectionResult(null)
-    
+
     try {
       const response = await fetch(`/api/admin/collect-tokens?userId=${userId}`)
       const data = await response.json()
@@ -152,7 +152,7 @@ export default function WalletCollectionPage() {
     setIsLoadingBalance(true)
     setWalletBalance(null)
     setCollectionResult(null)
-    
+
     try {
       const response = await fetch(`/api/admin/collect-tokens?walletAddress=${encodeURIComponent(walletAddress)}`)
       const data = await response.json()
@@ -185,7 +185,7 @@ export default function WalletCollectionPage() {
     setCollectionResult(null)
 
     try {
-      const requestBody = collectionMode === 'user' 
+      const requestBody = collectionMode === 'user'
         ? { action, userId: selectedUser!.id }
         : { action, walletAddress: manualWalletAddress }
 
@@ -206,7 +206,7 @@ export default function WalletCollectionPage() {
           txHash: data.txHash,
           amount: data.amount
         })
-        
+
         // Refresh wallet balance after collection
         if (collectionMode === 'user' && selectedUser) {
           await checkWalletBalance(selectedUser.id)
@@ -264,8 +264,8 @@ export default function WalletCollectionPage() {
       <header className="border-b border-white/20 p-4">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Link 
-              href="/admin" 
+            <Link
+              href="/admin"
               className="text-white hover:text-blue-300 flex items-center space-x-2"
             >
               <ArrowLeft className="h-6 w-6" />
@@ -297,11 +297,10 @@ export default function WalletCollectionPage() {
                   setCollectionResult(null)
                   setManualWalletAddress('')
                 }}
-                className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-colors ${
-                  collectionMode === 'user'
-                    ? 'bg-blue-600 text-white'
+                className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-colors ${collectionMode === 'user'
+                    ? 'bg-amber-900 text-white'
                     : 'bg-white/10 text-gray-300 hover:bg-white/20'
-                }`}
+                  }`}
               >
                 Select User
               </button>
@@ -312,11 +311,10 @@ export default function WalletCollectionPage() {
                   setCollectionResult(null)
                   setSelectedUser(null)
                 }}
-                className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-colors ${
-                  collectionMode === 'manual'
+                className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-colors ${collectionMode === 'manual'
                     ? 'bg-purple-600 text-white'
                     : 'bg-white/10 text-gray-300 hover:bg-white/20'
-                }`}
+                  }`}
               >
                 Manual Address
               </button>
@@ -345,11 +343,10 @@ export default function WalletCollectionPage() {
                         setSelectedUser(user)
                         checkWalletBalance(user.id)
                       }}
-                      className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                        selectedUser?.id === user.id
-                          ? 'bg-blue-600/30 border border-blue-500'
+                      className={`p-3 rounded-lg cursor-pointer transition-colors ${selectedUser?.id === user.id
+                          ? 'bg-amber-900/30 border border-amber-800'
                           : 'bg-white/5 hover:bg-white/10 border border-white/10'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center justify-between">
                         <div>
@@ -380,7 +377,7 @@ export default function WalletCollectionPage() {
                       className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm"
                     />
                   </div>
-                  
+
                   <button
                     onClick={() => {
                       if (manualWalletAddress.trim()) {
@@ -393,7 +390,7 @@ export default function WalletCollectionPage() {
                     <Wallet className="h-5 w-5" />
                     <span>{isLoadingBalance ? 'Checking...' : 'Check Balance'}</span>
                   </button>
-                  
+
                   <div className="bg-yellow-600/20 border border-yellow-500 rounded-lg p-3">
                     <p className="text-sm text-gray-300">
                       <strong>Note:</strong> Enter a valid BSC wallet address (0x...) to check its USDT and BNB balances for collection.
@@ -415,7 +412,7 @@ export default function WalletCollectionPage() {
               <div className="text-center py-8">
                 <User className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-300">
-                  {collectionMode === 'user' 
+                  {collectionMode === 'user'
                     ? 'Select a user to view wallet details'
                     : 'Enter a wallet address to check balance'
                   }
@@ -513,9 +510,9 @@ export default function WalletCollectionPage() {
                       </button>
                     </div>
 
-                    <div className="bg-blue-600/20 border border-blue-500 rounded-lg p-3">
+                    <div className="bg-amber-900/20 border border-amber-800 rounded-lg p-3">
                       <p className="text-sm text-gray-300">
-                        <strong>Note:</strong> Minimum thresholds - USDT: 0.01, BNB: 0.005. 
+                        <strong>Note:</strong> Minimum thresholds - USDT: 0.01, BNB: 0.005.
                         BNB collection only if cost-effective after gas fees.
                       </p>
                     </div>
@@ -524,11 +521,10 @@ export default function WalletCollectionPage() {
 
                 {/* Collection Result */}
                 {collectionResult && (
-                  <div className={`rounded-lg p-4 border ${
-                    collectionResult.success 
-                      ? 'bg-green-600/20 border-green-500' 
+                  <div className={`rounded-lg p-4 border ${collectionResult.success
+                      ? 'bg-green-600/20 border-green-500'
                       : 'bg-red-600/20 border-red-500'
-                  }`}>
+                    }`}>
                     <div className="flex items-start space-x-2">
                       {collectionResult.success ? (
                         <CheckCircle className="h-5 w-5 text-green-400 mt-0.5" />
@@ -540,7 +536,7 @@ export default function WalletCollectionPage() {
                           {collectionResult.success ? 'Success!' : 'Error'}
                         </p>
                         <p className="text-gray-300 text-sm mb-2">{collectionResult.message}</p>
-                        
+
                         {collectionResult.success && collectionResult.txHash && (
                           <div className="flex items-center space-x-2">
                             <span className="text-gray-400 text-sm">TX:</span>
