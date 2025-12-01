@@ -86,9 +86,6 @@ export default function InvestPage() {
     }
 
     try {
-      // Calculate coins earned - 100 JRC per $10 invested
-      const coinsEarned = Math.floor(investAmount / 10) * 100
-
       // Create investment plan
       const { data: investmentPlan, error: planError } = await supabase
         .from('investment_plans')
@@ -97,28 +94,17 @@ export default function InvestPage() {
           plan_type: selectedPlan,
           investment_amount: investAmount,
           daily_percentage: plan.dailyPercentage,
-          jarvis_tokens_earned: coinsEarned,
         })
         .select()
         .single()
 
       if (planError) throw planError
 
-      // Get current profile data first
-      const { data: currentProfile, error: fetchError } = await supabase
-        .from('profiles')
-        .select('total_jarvis_tokens')
-        .eq('id', user?.id)
-        .single()
-
-      if (fetchError) throw fetchError
-
-      // Deduct from fund wallet and add tokens
+      // Deduct from fund wallet
       const { error: updateError } = await supabase
         .from('profiles')
         .update({
-          fund_wallet_balance: profile.fund_wallet_balance - investAmount,
-          total_jarvis_tokens: (currentProfile.total_jarvis_tokens || 0) + coinsEarned
+          fund_wallet_balance: profile.fund_wallet_balance - investAmount
         })
         .eq('id', user?.id)
 
@@ -139,22 +125,21 @@ export default function InvestPage() {
 
       if (transactionError) throw transactionError
 
-      // Process dual referral commissions (USDT + JRC)
+      // Process referral commissions (USDT only)
       try {
         await dualReferralService.processDualReferralCommissions({
           userId: user?.id || '',
           amount: investAmount,
-          tonEarned: coinsEarned,
           transactionType: 'investment',
           planType: plan.name
         })
-        console.log('Dual referral commissions processed successfully')
+        console.log('Referral commissions processed successfully')
       } catch (referralError) {
         console.error('Error processing referral commissions:', referralError)
         // Don't fail the investment if referral processing fails
       }
 
-      setSuccess(`Successfully invested $${investAmount} in ${plan.name}! You earned ${coinsEarned.toLocaleString()} Ton Coins.`)
+      setSuccess(`Successfully invested $${investAmount} in ${plan.name}!`)
       setAmount('')
       setSelectedPlan(null)
 
@@ -236,9 +221,9 @@ export default function InvestPage() {
                   </div>
                   <div className="text-right">
                     <p className="text-amber-300 font-bold">
-                      100 TON per $10
+                      Earn Daily
                     </p>
-                    <p className="text-gray-400 text-sm">Coins</p>
+                    <p className="text-gray-400 text-sm">Returns</p>
                   </div>
                 </div>
 
@@ -261,28 +246,7 @@ export default function InvestPage() {
           })}
         </div>
 
-        {/* Token Information */}
-        <div className="jarvis-card rounded-2xl p-6 mb-6">
-          <h3 className="text-white font-bold text-lg mb-4 flex items-center">
-            <Coins className="h-6 w-6 mr-2 text-amber-300" />
-            Ton Coin Information
-          </h3>
-          <div className="space-y-3">
-            <div className="flex justify-between">
-              <span className="text-gray-300">Current Price:</span>
-              <span className="text-white font-semibold">$0.1 per TON</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-300">Future Listing:</span>
-              <span className="text-amber-300 font-semibold">$3.0 per TON</span>
-            </div>
-            <div className="bg-gradient-to-r from-amber-600/20 to-amber-700/20 rounded-lg p-3 mt-4">
-              <p className="text-center text-white text-sm">
-                🚀 <strong>Potential 30x Growth!</strong> Secure your coins now at discounted price.
-              </p>
-            </div>
-          </div>
-        </div>
+
 
         {/* Investment Button */}
         {selectedPlan && amount && (
@@ -311,7 +275,6 @@ export default function InvestPage() {
             <li>• Profits are added to your main wallet every hour</li>
             <li>• You can only withdraw profits, not principal</li>
             <li>• Multiple investments in different plans allowed</li>
-            <li>• Ton Coins are awarded instantly</li>
           </ul>
         </div>
       </div>

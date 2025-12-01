@@ -19,14 +19,11 @@ interface ReferralStats {
   total_referrals: number
   total_commission: number
   total_usdt_earned: number
-  total_ton_earned: number
   level_stats: Array<{
     level: number
     count: number
     usdtEarned: number
-    tonEarned: number
     usdtRate: number
-    tonRate: number
   }>
 }
 
@@ -80,7 +77,6 @@ export default function ReferralPage() {
           total_referrals: fallbackStats.totalReferrals,
           total_commission: fallbackStats.totalUsdtEarned, // For backward compatibility
           total_usdt_earned: fallbackStats.totalUsdtEarned,
-          total_ton_earned: fallbackStats.totalTonEarned,
           level_stats: fallbackStats.levelStats
         })
       } else {
@@ -89,7 +85,6 @@ export default function ReferralPage() {
           total_referrals: optimizedStats.totalReferrals,
           total_commission: optimizedStats.totalUsdtEarned,
           total_usdt_earned: optimizedStats.totalUsdtEarned,
-          total_ton_earned: optimizedStats.totalTonEarned,
           level_stats: optimizedStats.levelStats
         })
       }
@@ -233,15 +228,9 @@ export default function ReferralPage() {
                 <p className="text-2xl font-bold text-blue-400">{stats?.total_referrals || 0}</p>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-green-500/10 rounded-lg p-3">
-                <p className="text-gray-300 text-sm">USDT Earned</p>
-                <p className="text-xl font-bold text-green-400">${stats?.total_usdt_earned?.toFixed(2) || '0.00'}</p>
-              </div>
-              <div className="bg-yellow-500/10 rounded-lg p-3">
-                <p className="text-gray-300 text-sm">TON Earned</p>
-                <p className="text-xl font-bold text-yellow-400">{stats?.total_ton_earned?.toLocaleString() || '0'} TON</p>
-              </div>
+            <div className="bg-green-500/10 rounded-lg p-3">
+              <p className="text-gray-300 text-sm">USDT Earned</p>
+              <p className="text-xl font-bold text-green-400">${stats?.total_usdt_earned?.toFixed(2) || '0.00'}</p>
             </div>
           </div>
         </div>
@@ -302,7 +291,7 @@ export default function ReferralPage() {
 
         {/* Commission Structure */}
         <div className="jarvis-card rounded-2xl p-6 mb-6">
-          <h3 className="text-white font-bold text-lg mb-4">Dual Commission Structure</h3>
+          <h3 className="text-white font-bold text-lg mb-4">Commission Structure</h3>
           <div className="space-y-3">
             {/* Always show all 4 levels with actual data when available */}
             {referralLevels.map((level) => {
@@ -322,14 +311,10 @@ export default function ReferralPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-3 mt-2">
+                  <div className="grid grid-cols-1 gap-3 mt-2">
                     <div className="bg-green-500/10 rounded p-2">
                       <p className="text-green-400 font-bold text-sm">{level.percentage}% USDT</p>
                       <p className="text-gray-400 text-xs">Earned: ${levelStat?.usdtEarned?.toFixed(2) || '0.00'}</p>
-                    </div>
-                    <div className="bg-yellow-500/10 rounded p-2">
-                      <p className="text-yellow-400 font-bold text-sm">{level.percentage + 5}% TON</p>
-                      <p className="text-gray-400 text-xs">Earned: {levelStat?.tonEarned?.toLocaleString() || '0'} TON</p>
                     </div>
                   </div>
                 </div>
@@ -350,43 +335,31 @@ export default function ReferralPage() {
             </div>
             <div className="flex items-start space-x-3">
               <div className="w-6 h-6 bg-amber-800 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-white text-xs font-bold">2</span>
-              </div>
-              <p>When they invest or stake, you earn dual commissions in both USDT and TON coins</p>
-            </div>
-            <div className="flex items-start space-x-3">
-              <div className="w-6 h-6 bg-amber-800 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-white text-xs font-bold">3</span>
               </div>
-              <p>Earn from 10 levels deep - build your network and maximize earnings</p>
-            </div>
-            <div className="flex items-start space-x-3">
-              <div className="w-6 h-6 bg-amber-800 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-white text-xs font-bold">4</span>
-              </div>
-              <p>USDT commissions go to your main wallet, TON coins are added to your coin balance</p>
+              <p>Earn from 6 levels deep - build your network and maximize earnings</p>
             </div>
           </div>
         </div>
 
         {/* Referral Benefits */}
         <div className="jarvis-card rounded-2xl p-6">
-          <h3 className="text-white font-bold text-lg mb-4">Dual Referral Benefits</h3>
+          <h3 className="text-white font-bold text-lg mb-4">Referral Benefits</h3>
           <div className="grid grid-cols-2 gap-4 text-center">
             <div className="bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-lg p-4">
               <Users className="h-8 w-8 text-green-400 mx-auto mb-2" />
-              <p className="text-white font-semibold">4 Levels</p>
+              <p className="text-white font-semibold">6 Levels</p>
               <p className="text-gray-300 text-sm">Deep Commission</p>
             </div>
             <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg p-4">
               <Gift className="h-8 w-8 text-purple-400 mx-auto mb-2" />
-              <p className="text-white font-semibold">Dual Rewards</p>
-              <p className="text-gray-300 text-sm">USDT + TON Coins</p>
+              <p className="text-white font-semibold">USDT Rewards</p>
+              <p className="text-gray-300 text-sm">Commission</p>
             </div>
           </div>
           <div className="mt-4 p-4 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-lg border border-yellow-500/30">
             <p className="text-center text-yellow-400 font-semibold text-sm">
-              🎉 Earn up to 5% USDT + 20% TON coins on Level 1 referrals!
+              🎉 Earn up to 10% USDT on Level 1 referrals!
             </p>
           </div>
         </div>

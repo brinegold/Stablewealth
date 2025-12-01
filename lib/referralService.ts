@@ -3,13 +3,11 @@ import { createSupabaseClient } from './supabase'
 export interface ReferralCommissionRates {
   level: number
   usdtRate: number // Percentage for USDT commission
-  tonRate: number  // Percentage for TON coin commission
 }
 
 export interface ReferralTransaction {
   userId: string
   amount: number
-  tonEarned?: number // TON coins earned by the user (for calculating TON commission)
   transactionType: 'staking' | 'investment' | 'deposit'
   planType?: string
 }
@@ -19,20 +17,20 @@ export class DualReferralService {
 
   // 6-level referral commission structure for USDT staking
   private readonly commissionRates: ReferralCommissionRates[] = [
-    { level: 1, usdtRate: 10, tonRate: 0 },   // Level 1: 10% USDT
-    { level: 2, usdtRate: 5, tonRate: 0 },    // Level 2: 5% USDT
-    { level: 3, usdtRate: 3, tonRate: 0 },    // Level 3: 3% USDT
-    { level: 4, usdtRate: 2, tonRate: 0 },    // Level 4: 2% USDT
-    { level: 5, usdtRate: 1, tonRate: 0 },    // Level 5: 1% USDT
-    { level: 6, usdtRate: 0.5, tonRate: 0 }   // Level 6: 0.5% USDT
+    { level: 1, usdtRate: 10 },   // Level 1: 10% USDT
+    { level: 2, usdtRate: 5 },    // Level 2: 5% USDT
+    { level: 3, usdtRate: 3 },    // Level 3: 3% USDT
+    { level: 4, usdtRate: 2 },    // Level 4: 2% USDT
+    { level: 5, usdtRate: 1 },    // Level 5: 1% USDT
+    { level: 6, usdtRate: 0.5 }   // Level 6: 0.5% USDT
   ]
 
   /**
-   * Process dual referral commissions for a transaction
+   * Process referral commissions for a transaction
    */
   async processDualReferralCommissions(transaction: ReferralTransaction): Promise<void> {
     try {
-      console.log(`Processing dual referral commissions for user ${transaction.userId}, amount: ${transaction.amount}`)
+      console.log(`Processing referral commissions for user ${transaction.userId}, amount: ${transaction.amount}`)
 
       // Get user's referral chain
       const referralChain = await this.getReferralChain(transaction.userId)
@@ -51,14 +49,13 @@ export class DualReferralService {
           referrer.id,
           transaction.userId,
           transaction.amount,
-          transaction.tonEarned || 0,
           rates,
           transaction.transactionType,
           transaction.planType
         )
       }
     } catch (error) {
-      console.error('Error processing dual referral commissions:', error)
+      console.error('Error processing referral commissions:', error)
       throw error
     }
   }
@@ -85,7 +82,7 @@ export class DualReferralService {
       // Get referrer details by matching referral_code with sponsor_id
       const { data: referrer, error: referrerError } = await this.supabase
         .from('profiles')
-        .select('id, full_name, referral_code, main_wallet_balance, total_jarvis_tokens')
+        .select('id, full_name, referral_code, main_wallet_balance')
         .eq('referral_code', referralData.sponsor_id)
         .single()
 
@@ -105,35 +102,30 @@ export class DualReferralService {
   }
 
   /**
-   * Pay dual commission (USDT + TON) to a referrer
+   * Pay commission (USDT) to a referrer
    */
   private async payDualCommission(
     referrerId: string,
     referredUserId: string,
     transactionAmount: number,
-    tonEarned: number,
     rates: ReferralCommissionRates,
     transactionType: string,
     planType?: string
   ): Promise<void> {
     try {
-      // Calculate commissions
+      // Calculate commission
       const usdtCommission = (transactionAmount * rates.usdtRate) / 100
-      const tonCommission = (tonEarned * rates.tonRate) / 100 // TON coins based on actual TON earned
 
       console.log(`🧮 Commission Calculation for Level ${rates.level}:`)
       console.log(`   Transaction Amount: $${transactionAmount}`)
-      console.log(`   TON Earned: ${tonEarned}`)
       console.log(`   USDT Rate: ${rates.usdtRate}%`)
-      console.log(`   TON Rate: ${rates.tonRate}%`)
       console.log(`   USDT Commission: $${usdtCommission}`)
-      console.log(`   TON Commission: ${tonCommission} TON`)
       console.log(`   Paying to referrer: ${referrerId}`)
 
-      // Get current referrer balances
+      // Get current referrer balance
       const { data: referrer, error: referrerError } = await this.supabase
         .from('profiles')
-        .select('main_wallet_balance, total_jarvis_tokens')
+        .select('main_wallet_balance')
         .eq('id', referrerId)
         .single()
 
@@ -141,20 +133,18 @@ export class DualReferralService {
         throw new Error(`Failed to get referrer data: ${referrerError?.message}`)
       }
 
-      // Update referrer balances
+      // Update referrer balance
       const newUsdtBalance = referrer.main_wallet_balance + usdtCommission
-      const newTonBalance = referrer.total_jarvis_tokens + tonCommission
 
       const { error: updateError } = await this.supabase
         .from('profiles')
         .update({
-          main_wallet_balance: newUsdtBalance,
-          total_jarvis_tokens: newTonBalance
+          main_wallet_balance: newUsdtBalance
         })
         .eq('id', referrerId)
 
       if (updateError) {
-        throw new Error(`Failed to update referrer balances: ${updateError.message}`)
+        throw new Error(`Failed to update referrer balance: ${updateError.message}`)
       }
 
       // Create USDT commission transaction
@@ -168,23 +158,11 @@ export class DualReferralService {
         planType
       )
 
-      // Create TON commission transaction
-      await this.createCommissionTransaction(
-        referrerId,
-        referredUserId,
-        tonCommission,
-        'TON',
-        rates.level,
-        transactionType,
-        planType
-      )
-
-      // Create referral commission record (we'll create one record for USDT, TON info will be in additional columns)
+      // Create referral commission record
       await this.createReferralCommissionRecord(
         referrerId,
         referredUserId,
         usdtCommission,
-        tonCommission,
         rates.level,
         transactionType,
         planType,
@@ -192,7 +170,7 @@ export class DualReferralService {
       )
 
     } catch (error) {
-      console.error(`Error paying dual commission to ${referrerId}:`, error)
+      console.error(`Error paying commission to ${referrerId}:`, error)
       throw error
     }
   }
@@ -235,28 +213,25 @@ export class DualReferralService {
     referrerId: string,
     referredUserId: string,
     usdtAmount: number,
-    tonAmount: number,
     level: number,
     transactionType: string,
     planType?: string,
     transactionId?: string | null
   ): Promise<void> {
     try {
-      console.log(`💾 Saving referral commission: Level ${level}, USDT: ${usdtAmount}, TON: ${tonAmount}`)
+      console.log(`💾 Saving referral commission: Level ${level}, USDT: ${usdtAmount}`)
 
-      // Insert with dual commission format
+      // Insert commission record
       const { error: insertError } = await this.supabase
         .from('referral_commissions')
         .insert({
           referrer_id: referrerId,
           referred_id: referredUserId,
           transaction_id: transactionId, // May be null
-          commission_amount: usdtAmount, // Legacy field for backward compatibility
+          commission_amount: usdtAmount,
           usdt_commission: usdtAmount,
-          ton_commission: tonAmount,
           level: level,
           commission_percentage: this.commissionRates[level - 1]?.usdtRate || 0,
-          ton_percentage: this.commissionRates[level - 1]?.tonRate || 0,
           transaction_type: transactionType,
           plan_type: planType || null,
           created_at: new Date().toISOString(),
@@ -265,10 +240,10 @@ export class DualReferralService {
 
       if (insertError) {
         console.error('❌ Failed to create referral commission record:', insertError)
-        throw insertError // Throw error to see what's wrong
+        throw insertError
       } else {
-        console.log('✅ Referral commission saved successfully with dual format')
-        console.log(`📊 Saved: ${usdtAmount} USDT + ${tonAmount} TON for Level ${level}`)
+        console.log('✅ Referral commission saved successfully')
+        console.log(`📊 Saved: ${usdtAmount} USDT for Level ${level}`)
       }
     } catch (error) {
       console.error('💥 Error in createReferralCommissionRecord:', error)
@@ -360,15 +335,12 @@ export class DualReferralService {
    */
   async getReferralStats(userId: string): Promise<{
     totalUsdtEarned: number
-    totalTonEarned: number
     totalReferrals: number
     levelStats: Array<{
       level: number
       count: number
       usdtEarned: number
-      tonEarned: number
       usdtRate: number
-      tonRate: number
     }>
   }> {
     try {
@@ -382,11 +354,10 @@ export class DualReferralService {
         throw new Error(`Failed to get referral stats: ${error.message}`)
       }
 
-      // Handle both old and new commission formats
+      // Calculate total USDT earned
       const totalUsdtEarned = commissions?.reduce((sum, c) => {
         return sum + (c.usdt_commission || c.commission_amount || 0)
       }, 0) || 0
-      const totalTonEarned = commissions?.reduce((sum, c) => sum + (c.ton_commission || 0), 0) || 0
 
       // Get actual referral counts by level
       const referralChain = await this.getReferralChain(userId)
@@ -409,9 +380,7 @@ export class DualReferralService {
           level: rate.level,
           count: referralCount,
           usdtEarned: levelCommissions.reduce((sum, c) => sum + (c.usdt_commission || c.commission_amount || 0), 0),
-          tonEarned: levelCommissions.reduce((sum, c) => sum + (c.ton_commission || 0), 0),
-          usdtRate: rate.usdtRate,
-          tonRate: rate.tonRate
+          usdtRate: rate.usdtRate
         }
       }))
 
@@ -420,7 +389,6 @@ export class DualReferralService {
 
       return {
         totalUsdtEarned,
-        totalTonEarned,
         totalReferrals: allReferrals?.length || 0,
         levelStats
       }

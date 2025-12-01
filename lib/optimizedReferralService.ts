@@ -3,20 +3,16 @@ import { createSupabaseClient } from './supabase'
 export interface ReferralCommissionRates {
   level: number
   usdtRate: number
-  tonRate: number
 }
 
 export interface OptimizedReferralStats {
   totalUsdtEarned: number
-  totalTonEarned: number
   totalReferrals: number
   levelStats: Array<{
     level: number
     count: number
     usdtEarned: number
-    tonEarned: number
     usdtRate: number
-    tonRate: number
   }>
 }
 
@@ -24,10 +20,10 @@ export class OptimizedReferralService {
   private supabase = createSupabaseClient()
 
   private readonly commissionRates: ReferralCommissionRates[] = [
-    { level: 1, usdtRate: 5, tonRate: 20 },
-    { level: 2, usdtRate: 3, tonRate: 15 },
-    { level: 3, usdtRate: 2, tonRate: 10 },
-    { level: 4, usdtRate: 1, tonRate: 8 }
+    { level: 1, usdtRate: 5 },
+    { level: 2, usdtRate: 3 },
+    { level: 3, usdtRate: 2 },
+    { level: 4, usdtRate: 1 }
   ]
 
   /**
@@ -70,13 +66,9 @@ export class OptimizedReferralService {
         throw userProfile.error
       }
 
-      // Calculate totals efficiently
+      // Calculate total USDT earned
       const totalUsdtEarned = commissions?.reduce((sum, c) => {
         return sum + (c.usdt_commission || c.commission_amount || 0)
-      }, 0) || 0
-
-      const totalTonEarned = commissions?.reduce((sum, c) => {
-        return sum + (c.ton_commission || 0)
       }, 0) || 0
 
       // Group commissions by level for efficient processing
@@ -108,15 +100,12 @@ export class OptimizedReferralService {
           level: rate.level,
           count: rate.level === 1 ? (directReferralsCount.count || 0) : uniqueReferrals.size,
           usdtEarned: levelCommissions.reduce((sum, c) => sum + (c.usdt_commission || c.commission_amount || 0), 0),
-          tonEarned: levelCommissions.reduce((sum, c) => sum + (c.ton_commission || 0), 0),
-          usdtRate: rate.usdtRate,
-          tonRate: rate.tonRate
+          usdtRate: rate.usdtRate
         }
       })
 
       const result = {
         totalUsdtEarned,
-        totalTonEarned,
         totalReferrals: directReferralsCount.count || 0,
         levelStats
       }
@@ -163,7 +152,7 @@ export class OptimizedReferralService {
     // Batch query to get all sponsor relationships
     const { data: allProfiles, error } = await this.supabase
       .from('profiles')
-      .select('id, sponsor_id, referral_code, full_name, main_wallet_balance, total_jarvis_tokens')
+      .select('id, sponsor_id, referral_code, full_name, main_wallet_balance')
 
     if (error || !allProfiles) {
       console.error('Error fetching profiles for referral chain:', error)

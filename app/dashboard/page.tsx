@@ -25,13 +25,11 @@ import { useOptimizedData } from '@/hooks/useOptimizedData'
 
 // Lazy load heavy components
 const IncomeModal = lazy(() => import('@/components/dashboard/IncomeModal'))
-const TonPurchaseModal = lazy(() => import('@/components/dashboard/TonPurchaseModal'))
 
 interface Profile {
   id: string
   full_name: string
   referral_code: string
-  total_jarvis_tokens: number
   main_wallet_balance: number
   fund_wallet_balance: number
 }
@@ -46,19 +44,7 @@ interface InvestmentPlan {
   created_at: string
 }
 
-interface TonStakingPlan {
-  id: string
-  user_id: string
-  amount: number
-  staking_period: number
-  daily_percentage: number
-  start_date: string
-  end_date: string
-  status: 'active' | 'completed' | 'withdrawn'
-  total_profit_earned: number
-  rewards_claimed: number
-  created_at: string
-}
+
 
 export default function DashboardPage() {
   const { user, loading, signOut } = useAuth()
@@ -70,21 +56,12 @@ export default function DashboardPage() {
   const [incomeData, setIncomeData] = useState<any[]>([])
   const [referralCommissions, setReferralCommissions] = useState(0)
   const [referralUsdtEarned, setReferralUsdtEarned] = useState(0)
-  const [referralTonEarned, setReferralTonEarned] = useState(0)
   const [totalReferrals, setTotalReferrals] = useState(0)
   const [teamInvestment, setTeamInvestment] = useState(0)
-  const [totalTonStaked, setTotalTonStaked] = useState(0)
   const [plans, setPlans] = useState<InvestmentPlan[]>([])
-  const [tonStakingPlans, setTonStakingPlans] = useState<TonStakingPlan[]>([])
-  const [totalTonEarned, setTotalTonEarned] = useState(0)
   const [stakingIncome, setStakingIncome] = useState(0)
   const [loadingData, setLoadingData] = useState(true)
   const [showSkeleton, setShowSkeleton] = useState(false) // Always false - no skeleton
-  const [showTonModal, setShowTonModal] = useState(false)
-  const [tonAmount, setTonAmount] = useState('')
-  const [tonPurchasing, setTonPurchasing] = useState(false)
-  const [tonError, setTonError] = useState('')
-  const [tonSuccess, setTonSuccess] = useState('')
   const supabase = createSupabaseClient()
 
   useEffect(() => {
@@ -105,7 +82,6 @@ export default function DashboardPage() {
       const [
         profileResult,
         plansResult,
-        tonStakingResult,
         profitDistributionsResult,
         legacyCommissionsResult
       ] = await Promise.allSettled([
@@ -122,13 +98,6 @@ export default function DashboardPage() {
           .select('*')
           .eq('user_id', user?.id)
           .eq('is_active', true),
-
-        // TON staking plans query
-        supabase
-          .from('ton_staking_plans')
-          .select('*')
-          .eq('user_id', user?.id)
-          .order('created_at', { ascending: false }),
 
         // Profit distributions query (for staking income)
         supabase
@@ -187,21 +156,7 @@ export default function DashboardPage() {
         }
       }
 
-      // Process TON staking data
-      if (tonStakingResult.status === 'fulfilled' && !tonStakingResult.value.error) {
-        const tonStakingData = tonStakingResult.value.data || []
-        setTonStakingPlans(tonStakingData)
 
-        // Calculate total TON earned and staked
-        const totalTonEarned = tonStakingData.reduce((sum: number, plan: TonStakingPlan) =>
-          sum + (plan.total_profit_earned || 0), 0)
-        setTotalTonEarned(totalTonEarned)
-
-        const totalStaked = tonStakingData
-          .filter((plan: TonStakingPlan) => plan.status === 'active')
-          .reduce((sum: number, plan: TonStakingPlan) => sum + (plan.amount || 0), 0)
-        setTotalTonStaked(totalStaked)
-      }
 
       // Process referral data in parallel after profile is available
       if (profileData?.referral_code) {
@@ -212,7 +167,7 @@ export default function DashboardPage() {
           // Optimized referral stats (simplified)
           supabase
             .from('referral_commissions')
-            .select('commission_amount, ton_commission, level, referred_id')
+            .select('commission_amount, level, referred_id')
             .eq('referrer_id', user?.id),
 
           // Direct referrals for team investment
@@ -226,11 +181,9 @@ export default function DashboardPage() {
         if (referralStatsResult.status === 'fulfilled' && !referralStatsResult.value.error) {
           const commissions = referralStatsResult.value.data || []
           const totalUsdtEarned = commissions.reduce((sum, c) => sum + (c.commission_amount || 0), 0)
-          const totalTonEarned = commissions.reduce((sum, c) => sum + (c.ton_commission || 0), 0)
 
           setReferralCommissions(totalUsdtEarned)
           setReferralUsdtEarned(totalUsdtEarned)
-          setReferralTonEarned(totalTonEarned)
 
           // Count unique referrals from commissions
           const uniqueReferrals = new Set(commissions.map(c => c.referred_id)).size
@@ -336,18 +289,7 @@ export default function DashboardPage() {
           }
           break
 
-        case 'staking-referral':
-          // Fetch TON staking plans and distributions
-          const { data: stakingPlans, error: tonStakingError } = await supabase
-            .from('ton_staking_plans')
-            .select('*')
-            .eq('user_id', user?.id)
-            .order('created_at', { ascending: false })
 
-          if (!tonStakingError) {
-            setIncomeData(stakingPlans || [])
-          }
-          break
 
         default:
           setIncomeData([])
@@ -365,62 +307,7 @@ export default function DashboardPage() {
     router.push('/')
   }
 
-  const handleTonPurchase = async () => {
-    if (!tonAmount || !profile) return
 
-    setTonPurchasing(true)
-    setTonError('')
-    setTonSuccess('')
-
-    const coinsToBuy = parseFloat(tonAmount)
-
-    // Validation
-    if (coinsToBuy <= 0) {
-      setTonError('Please enter a valid amount of TON coins to purchase')
-      setTonPurchasing(false)
-      return
-    }
-
-    try {
-      const response = await fetch('/api/ton/purchase', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          tonAmount: tonAmount,
-          userId: user.id
-        })
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to purchase TON coins')
-      }
-
-      // Update local state with response data
-      setProfile((prev: any) => ({
-        ...prev,
-        fund_wallet_balance: data.newFundBalance,
-        total_jarvis_tokens: data.newTonBalance
-      }))
-
-      setTonSuccess(data.message)
-      setTonAmount('')
-
-      // Close modal after 2 seconds
-      setTimeout(() => {
-        setShowTonModal(false)
-        setTonSuccess('')
-      }, 2000)
-
-    } catch (error: any) {
-      setTonError(error.message || 'Failed to purchase TON coins')
-    } finally {
-      setTonPurchasing(false)
-    }
-  }
 
   // Render dashboard immediately without loading states
   if (!user) {
@@ -546,7 +433,7 @@ export default function DashboardPage() {
         {/* Staking Notice */}
         <div className="bg-amber-900/20 border border-amber-800 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 overflow-hidden">
           <div className="whitespace-nowrap animate-marquee">
-            <p className="text-white inline-block">Staking Started from 10 USDT: Earn 3% daily on USDT and TON. Referral Commission up to 10 Levels</p>
+            <p className="text-white inline-block">Staking Started from 10 USDT: Earn 3% daily. Referral Commission up to 10 Levels</p>
           </div>
         </div>
 
@@ -581,27 +468,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Jarvis Tokens Card */}
-        <div className="jarvis-card rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-amber-400 to-amber-600 rounded-full flex items-center justify-center">
-                <Coins className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
-              </div>
-              <div>
-                <h3 className="text-white font-semibold text-sm sm:text-base">Ton Coins</h3>
-                <p className="text-lg sm:text-2xl font-bold text-amber-300">{profile.total_jarvis_tokens.toLocaleString()} TON</p>
-                <p className="text-gray-300 text-xs sm:text-sm mb-2">$0.1 per TON</p>
-                <button
-                  onClick={() => setShowTonModal(true)}
-                  className="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1 sm:px-4 rounded-full text-xs sm:text-sm font-semibold mt-2 transition-colors"
-                >
-                  BUY TON
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+
 
         {/* Quick Actions */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
@@ -625,10 +492,7 @@ export default function DashboardPage() {
             <p className="text-white font-semibold text-xs sm:text-sm">Withdraw</p>
           </Link>
 
-          <Link href="/dashboard/bnx-staking" className="jarvis-card rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center hover:scale-105 transition-transform">
-            <Coins className="h-6 w-6 sm:h-8 sm:w-8 text-orange-400 mx-auto mb-2" />
-            <p className="text-white font-semibold text-xs sm:text-sm">TON Staking</p>
-          </Link>
+
 
           <Link href="/dashboard/referral" className="jarvis-card rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center hover:scale-105 transition-transform">
             <Users className="h-6 w-6 sm:h-8 sm:w-8 text-pink-400 mx-auto mb-2" />
@@ -644,21 +508,7 @@ export default function DashboardPage() {
         {/* Income Tracking */}
         <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
 
-          <div className="jarvis-card rounded-xl p-3 sm:p-4 flex items-center justify-between">
-            <div className="flex items-center space-x-2 sm:space-x-3">
-              <Coins className="h-5 w-5 sm:h-6 sm:w-6 text-amber-300" />
-              <div>
-                <p className="text-white font-semibold text-sm sm:text-base">TON Referral Coin</p>
-                <button
-                  onClick={() => handleViewIncome('tokens')}
-                  className="text-amber-300 text-xs sm:text-sm hover:text-amber-200"
-                >
-                  VIEW
-                </button>
-              </div>
-            </div>
-            <p className="text-white font-bold text-sm sm:text-base">{referralTonEarned.toLocaleString()} TON</p>
-          </div>
+
 
 
 
@@ -695,21 +545,7 @@ export default function DashboardPage() {
             <p className="text-white font-bold text-sm sm:text-base">${stakingIncome.toFixed(2)}</p>
           </div>
 
-          <div className="jarvis-card rounded-xl p-3 sm:p-4 flex items-center justify-between">
-            <div className="flex items-center space-x-2 sm:space-x-3">
-              <Users className="h-5 w-5 sm:h-6 sm:w-6 text-orange-400" />
-              <div>
-                <p className="text-white font-semibold text-sm sm:text-base">TON Staking Reward</p>
-                <button
-                  onClick={() => handleViewIncome('staking-referral')}
-                  className="text-amber-300 text-xs sm:text-sm hover:text-amber-200"
-                >
-                  VIEW
-                </button>
-              </div>
-            </div>
-            <p className="text-white font-bold text-sm sm:text-base">TON {totalTonEarned.toFixed(2)}</p>
-          </div>
+
         </div>
 
         {/* Team & Investment Info */}
@@ -731,15 +567,9 @@ export default function DashboardPage() {
                 <p className="text-gray-300 text-xs sm:text-sm">Team Investment</p>
                 <p className="text-lg sm:text-2xl font-bold text-white">${(teamInvestment || 0).toFixed(2)}</p>
               </div>
-              <div className="space-y-2">
-                <div className="text-center">
-                  <p className="text-gray-300 text-xs sm:text-sm">Staking Progress</p>
-                  <p className="text-lg sm:text-2xl font-bold text-white">${(totalProfits || 0).toFixed(2)}</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-gray-300 text-xs sm:text-sm">Stable Wealth</p>
-                  <p className="text-lg sm:text-2xl font-bold text-white">{(totalTonStaked || 0).toLocaleString()} TON</p>
-                </div>
+              <div className="text-center">
+                <p className="text-gray-300 text-xs sm:text-sm">Staking Progress</p>
+                <p className="text-lg sm:text-2xl font-bold text-white">${(totalProfits || 0).toFixed(2)}</p>
               </div>
             </div>
           </div>
@@ -759,19 +589,7 @@ export default function DashboardPage() {
         />
       </Suspense>
 
-      {/* JRC Purchase Modal - Lazy Loaded */}
-      <Suspense fallback={null}>
-        <TonPurchaseModal
-          showTonModal={showTonModal}
-          setShowTonModal={setShowTonModal}
-          tonAmount={tonAmount}
-          setTonAmount={setTonAmount}
-          tonPurchasing={tonPurchasing}
-          tonError={tonError}
-          tonSuccess={tonSuccess}
-          handleTonPurchase={handleTonPurchase}
-        />
-      </Suspense>
+
     </div>
   )
 }

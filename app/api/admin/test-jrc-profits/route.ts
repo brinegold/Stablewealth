@@ -1,23 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { triggerTonStakingProfitDistribution } from '@/lib/profit-distribution'
+import { triggerProfitDistribution } from '@/lib/profit-distribution'
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('Testing JRC staking profit distribution...')
+    console.log('Manual trigger: Starting profit distribution...')
 
-    // Trigger JRC staking profit distribution
-    await triggerTonStakingProfitDistribution()
+    // Trigger profit distribution
+    await triggerProfitDistribution()
 
     return NextResponse.json({
       success: true,
-      message: 'JRC staking profit distribution test completed',
-      timestamp: new Date().toISOString()
+      message: 'Profit distribution completed successfully'
     })
-
-  } catch (error: any) {
-    console.error('Error testing JRC staking profits:', error)
+  } catch (error) {
+    console.error('Error in manual profit distribution:', error)
     return NextResponse.json({
-      error: error.message || 'Failed to test JRC staking profit distribution'
+      success: false,
+      error: 'Failed to distribute profits'
     }, { status: 500 })
   }
 }

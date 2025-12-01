@@ -17,8 +17,8 @@ export default function FeatureSection() {
         <div className="bg-amber-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
           <Users className="h-8 w-8 text-white" />
         </div>
-        <h3 className="text-xl font-semibold text-white mb-2">4-Level Referrals</h3>
-        <p className="text-gray-300">Earn up to 5% USDT commission from your referrals across 4 levels of depth.</p>
+        <h3 className="text-xl font-semibold text-white mb-2">6-Level Referrals</h3>
+        <p className="text-gray-300">Earn up to 10% USDT commission from your referrals across 4 levels of depth.</p>
       </div>
 
       <div className="text-center">

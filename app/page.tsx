@@ -9,7 +9,7 @@ import { TrendingUp, Shield, Users, ArrowRight } from 'lucide-react'
 
 // Lazy load heavy components
 const LazyFeatureSection = lazy(() => import('@/components/FeatureSection'))
-const LazyTokenInfo = lazy(() => import('@/components/TokenInfo'))
+
 
 export default function HomePage() {
   const { user, loading } = useAuth()
@@ -120,7 +120,7 @@ export default function HomePage() {
               <h3 className="text-3xl font-bold text-white mb-3">USDT Staking</h3>
               <p className="text-gray-300 mb-4 text-lg">$10 to $50,000</p>
               <div className="text-4xl font-bold text-amber-300 mb-4">3% Daily</div>
-              <p className="text-gray-300 mb-4 text-lg">100 TON per $10</p>
+              <p className="text-gray-300 mb-4 text-lg">Earn daily rewards on your investment</p>
               <div className="text-sm text-gray-400">
                 Current: $0.1/token<br />
                 Future: $3/token
@@ -131,10 +131,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Token Information - Lazy Loaded */}
-          <Suspense fallback={<div className="jarvis-card rounded-2xl p-8 mb-16 animate-pulse bg-white/5 h-48"></div>}>
-            <LazyTokenInfo />
-          </Suspense>
+
 
           {/* Features - Lazy Loaded */}
           <Suspense fallback={<div className="grid md:grid-cols-3 gap-8 animate-pulse">
@@ -151,7 +148,7 @@ export default function HomePage() {
       <footer className="relative z-10 border-t border-white/20 mt-20">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center text-gray-300">
-            <p>&copy; 2024 Ton Staking. All rights reserved.</p>
+            <p>&copy; 2025 StableGrowth Staking. All rights reserved.</p>
             <p className="mt-2">Smart Crypto Growth Platform</p>
           </div>
         </div>

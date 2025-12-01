@@ -113,16 +113,15 @@ export default function StakingPage() {
 
       if (walletError) throw walletError
 
-      // Process dual referral commissions (USDT + TON)
+      // Process referral commissions (USDT only)
       try {
         await dualReferralService.processDualReferralCommissions({
           userId: user?.id || '',
           amount: stakingAmount,
-          tonEarned: 0, // USDT staking doesn't earn TON coins
           transactionType: 'staking',
           planType: `${selectedPeriod?.label} at ${selectedPeriod?.apy} APY`
         })
-        console.log('Dual referral commissions processed successfully')
+        console.log('Referral commissions processed successfully')
       } catch (referralError) {
         console.error('Error processing referral commissions:', referralError)
         // Don't fail the staking if referral processing fails
