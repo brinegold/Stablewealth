@@ -13,12 +13,12 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'Ton Staking - Smart Crypto Growth Platform',
-  description: 'Invest in Future Smart Crypto Growth with Ton Staking. Revolutionary cryptocurrency investment platform offering secure, decentralized alternatives to traditional money.',
+  title: 'StableWealth - Smart Crypto Growth Platform',
+  description: 'Invest in Future Smart Crypto Growth with StableWealth. Revolutionary cryptocurrency investment platform offering secure, decentralized alternatives to traditional money.',
   keywords: ['crypto', 'staking', 'investment', 'blockchain', 'USDT', 'cryptocurrency'],
-  authors: [{ name: 'Ton Staking Team' }],
-  creator: 'Ton Staking',
-  publisher: 'Ton Staking',
+  authors: [{ name: 'StableWealth Team' }],
+  creator: 'StableWealth',
+  publisher: 'StableWealth',
   formatDetection: {
     email: false,
     address: false,

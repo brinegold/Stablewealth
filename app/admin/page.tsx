@@ -242,8 +242,20 @@ export default function AdminDashboard() {
   }
 
   const handleWithdrawalAction = async (withdrawalId: string, action: 'approve' | 'reject') => {
+    let txHash = '';
+
+    if (action === 'approve') {
+      const input = window.prompt('Please enter the Transaction Hash for this manual withdrawal:');
+      if (input === null) return; // User cancelled
+      if (!input.trim()) {
+        alert('Transaction Hash is required for approval.');
+        return;
+      }
+      txHash = input.trim();
+    }
+
     const loadingMessage = action === 'approve'
-      ? 'Processing withdrawal on blockchain...'
+      ? 'Processing manual withdrawal approval...'
       : 'Rejecting withdrawal...';
 
     // Show loading state
@@ -253,7 +265,7 @@ export default function AdminDashboard() {
     try {
       // Show processing message
       if (action === 'approve') {
-        alert('Processing withdrawal on BSC blockchain. This may take a few moments...');
+        // We can't use alert here as it blocks execution, but we can rely on the UI update after
       }
 
       const response = await fetch('/api/admin/approve-withdrawal', {
@@ -263,7 +275,8 @@ export default function AdminDashboard() {
         },
         body: JSON.stringify({
           withdrawalId,
-          action
+          action,
+          txHash
         })
       })
 
@@ -274,7 +287,7 @@ export default function AdminDashboard() {
 
       if (response.ok) {
         if (action === 'approve') {
-          alert(`✅ Withdrawal approved and processed successfully!\n\n💰 Net Amount: $${data.netAmount?.toFixed(2)}\n💸 Withdrawal Fee: $${data.withdrawalFee?.toFixed(2)}\n🔗 Blockchain TX: ${data.txHash}\n\nThe USDT has been sent to the user's wallet!`)
+          alert(`✅ Withdrawal approved successfully!\n\n💰 Net Amount: $${data.netAmount?.toFixed(2)}\n💸 Withdrawal Fee: $${data.withdrawalFee?.toFixed(2)}\n🔗 Blockchain TX: ${data.txHash}\n\nThe withdrawal has been recorded manually.`)
         } else {
           alert('✅ Withdrawal rejected successfully!')
         }

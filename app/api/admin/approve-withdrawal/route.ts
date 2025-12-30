@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     // TODO: Implement proper admin authentication
     const supabase = createSupabaseServerClient()
 
-    const { withdrawalId, action } = await request.json()
+    const { withdrawalId, action, txHash } = await request.json()
 
     if (!withdrawalId || !action) {
       return NextResponse.json({ error: 'Withdrawal ID and action are required' }, { status: 400 })
@@ -42,39 +42,26 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === 'approve') {
+      if (!txHash) {
+        return NextResponse.json({ error: 'Transaction Hash is required for approval' }, { status: 400 })
+      }
+
       try {
-        console.log('Processing withdrawal approval:', {
+        console.log('Processing manual withdrawal approval:', {
           withdrawalId,
           amount: withdrawal.amount,
           walletAddress: withdrawal.wallet_address,
-          userId: withdrawal.user_id
+          userId: withdrawal.user_id,
+          txHash
         })
 
         // Calculate fee amount (10% fee)
         const withdrawalFee = withdrawal.amount * 0.10
 
-        // Initialize BSC service
-        const bscService = new BSCService(BSC_CONFIG)
-        
-        // Process the blockchain withdrawal with fee handling
-        console.log('Processing withdrawal with fee:', {
-          toAddress: withdrawal.wallet_address,
-          totalAmount: withdrawal.amount,
-          feeAmount: withdrawalFee
-        })
-
-        const withdrawalResult = await bscService.processWithdrawalWithFee(
-          withdrawal.wallet_address,
-          withdrawal.amount,
-          withdrawalFee
-        )
-
-        console.log('Blockchain withdrawal successful:', withdrawalResult.userTransferTx)
-
-        // Use database function to approve withdrawal with blockchain hash
+        // Use database function to approve withdrawal with manual blockchain hash
         const { error: approvalError } = await supabase.rpc('approve_withdrawal_request', {
           p_request_id: withdrawalId,
-          p_admin_notes: `Approved and processed on blockchain. User TX: ${withdrawalResult.userTransferTx}${withdrawalResult.feeTransferTx ? `, Fee TX: ${withdrawalResult.feeTransferTx}` : ''}`
+          p_admin_notes: `Approved manually. User TX: ${txHash}`
         })
 
         if (approvalError) throw approvalError
@@ -83,7 +70,7 @@ export async function POST(request: NextRequest) {
         await supabase
           .from('withdrawal_requests')
           .update({
-            admin_notes: `User TX: ${withdrawalResult.userTransferTx}${withdrawalResult.feeTransferTx ? `, Fee TX: ${withdrawalResult.feeTransferTx}` : ''}`
+            admin_notes: `User TX: ${txHash}`
           })
           .eq('id', withdrawalId)
 
@@ -99,7 +86,7 @@ export async function POST(request: NextRequest) {
 
           // Get user email from auth - with debugging
           console.log("Attempting to get user email for ID:", withdrawal.user_id)
-          
+
           let userEmail = null
           try {
             const { data: authUser } = await (supabaseAdmin.auth as any).admin.getUserById(withdrawal.user_id)
@@ -107,14 +94,14 @@ export async function POST(request: NextRequest) {
             userEmail = authUser?.user?.email
           } catch (authError) {
             console.error("Failed to get user from auth:", authError)
-            
+
             // Fallback: try to get email from profiles table if it exists
             const { data: profileWithEmail } = await supabase
               .from('profiles')
               .select('email')
               .eq('id', withdrawal.user_id)
               .single()
-            
+
             userEmail = profileWithEmail?.email
             console.log("Fallback email from profiles:", userEmail)
           }
@@ -131,7 +118,7 @@ export async function POST(request: NextRequest) {
                 'USDT',
                 'success',
                 withdrawal.wallet_address,
-                `Your withdrawal of ${withdrawal.amount} USDT has been approved and processed successfully. Net amount: ${netAmount} USDT (after 10% fee). Transaction Hash: ${withdrawalResult.userTransferTx}`
+                `Your withdrawal of ${withdrawal.amount} USDT has been approved and processed successfully. Net amount: ${netAmount} USDT (after 10% fee). Transaction Hash: ${txHash}`
               )
               console.log("Withdrawal approval email sent successfully")
             } else {
@@ -145,40 +132,18 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
           success: true,
-          message: 'Withdrawal approved and processed on blockchain',
-          userTransferTx: withdrawalResult.userTransferTx,
-          feeTransferTx: withdrawalResult.feeTransferTx,
+          message: 'Withdrawal approved and processed manually',
+          txHash: txHash,
           netAmount,
           withdrawalFee
         })
 
       } catch (error: any) {
-        console.error('Error processing blockchain withdrawal:', error)
-        
-        // If blockchain transaction fails, reject the withdrawal
-        const { error: rejectionError } = await supabase.rpc('reject_withdrawal_request', {
-          p_request_id: withdrawalId,
-          p_admin_notes: `Blockchain processing failed: ${error.message}`
-        })
+        console.error('Error processing manual withdrawal:', error)
 
-        // Send failure email notification
-        try {
-          const { data: userProfile } = await supabase
-            .from('profiles')
-            .select('full_name')
-            .eq('id', withdrawal.user_id)
-            .single()
-
-          if (userProfile) {
-            console.log("Withdrawal failed - email notification skipped (user email retrieval needs to be implemented)")
-          }
-        } catch (emailError) {
-          console.error("Failed to send withdrawal failure email:", emailError)
-        }
-
-        return NextResponse.json({ 
+        return NextResponse.json({
           error: `Withdrawal processing failed: ${error.message}`,
-          details: 'The withdrawal has been automatically rejected due to blockchain processing failure'
+          details: 'Failed to process manual withdrawal approval'
         }, { status: 500 })
       }
 
@@ -217,8 +182,8 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     console.error('Error in withdrawal approval:', error)
-    return NextResponse.json({ 
-      error: error.message || 'Failed to process withdrawal approval' 
+    return NextResponse.json({
+      error: error.message || 'Failed to process withdrawal approval'
     }, { status: 500 })
   }
 }

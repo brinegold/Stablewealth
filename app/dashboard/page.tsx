@@ -433,7 +433,7 @@ export default function DashboardPage() {
         {/* Staking Notice */}
         <div className="bg-amber-900/20 border border-amber-800 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 overflow-hidden">
           <div className="whitespace-nowrap animate-marquee">
-            <p className="text-white inline-block">Staking Started from 10 USDT: Earn 3% daily. Referral Commission up to 10 Levels</p>
+            <p className="text-white inline-block">Staking Started from 10 USDT: Earn 3% daily. Referral Commission up to 4 Levels</p>
           </div>
         </div>
 

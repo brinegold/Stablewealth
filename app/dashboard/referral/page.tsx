@@ -54,7 +54,8 @@ export default function ReferralPage() {
     if (user && !hasLoaded && !isLoadingData) {
       fetchData()
     }
-  }, [user, hasLoaded, isLoadingData])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, hasLoaded]) // Removed isLoadingData to prevent unnecessary re-runs
 
   const fetchData = async () => {
     if (isLoadingData) return // Prevent duplicate requests
@@ -134,11 +135,11 @@ export default function ReferralPage() {
 
       const endTime = performance.now()
       console.log(`✅ Optimized referral data loaded in ${(endTime - startTime).toFixed(2)}ms`)
-      setHasLoaded(true)
 
     } catch (error) {
       console.error('❌ Error fetching referral data:', error)
     } finally {
+      setHasLoaded(true) // Always set hasLoaded to true to prevent infinite loops
       setIsLoadingData(false)
     }
   }
