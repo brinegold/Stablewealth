@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
+import Logo from '@/components/Logo'
 import { createSupabaseClient } from '@/lib/supabase'
 import { Eye, EyeOff, User } from 'lucide-react'
 
@@ -56,14 +56,10 @@ export default function SignInPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center space-x-2 mb-6">
-            <Image
-              src="/logo_300x300.png"
-              alt="Jarvis Staking Logo"
+            <Logo
               width={48}
               height={48}
               className="h-12 w-12"
-              priority
-              unoptimized={process.env.NODE_ENV === 'development'}
             />
             <h2 className="text-3xl font-bold text-white">Sign In to Stable Wealth</h2>
           </Link>

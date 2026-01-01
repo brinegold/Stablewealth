@@ -22,6 +22,7 @@ import Image from 'next/image'
 import DockNavbar from '@/components/DockNavbar'
 import { dualReferralService } from '@/lib/referralService'
 import { useOptimizedData } from '@/hooks/useOptimizedData'
+import Logo from '@/components/Logo'
 
 // Lazy load heavy components
 const IncomeModal = lazy(() => import('@/components/dashboard/IncomeModal'))
@@ -337,29 +338,18 @@ export default function DashboardPage() {
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-2 sm:space-x-4">
             <div className="flex items-center space-x-1 sm:space-x-2">
-              <Image
-                src="/logo_300x300.png"
-                alt="Stable Wealth Logo"
+              <Logo
                 width={128}
                 height={128}
                 className="!h-24 !w-24 sm:!h-32 sm:!w-32"
-                style={{ width: '96px', height: '96px' }}
-                priority
-                quality={75}
-                placeholder="blur"
-                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
               />
               <span className="text-lg sm:text-2xl font-bold text-white">Stable Wealth</span>
             </div>
             <div className="flex items-center">
-              <Image
-                src="/logo_300x300.png"
-                alt="Stable Wealth Logo"
+              <Logo
                 width={64}
                 height={64}
                 className="!h-12 !w-12 sm:!h-16 sm:!w-16"
-                style={{ width: '48px', height: '48px' }}
-                unoptimized={process.env.NODE_ENV === 'development'}
               />
             </div>
           </div>
@@ -414,15 +404,10 @@ export default function DashboardPage() {
             </div>
             <div className="text-right hidden sm:block">
               <div className="flex items-center space-x-2">
-                <Image
-                  src="/logo_300x300.png"
-                  alt="Stable Wealth Logo"
+                <Logo
                   width={128}
                   height={128}
                   className="!h-24 !w-24 sm:!h-32 sm:!w-32"
-                  style={{ width: '96px', height: '96px' }}
-                  priority
-                  unoptimized={process.env.NODE_ENV === 'development'}
                 />
               </div>
 

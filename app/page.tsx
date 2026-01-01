@@ -9,6 +9,7 @@ import { TrendingUp, Shield, Users, ArrowRight } from 'lucide-react'
 
 // Lazy load heavy components
 const LazyFeatureSection = lazy(() => import('@/components/FeatureSection'))
+import Logo from '@/components/Logo'
 
 
 export default function HomePage() {
@@ -47,17 +48,10 @@ export default function HomePage() {
       <header className="relative z-10 container mx-auto px-4 py-6">
         <nav className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Image
-              src="/logo_300x300.png"
-              alt="Ton Staking Logo"
+            <Logo
               width={128}
               height={128}
               className="!w-32 !h-32"
-              style={{ width: '128px', height: '128px' }}
-              priority
-              quality={85}
-              placeholder="blur"
-              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
             />
           </div>
           <div className="flex items-center space-x-4">

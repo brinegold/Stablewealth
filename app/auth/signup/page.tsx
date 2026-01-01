@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
+import Logo from '@/components/Logo'
 import { createSupabaseClient } from '@/lib/supabase'
 import { Eye, EyeOff, User } from 'lucide-react'
 
@@ -151,14 +151,10 @@ export default function SignUpPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center space-x-2 mb-6">
-            <Image
-              src="/logo_300x300.png"
-              alt="Jarvis Staking Logo"
+            <Logo
               width={120}
               height={120}
               className="h-25 w-25"
-              priority
-              unoptimized={process.env.NODE_ENV === 'development'}
             />
             <h2 className="text-3xl font-bold text-white">Join Stable Wealth</h2>
           </Link>
