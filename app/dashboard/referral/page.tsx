@@ -7,6 +7,8 @@ import { createSupabaseClient } from '@/lib/supabase'
 import { ArrowLeft, Users, Copy, Share, Gift } from 'lucide-react'
 import Link from 'next/link'
 import { optimizedReferralService } from '@/lib/optimizedReferralService'
+import { useOptimizedData } from '@/hooks/useOptimizedData'
+import { useCallback } from 'react'
 
 interface Profile {
   referral_code: string
@@ -33,15 +35,17 @@ export default function ReferralPage() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [stats, setStats] = useState<ReferralStats | null>(null)
   const [copied, setCopied] = useState(false)
-  const [isLoadingData, setIsLoadingData] = useState(false)
-  const [hasLoaded, setHasLoaded] = useState(false)
+
+
   const supabase = createSupabaseClient()
 
   const referralLevels = [
-    { level: 1, percentage: 5 },
-    { level: 2, percentage: 3 },
-    { level: 3, percentage: 2 },
-    { level: 4, percentage: 1 }
+    { level: 1, percentage: 10 },
+    { level: 2, percentage: 5 },
+    { level: 3, percentage: 3 },
+    { level: 4, percentage: 2 },
+    { level: 5, percentage: 1 },
+    { level: 6, percentage: 0.5 }
   ]
 
   useEffect(() => {
@@ -50,99 +54,106 @@ export default function ReferralPage() {
     }
   }, [user, loading, router])
 
-  useEffect(() => {
-    if (user && !hasLoaded && !isLoadingData) {
-      fetchData()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, hasLoaded]) // Removed isLoadingData to prevent unnecessary re-runs
 
-  const fetchData = async () => {
-    if (isLoadingData) return // Prevent duplicate requests
 
-    setIsLoadingData(true)
-    try {
-      console.log('🚀 Starting optimized referral data fetch')
-      const startTime = performance.now()
+  const fetchReferralData = useCallback(async () => {
+    if (!user?.id) return null
 
-      // Use database function for optimized stats fetching
-      const { data: optimizedStats, error: statsError } = await supabase
-        .rpc('get_referral_stats_optimized', { user_id: user?.id })
+    console.log('🚀 Starting optimized referral data fetch')
+    const startTime = performance.now()
 
-      if (statsError) {
-        console.warn('Database function not available, using fallback service')
-        // Fallback to optimized service
-        const fallbackStats = await optimizedReferralService.getReferralStats(user?.id || '')
+    // Use database function for optimized stats fetching
+    const { data: optimizedStats, error: statsError } = await supabase
+      .rpc('get_referral_stats_optimized', { user_id: user.id })
 
-        setStats({
-          total_referrals: fallbackStats.totalReferrals,
-          total_commission: fallbackStats.totalUsdtEarned, // For backward compatibility
-          total_usdt_earned: fallbackStats.totalUsdtEarned,
-          level_stats: fallbackStats.levelStats
-        })
-      } else {
-        // Use optimized database function results
-        setStats({
-          total_referrals: optimizedStats.totalReferrals,
-          total_commission: optimizedStats.totalUsdtEarned,
-          total_usdt_earned: optimizedStats.totalUsdtEarned,
-          level_stats: optimizedStats.levelStats
-        })
+    let statsData = null
+    if (statsError) {
+      console.warn('Database function not available, using fallback service')
+      // Fallback to optimized service
+      const fallbackStats = await optimizedReferralService.getReferralStats(user.id)
+
+      statsData = {
+        total_referrals: fallbackStats.totalReferrals,
+        total_commission: fallbackStats.totalUsdtEarned,
+        total_usdt_earned: fallbackStats.totalUsdtEarned,
+        level_stats: fallbackStats.levelStats
       }
+    } else {
+      // Use optimized database function results
+      statsData = {
+        total_referrals: optimizedStats.totalReferrals,
+        total_commission: optimizedStats.totalUsdtEarned,
+        total_usdt_earned: optimizedStats.totalUsdtEarned,
+        level_stats: optimizedStats.levelStats
+      }
+    }
 
-      // Fetch profile data in parallel
-      const { data: profileData, error: profileError } = await supabase
+    // Fetch profile data in parallel
+    const { data: profileData, error: profileError } = await supabase
+      .from('profiles')
+      .select(`
+        referral_code, 
+        full_name, 
+        sponsor_id,
+        sponsor:profiles!sponsor_id(full_name)
+      `)
+      .eq('id', user.id)
+      .single()
+
+    let profileResult = null
+    if (profileError) {
+      console.warn('Profile join failed, using fallback method')
+      // Fallback method
+      const { data: basicProfile } = await supabase
         .from('profiles')
-        .select(`
-          referral_code, 
-          full_name, 
-          sponsor_id,
-          sponsor:profiles!profiles_sponsor_id_fkey(full_name)
-        `)
-        .eq('id', user?.id)
+        .select('referral_code, full_name, sponsor_id')
+        .eq('id', user.id)
         .single()
 
-      if (profileError) {
-        console.warn('Profile join failed, using fallback method')
-        // Fallback method
-        const { data: basicProfile } = await supabase
+      if (basicProfile?.sponsor_id) {
+        const { data: sponsorData } = await supabase
           .from('profiles')
-          .select('referral_code, full_name, sponsor_id')
-          .eq('id', user?.id)
+          .select('full_name')
+          .eq('referral_code', basicProfile.sponsor_id)
           .single()
 
-        if (basicProfile?.sponsor_id) {
-          const { data: sponsorData } = await supabase
-            .from('profiles')
-            .select('full_name')
-            .eq('referral_code', basicProfile.sponsor_id)
-            .single()
-
-          if (sponsorData) {
-            (basicProfile as any).sponsor_name = sponsorData.full_name
-          }
+        if (sponsorData) {
+          (basicProfile as any).sponsor_name = sponsorData.full_name
         }
-        setProfile(basicProfile)
-      } else {
-        // Use joined data
-        const sponsor = Array.isArray(profileData.sponsor) ? profileData.sponsor[0] : profileData.sponsor
-        const profileWithSponsor = {
-          ...profileData,
-          sponsor_name: sponsor?.full_name
-        }
-        setProfile(profileWithSponsor)
       }
-
-      const endTime = performance.now()
-      console.log(`✅ Optimized referral data loaded in ${(endTime - startTime).toFixed(2)}ms`)
-
-    } catch (error) {
-      console.error('❌ Error fetching referral data:', error)
-    } finally {
-      setHasLoaded(true) // Always set hasLoaded to true to prevent infinite loops
-      setIsLoadingData(false)
+      profileResult = basicProfile
+    } else {
+      // Use joined data
+      const sponsor = Array.isArray(profileData.sponsor) ? profileData.sponsor[0] : profileData.sponsor
+      const profileWithSponsor = {
+        ...profileData,
+        sponsor_name: sponsor?.full_name
+      }
+      profileResult = profileWithSponsor
     }
-  }
+
+    const endTime = performance.now()
+    console.log(`✅ Optimized referral data loaded in ${(endTime - startTime).toFixed(2)}ms`)
+    console.log('📊 Stats Data:', statsData)
+    console.log('👤 Profile Result:', profileResult)
+
+    return { stats: statsData, profile: profileResult }
+  }, [user?.id, supabase])
+
+  const { data, loading: isLoadingData } = useOptimizedData(fetchReferralData, {
+    cacheKey: `referral_data_${user?.id}`,
+    enabled: !!user?.id,
+    cacheExpiry: 5 * 60 * 1000 // 5 minutes
+  })
+
+  useEffect(() => {
+    if (data) {
+      console.log('🔄 Setting state from optimized data:', data)
+      setStats(data.stats)
+      setProfile(data.profile as any)
+
+    }
+  }, [data])
 
   const copyReferralLink = async () => {
     if (!profile) return

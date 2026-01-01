@@ -1,27 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseServerClient, supabaseAdmin } from '@/lib/supabase-server'
-import BSCService from '@/lib/bsc-service'
+
 import EmailService from '@/lib/email-service'
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
 
-const BSC_CONFIG = {
-  rpcUrl: process.env.BSC_RPC_URL || "https://bsc-dataseed1.binance.org/",
-  contractAddress: process.env.PAYMENT_CONTRACT_ADDRESS || "",
-  usdtContractAddress: process.env.USDT_CONTRACT_ADDRESS || "0x55d398326f99059fF775485246999027B3197955",
-  adminFeeWallet: process.env.ADMIN_FEE_WALLET || "",
-  globalAdminWallet: process.env.GLOBAL_ADMIN_WALLET || "",
-  privateKey: process.env.BSC_PRIVATE_KEY || ""
-}
+
 
 export async function POST(request: NextRequest) {
   try {
     const supabase = createSupabaseServerClient()
-    
+
     // Parse request body
     const { amount, walletAddress, userId } = await request.json()
-    
+
     if (!userId) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
     }
@@ -152,21 +145,14 @@ export async function PUT(request: NextRequest) {
     }
 
     if (approve) {
-      // Process the withdrawal using BSC service with fee handling
+      // Process the withdrawal manually (admin confirms they sent the funds)
       try {
-        const bscService = new BSCService(BSC_CONFIG)
-        const withdrawalResult = await bscService.processWithdrawalWithFee(
-          walletAddress || transaction.description.match(/to (\w+)/)?.[1] || '',
-          parseFloat(transaction.amount.toString()),
-          parseFloat(transaction.amount.toString()) * 0.10 // 10% fee
-        )
-
         // Update transaction status to completed
         await supabase
           .from('transactions')
           .update({
-            reference_id: withdrawalResult.userTransferTx,
-            description: `${transaction.description} - User TX: ${withdrawalResult.userTransferTx}${withdrawalResult.feeTransferTx ? `, Fee TX: ${withdrawalResult.feeTransferTx}` : ''}`
+            status: 'completed',
+            description: `${transaction.description} - Manual Approval`
           })
           .eq('id', transactionId)
 
@@ -201,14 +187,12 @@ export async function PUT(request: NextRequest) {
 
         return NextResponse.json({
           success: true,
-          message: "Withdrawal approved and processed",
-          userTransferTx: withdrawalResult.userTransferTx,
-          feeTransferTx: withdrawalResult.feeTransferTx
+          message: "Withdrawal approved and marked as completed"
         })
 
       } catch (txError: any) {
         console.error('Error processing withdrawal:', txError)
-        
+
         // Use database function to handle failed withdrawal
         const { error: approvalError } = await supabase
           .rpc('process_withdrawal_approval', {

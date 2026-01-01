@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { createSupabaseClient } from '@/lib/supabase'
-import { dualReferralService } from '@/lib/referralService'
+import { referralService } from '@/lib/referralService'
 
 interface Profile {
   id: string
@@ -77,7 +77,7 @@ export function useDashboardData(userId: string | undefined) {
           .eq('is_active', true),
 
         // Dual referral stats
-        dualReferralService.getReferralStats(userId)
+        referralService.getReferralStats(userId)
       ])
 
       const newData: DashboardData = { ...initialData }

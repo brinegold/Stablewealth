@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { createSupabaseClient } from '@/lib/supabase'
 import { ArrowLeft, TrendingUp, Star, Shield, Coins } from 'lucide-react'
 import Link from 'next/link'
-import { dualReferralService } from '@/lib/referralService'
+import { referralService } from '@/lib/referralService'
 
 interface Profile {
   fund_wallet_balance: number
@@ -127,7 +127,7 @@ export default function InvestPage() {
 
       // Process referral commissions (USDT only)
       try {
-        await dualReferralService.processDualReferralCommissions({
+        await referralService.processReferralCommissions({
           userId: user?.id || '',
           amount: investAmount,
           transactionType: 'investment',

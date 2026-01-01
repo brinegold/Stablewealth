@@ -20,7 +20,7 @@ import {
 import Link from 'next/link'
 import Image from 'next/image'
 import DockNavbar from '@/components/DockNavbar'
-import { dualReferralService } from '@/lib/referralService'
+import { referralService } from '@/lib/referralService'
 import { useOptimizedData } from '@/hooks/useOptimizedData'
 import Logo from '@/components/Logo'
 
@@ -40,7 +40,7 @@ interface InvestmentPlan {
   plan_type: 'A' | 'B' | 'C'
   investment_amount: number
   daily_percentage: number
-  jarvis_tokens_earned: number
+
   is_active: boolean
   created_at: string
 }
@@ -250,7 +250,7 @@ export default function DashboardPage() {
             .from('referral_commissions')
             .select(`
               *,
-              profiles!referral_commissions_referred_id_fkey(username, referral_code)
+              profiles!referred_id(username, referral_code)
             `)
             .eq('referrer_id', user?.id)
             .order('created_at', { ascending: false })
@@ -418,7 +418,7 @@ export default function DashboardPage() {
         {/* Staking Notice */}
         <div className="bg-amber-900/20 border border-amber-800 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 overflow-hidden">
           <div className="whitespace-nowrap animate-marquee">
-            <p className="text-white inline-block">Staking Started from 10 USDT: Earn 3% daily. Referral Commission up to 4 Levels</p>
+            <p className="text-white inline-block">Staking Started from 10 USDT: Earn 3% daily. Referral Commission up to 6 Levels</p>
           </div>
         </div>
 

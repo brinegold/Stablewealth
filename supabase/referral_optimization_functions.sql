@@ -2,6 +2,8 @@
 -- These functions reduce the number of database queries and improve loading times
 
 -- Function to get referral chain recursively in a single query
+DROP FUNCTION IF EXISTS get_referral_chain_recursive(UUID, INTEGER);
+
 CREATE OR REPLACE FUNCTION get_referral_chain_recursive(
     start_user_id UUID,
     max_levels INTEGER DEFAULT 4
@@ -11,7 +13,6 @@ RETURNS TABLE (
     full_name TEXT,
     referral_code TEXT,
     main_wallet_balance DECIMAL,
-    total_jarvis_tokens DECIMAL,
     level INTEGER
 ) AS $$
 BEGIN
@@ -23,7 +24,6 @@ BEGIN
             p.full_name,
             p.referral_code,
             p.main_wallet_balance,
-            p.total_jarvis_tokens,
             0 as current_level,
             p.sponsor_id
         FROM profiles p
@@ -37,7 +37,6 @@ BEGIN
             referrer.full_name,
             referrer.referral_code,
             referrer.main_wallet_balance,
-            referrer.total_jarvis_tokens,
             rc.current_level + 1,
             referrer.sponsor_id
         FROM referral_chain rc
@@ -50,7 +49,6 @@ BEGIN
         rc.full_name,
         rc.referral_code,
         rc.main_wallet_balance,
-        rc.total_jarvis_tokens,
         rc.current_level as level
     FROM referral_chain rc
     WHERE rc.current_level > 0  -- Exclude the starting user

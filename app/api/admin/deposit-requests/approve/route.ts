@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseServerClient, supabaseAdmin } from '@/lib/supabase-server'
 import EmailService from '@/lib/email-service'
+import { referralService } from '@/lib/referralService'
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
@@ -26,14 +27,14 @@ export async function POST(request: NextRequest) {
 
     if (processError) {
       console.error('Error processing deposit approval:', processError)
-      return NextResponse.json({ 
-        error: 'Failed to process deposit approval' 
+      return NextResponse.json({
+        error: 'Failed to process deposit approval'
       }, { status: 500 })
     }
 
     if (!result.success) {
-      return NextResponse.json({ 
-        error: result.error || 'Failed to approve deposit' 
+      return NextResponse.json({
+        error: result.error || 'Failed to approve deposit'
       }, { status: 400 })
     }
 
@@ -46,6 +47,20 @@ export async function POST(request: NextRequest) {
       `)
       .eq('id', requestId)
       .single()
+
+    // Process referral commissions for the deposit
+    try {
+      await referralService.processReferralCommissions({
+        userId: depositRequest.user_id,
+        amount: result.amount,
+        transactionType: 'deposit',
+        planType: 'deposit'
+      })
+    } catch (commissionError) {
+      console.error('Error processing referral commissions:', commissionError)
+      // Don't fail the deposit if commission processing fails
+      // Admin can manually fix commissions later
+    }
 
     // Send approval email to user
     try {
@@ -81,8 +96,8 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     console.error("Error approving deposit request:", error)
-    return NextResponse.json({ 
-      error: error.message || "Failed to approve deposit request" 
+    return NextResponse.json({
+      error: error.message || "Failed to approve deposit request"
     }, { status: 500 })
   }
 }

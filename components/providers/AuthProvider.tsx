@@ -13,7 +13,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
-  signOut: async () => {},
+  signOut: async () => { },
 })
 
 export const useAuth = () => {
@@ -27,7 +27,8 @@ export const useAuth = () => {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any | null>(null)
   const [loading, setLoading] = useState(true)
-  const supabase = createSupabaseClient()
+  // Create the client once and keep it stable across renders
+  const [supabase] = useState(() => createSupabaseClient())
 
   useEffect(() => {
     // Get initial session

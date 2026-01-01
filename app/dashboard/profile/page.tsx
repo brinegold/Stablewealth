@@ -13,7 +13,7 @@ interface Profile {
   country: string
   mobile_no: string
   referral_code: string
-  total_jarvis_tokens: number
+
 }
 
 export default function ProfilePage() {
@@ -53,7 +53,7 @@ export default function ProfilePage() {
         .single()
 
       if (error) throw error
-      
+
       setProfile(data)
       setFormData({
         fullName: data.full_name || '',
@@ -96,7 +96,7 @@ export default function ProfilePage() {
       setSuccess('Profile updated successfully!')
       setIsEditing(false)
       fetchProfile()
-      
+
       // Clear password field
       setFormData(prev => ({ ...prev, password: '' }))
 
@@ -190,9 +190,8 @@ export default function ProfilePage() {
                 value={formData.fullName}
                 onChange={handleChange}
                 disabled={!isEditing}
-                className={`w-full px-4 py-3 border border-white/20 rounded-lg text-white ${
-                  isEditing ? 'bg-white/10' : 'bg-white/5'
-                } ${isEditing ? '' : 'text-gray-400'}`}
+                className={`w-full px-4 py-3 border border-white/20 rounded-lg text-white ${isEditing ? 'bg-white/10' : 'bg-white/5'
+                  } ${isEditing ? '' : 'text-gray-400'}`}
               />
             </div>
 
@@ -205,9 +204,8 @@ export default function ProfilePage() {
                 value={formData.country}
                 onChange={handleChange}
                 disabled={!isEditing}
-                className={`w-full px-4 py-3 border border-white/20 rounded-lg text-white ${
-                  isEditing ? 'bg-white/10' : 'bg-white/5'
-                } ${isEditing ? '' : 'text-gray-400'}`}
+                className={`w-full px-4 py-3 border border-white/20 rounded-lg text-white ${isEditing ? 'bg-white/10' : 'bg-white/5'
+                  } ${isEditing ? '' : 'text-gray-400'}`}
               >
                 <option value="" className="bg-gray-800">--Select--</option>
                 <option value="US" className="bg-gray-800">United States</option>
@@ -235,9 +233,8 @@ export default function ProfilePage() {
                   value={formData.mobileNo}
                   onChange={handleChange}
                   disabled={!isEditing}
-                  className={`w-full pl-10 pr-4 py-3 border border-white/20 rounded-lg text-white ${
-                    isEditing ? 'bg-white/10' : 'bg-white/5'
-                  } ${isEditing ? '' : 'text-gray-400'}`}
+                  className={`w-full pl-10 pr-4 py-3 border border-white/20 rounded-lg text-white ${isEditing ? 'bg-white/10' : 'bg-white/5'
+                    } ${isEditing ? '' : 'text-gray-400'}`}
                 />
               </div>
             </div>
@@ -257,15 +254,7 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Jarvis Tokens Display */}
-            <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-lg p-4">
-              <div className="flex justify-between items-center">
-                <span className="text-white font-medium">Total Jarvis Coins</span>
-                <span className="text-yellow-400 font-bold text-lg">
-                  {profile?.total_jarvis_tokens.toLocaleString() || 0} JRC
-                </span>
-              </div>
-            </div>
+
 
             {isEditing && (
               <div>

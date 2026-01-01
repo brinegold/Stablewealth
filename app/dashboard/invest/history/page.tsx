@@ -119,7 +119,6 @@ export default function InvestHistoryPage() {
   const totalInvested = investments.reduce((sum, inv) => sum + inv.investment_amount, 0)
   const totalProfit = investments.reduce((sum, inv) => sum + (inv.total_profit_earned || 0), 0)
   const activeInvestments = investments.filter(inv => inv.status === 'active').length
-  const totalTokensEarned = investments.reduce((sum, inv) => sum + (inv.jarvis_tokens_earned || 0), 0)
 
   if (loading || loadingData) {
     return (
@@ -245,10 +244,6 @@ export default function InvestHistoryPage() {
                         <div>
                           <p className="text-gray-400">Profit Earned</p>
                           <p className="text-green-400 font-semibold">${(investment.total_profit_earned || 0).toFixed(2)}</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-400">JRC Coins</p>
-                          <p className="text-yellow-400 font-semibold">{(investment.jarvis_tokens_earned || 0).toLocaleString()}</p>
                         </div>
                         <div>
                           <p className="text-gray-400">Start Date</p>

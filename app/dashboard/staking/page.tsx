@@ -7,7 +7,7 @@ import { createSupabaseClient } from '@/lib/supabase'
 import { ArrowLeft, Coins, History } from 'lucide-react'
 import Link from 'next/link'
 import DockNavbar from '@/components/DockNavbar'
-import { dualReferralService } from '@/lib/referralService'
+import { referralService } from '@/lib/referralService'
 
 interface Profile {
   fund_wallet_balance: number
@@ -115,7 +115,7 @@ export default function StakingPage() {
 
       // Process referral commissions (USDT only)
       try {
-        await dualReferralService.processDualReferralCommissions({
+        await referralService.processReferralCommissions({
           userId: user?.id || '',
           amount: stakingAmount,
           transactionType: 'staking',

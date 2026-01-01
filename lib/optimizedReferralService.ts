@@ -20,10 +20,12 @@ export class OptimizedReferralService {
   private supabase = createSupabaseClient()
 
   private readonly commissionRates: ReferralCommissionRates[] = [
-    { level: 1, usdtRate: 5 },
-    { level: 2, usdtRate: 3 },
-    { level: 3, usdtRate: 2 },
-    { level: 4, usdtRate: 1 }
+    { level: 1, usdtRate: 10 },
+    { level: 2, usdtRate: 5 },
+    { level: 3, usdtRate: 3 },
+    { level: 4, usdtRate: 2 },
+    { level: 5, usdtRate: 1 },
+    { level: 6, usdtRate: 0.5 }
   ]
 
   /**
@@ -36,7 +38,7 @@ export class OptimizedReferralService {
       // Single query to get all referral commissions with aggregation
       const { data: commissions, error: commissionsError } = await this.supabase
         .from('referral_commissions')
-        .select('level, usdt_commission, ton_commission, commission_amount, referred_id')
+        .select('level, commission_amount, referred_id')
         .eq('referrer_id', userId)
 
       if (commissionsError) {
@@ -68,7 +70,7 @@ export class OptimizedReferralService {
 
       // Calculate total USDT earned
       const totalUsdtEarned = commissions?.reduce((sum, c) => {
-        return sum + (c.usdt_commission || c.commission_amount || 0)
+        return sum + (c.commission_amount || 0)
       }, 0) || 0
 
       // Group commissions by level for efficient processing
@@ -99,7 +101,7 @@ export class OptimizedReferralService {
         return {
           level: rate.level,
           count: rate.level === 1 ? (directReferralsCount.count || 0) : uniqueReferrals.size,
-          usdtEarned: levelCommissions.reduce((sum, c) => sum + (c.usdt_commission || c.commission_amount || 0), 0),
+          usdtEarned: levelCommissions.reduce((sum, c) => sum + (c.commission_amount || 0), 0),
           usdtRate: rate.usdtRate
         }
       })
