@@ -105,20 +105,11 @@ export async function POST(request: NextRequest) {
 
       if (userProfile && authUser.user?.email) {
         const emailService = new EmailService()
-        await emailService.sendDepositNotification(
-          authUser.user.email,
-          userProfile.full_name || 'User',
-          parseFloat(netAmount.toString()),
-          'USDT',
-          'success',
-          txHash,
-          parseFloat(fee.toString()),
-          parseFloat(netAmount.toString())
-        )
-        console.log("Deposit success email sent")
+        // Send pending notification (you might want to create a specific method for this)
+        console.log("Deposit pending - email notification skipped for now")
       }
     } catch (emailError) {
-      console.error("Failed to send deposit success email:", emailError)
+      console.error("Failed to send deposit email:", emailError)
       // Don't fail the transaction if email fails
     }
 
