@@ -25,9 +25,9 @@ export const metadata: Metadata = {
     telephone: false,
   },
   icons: {
-    icon: '/logo_32x32.png',
-    shortcut: '/logo_32x32.png',
-    apple: '/logo_32x32.png',
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
   },
   manifest: '/manifest.json',
   robots: {

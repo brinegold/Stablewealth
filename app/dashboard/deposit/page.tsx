@@ -285,7 +285,7 @@ export default function ManualDepositPage() {
                   <p>• Send USDT on BEP20 network only</p>
                   <p>• Copy the transaction hash after sending</p>
                   <p>• Submit the form below with exact amount and tx hash</p>
-                  <p>• Processing time: 1-24 hours</p>
+                  <p>• Processing time: 1-5 minutes</p>
                 </div>
               </div>
             </div>
@@ -465,19 +465,6 @@ export default function ManualDepositPage() {
           </div>
           <ExternalLink className="h-5 w-5 text-gray-400" />
         </Link>
-
-        {/* Information */}
-        <div className="jarvis-card rounded-xl p-4">
-          <h3 className="text-white font-semibold mb-2">Manual Deposit Process</h3>
-          <ul className="text-gray-300 text-sm space-y-1">
-            <li>• Send USDT to the provided wallet address</li>
-            <li>• Submit this form with transaction details</li>
-            <li>• Admin will verify the transaction</li>
-            <li>• Balance credited after approval (1-24 hours)</li>
-            <li>• Processing fee: 1% of deposit amount</li>
-            <li>• Minimum: $10 • Maximum: $50,000</li>
-          </ul>
-        </div>
       </div>
     </div>
   )
