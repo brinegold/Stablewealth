@@ -35,7 +35,28 @@ export class OptimizedReferralService {
     try {
       console.log('🚀 Starting optimized referral stats fetch for user:', userId)
 
-      // Single query to get all referral commissions with aggregation
+      // Get user's referral code first
+      const { data: userProfile, error: profileError } = await this.supabase
+        .from('profiles')
+        .select('referral_code')
+        .eq('id', userId)
+        .single()
+
+      if (profileError || !userProfile?.referral_code) {
+        console.error('❌ Error fetching user profile:', profileError)
+        return {
+          totalUsdtEarned: 0,
+          totalReferrals: 0,
+          levelStats: this.commissionRates.map(rate => ({
+            level: rate.level,
+            count: 0,
+            usdtEarned: 0,
+            usdtRate: rate.usdtRate
+          }))
+        }
+      }
+
+      // Fetch all referral commissions
       const { data: commissions, error: commissionsError } = await this.supabase
         .from('referral_commissions')
         .select('level, commission_amount, referred_id')
@@ -46,32 +67,13 @@ export class OptimizedReferralService {
         throw commissionsError
       }
 
-      // Single query to get user's referral code and direct referrals count
-      const [userProfile, directReferralsCount] = await Promise.all([
-        this.supabase
-          .from('profiles')
-          .select('referral_code')
-          .eq('id', userId)
-          .single(),
-        this.supabase
-          .from('profiles')
-          .select('id', { count: 'exact', head: true })
-          .eq('sponsor_id', (await this.supabase
-            .from('profiles')
-            .select('referral_code')
-            .eq('id', userId)
-            .single()).data?.referral_code || '')
-      ])
-
-      if (userProfile.error) {
-        console.error('❌ Error fetching user profile:', userProfile.error)
-        throw userProfile.error
-      }
-
       // Calculate total USDT earned
       const totalUsdtEarned = commissions?.reduce((sum, c) => {
         return sum + (c.commission_amount || 0)
       }, 0) || 0
+
+      // Count ALL referrals recursively across all levels
+      const totalReferrals = await this.countAllReferralsRecursive(userProfile.referral_code)
 
       // Group commissions by level for efficient processing
       const commissionsByLevel = new Map<number, any[]>()
@@ -100,33 +102,55 @@ export class OptimizedReferralService {
 
         return {
           level: rate.level,
-          count: rate.level === 1 ? (directReferralsCount.count || 0) : uniqueReferrals.size,
+          count: uniqueReferrals.size,
           usdtEarned: levelCommissions.reduce((sum, c) => sum + (c.commission_amount || 0), 0),
           usdtRate: rate.usdtRate
         }
       })
 
-      // Calculate total referrals across all levels (unique referred_ids)
-      const allUniqueReferrals = new Set<string>()
-      commissions?.forEach(commission => {
-        if (commission.referred_id) {
-          allUniqueReferrals.add(commission.referred_id)
-        }
-      })
-
       const result = {
         totalUsdtEarned,
-        totalReferrals: allUniqueReferrals.size,
+        totalReferrals,
         levelStats
       }
 
-      console.log('✅ Optimized referral stats completed in single batch:', result)
+      console.log('✅ Optimized referral stats completed:', result)
       return result
 
     } catch (error) {
       console.error('💥 Error in optimized referral stats:', error)
       throw error
     }
+  }
+
+  /**
+   * Recursively count all referrals across all levels
+   */
+  private async countAllReferralsRecursive(referralCode: string, depth: number = 0, maxDepth: number = 6): Promise<number> {
+    if (depth >= maxDepth) {
+      return 0
+    }
+
+    // Get direct referrals
+    const { data: directReferrals, error } = await this.supabase
+      .from('profiles')
+      .select('referral_code')
+      .eq('sponsor_id', referralCode)
+
+    if (error || !directReferrals || directReferrals.length === 0) {
+      return 0
+    }
+
+    let totalCount = directReferrals.length
+
+    // Recursively count referrals of each direct referral
+    for (const referral of directReferrals) {
+      if (referral.referral_code) {
+        totalCount += await this.countAllReferralsRecursive(referral.referral_code, depth + 1, maxDepth)
+      }
+    }
+
+    return totalCount
   }
 
   /**

@@ -223,10 +223,12 @@ export class ReferralService {
         })
 
       if (insertError) {
+        console.error('Failed to create referral commission record:', insertError)
         throw insertError
       }
     } catch (error) {
-      // Don't throw error here as the main commission payment succeeded
+      console.error('Error in createReferralCommissionRecord:', error)
+      throw error
     }
   }
 
@@ -363,12 +365,12 @@ export class ReferralService {
         }
       }))
 
-      // Get total referrals using the direct referrals method
-      const allReferrals = await this.getDirectReferrals(userId)
+      // Get total referrals across all levels (unique referred_ids from commissions)
+      const uniqueReferredUsers = new Set(commissions?.map(c => c.referred_id) || [])
 
       return {
         totalUsdtEarned,
-        totalReferrals: allReferrals?.length || 0,
+        totalReferrals: uniqueReferredUsers.size,
         levelStats
       }
     } catch (error) {
