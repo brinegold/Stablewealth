@@ -361,18 +361,8 @@ export default function DashboardPage() {
               <p className="text-xs text-amber-300">User ID: {profile.referral_code}</p>
             </div>
             <div className="flex items-center space-x-1 sm:space-x-2">
-              {/* Social Media Icons */}
               <a
-                href="https://youtube.com/@jarvisstaking"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-1.5 sm:p-2 text-white hover:bg-red-600/20 hover:text-red-400 rounded-full transition-all duration-300"
-                title="Follow us on YouTube"
-              >
-                <Youtube className="h-4 w-4 sm:h-5 sm:w-5" />
-              </a>
-              <a
-                href="https://t.me/+vIW_s8xt3IdmNjg0"
+                href="https://t.me/stablewealtht"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-1.5 sm:p-2 text-white hover:bg-amber-800/20 hover:text-amber-400 rounded-full transition-all duration-300"
@@ -383,7 +373,7 @@ export default function DashboardPage() {
               {/* Existing buttons */}
 
               <a
-                href="mailto:support@jarvisstaking.live"
+                href="mailto:stablewealth@atomicmail.io"
                 className="p-1.5 sm:p-2 text-white hover:bg-white/10 rounded-full"
                 title="Email us"
               >
