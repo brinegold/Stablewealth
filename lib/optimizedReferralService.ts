@@ -106,9 +106,17 @@ export class OptimizedReferralService {
         }
       })
 
+      // Calculate total referrals across all levels (unique referred_ids)
+      const allUniqueReferrals = new Set<string>()
+      commissions?.forEach(commission => {
+        if (commission.referred_id) {
+          allUniqueReferrals.add(commission.referred_id)
+        }
+      })
+
       const result = {
         totalUsdtEarned,
-        totalReferrals: directReferralsCount.count || 0,
+        totalReferrals: allUniqueReferrals.size,
         levelStats
       }
 

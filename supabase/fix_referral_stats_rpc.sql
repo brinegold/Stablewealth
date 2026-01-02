@@ -24,7 +24,7 @@ BEGIN
     -- Build comprehensive stats in a single query
     SELECT json_build_object(
         'totalUsdtEarned', COALESCE(totals.total_usdt, 0),
-        'totalReferrals', COALESCE(direct_count.count, 0),
+        'totalReferrals', COALESCE(all_referrals_count.count, 0),
         'levelStats', COALESCE(level_stats.stats, '[]'::json)
     ) INTO stats
     FROM (
@@ -35,11 +35,11 @@ BEGIN
         WHERE referrer_id = user_id
     ) totals
     CROSS JOIN (
-        -- Count direct referrals
-        SELECT COUNT(*) as count
-        FROM profiles
-        WHERE sponsor_id = user_referral_code
-    ) direct_count
+        -- Count ALL referrals across all levels (unique referred_id)
+        SELECT COUNT(DISTINCT referred_id) as count
+        FROM referral_commissions
+        WHERE referrer_id = user_id
+    ) all_referrals_count
     CROSS JOIN (
         -- Level statistics
         SELECT json_agg(
