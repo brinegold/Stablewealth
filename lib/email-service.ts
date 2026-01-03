@@ -35,6 +35,8 @@ interface WelcomeEmailData {
 }
 class EmailService {
   private transporter: nodemailer.Transporter
+  private baseUrl: string = process.env.NEXT_PUBLIC_APP_URL || 'https://stablewealth.dev'
+  private logoUrl: string = `${this.baseUrl}/logo.png`
 
   constructor() {
     const emailConfig: EmailConfig = {
@@ -107,10 +109,14 @@ class EmailService {
             position: relative;
           }
           .email-header h1 {
-            margin: 0;
+            margin: 15px 0 0 0;
             font-size: 28px;
             font-weight: 300;
             letter-spacing: 0.5px;
+          }
+          .logo-img {
+            max-width: 80px;
+            height: auto;
           }
           .email-header h2 {
             margin: 10px 0 0 0;
@@ -257,6 +263,7 @@ class EmailService {
       <body>
         <div class="email-container">
           <div class="email-header">
+            <img src="${this.logoUrl}" alt="Stable Wealth" class="logo-img">
             <h1>Stable Wealth Platform</h1>
             <h2>${this.getTransactionTitle(transactionType)} Notification</h2>
           </div>
@@ -601,7 +608,7 @@ class EmailService {
       <body>
         <div class="container">
           <div class="header">
-            <img src="https://www.stablewealth.live/_next/image?url=%2Flogo_300x300.png&w=128&q=75" alt="Stable Wealth" class="logo">
+            <img src="${this.logoUrl}" alt="Stable Wealth" class="logo">
             <h1 style="color: white;">Welcome to Stable Wealth Platform</h1>
             <p>Professional Cryptocurrency Staking Solutions</p>
           </div>

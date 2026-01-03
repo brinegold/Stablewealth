@@ -95,7 +95,7 @@ export default function WithdrawPage() {
     }
 
     const withdrawAmount = parseFloat(amount)
-    
+
     if (withdrawAmount < 10) {
       setError('Minimum withdrawal amount is $10')
       setIsSubmitting(false)
@@ -120,7 +120,7 @@ export default function WithdrawPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           amount: withdrawAmount,
           walletAddress: walletAddress,
           userId: user.id
@@ -133,10 +133,10 @@ export default function WithdrawPage() {
         setSuccess(`Withdrawal request submitted successfully! Net amount: $${data.netAmount.toFixed(2)} (after 10% fee). Your request is being processed.`)
         setAmount('')
         setWalletAddress('')
-        
+
         // Update local profile state
         setProfile(prev => prev ? { ...prev, main_wallet_balance: prev.main_wallet_balance - withdrawAmount } : null)
-        
+
         // Refresh pending withdrawal status
         await checkPendingWithdrawal()
       } else {
@@ -190,7 +190,7 @@ export default function WithdrawPage() {
               <div className="ml-3">
                 <h3 className="text-sm font-medium text-orange-200">Pending Withdrawal</h3>
                 <p className="mt-1 text-sm text-orange-300">
-                  You have a pending withdrawal of <span className="font-bold">${pendingWithdrawal.amount.toFixed(2)}</span> awaiting admin approval. 
+                  You have a pending withdrawal of <span className="font-bold">${pendingWithdrawal.amount.toFixed(2)}</span> awaiting admin approval.
                   You cannot submit a new withdrawal request until this one is processed.
                 </p>
               </div>
@@ -282,7 +282,7 @@ export default function WithdrawPage() {
         </div>
 
         {/* Withdrawal History Button */}
-        <Link 
+        <Link
           href="/dashboard/withdraw/history"
           className="jarvis-card rounded-xl p-4 flex items-center justify-between hover:bg-white/10 transition-colors"
         >
@@ -291,29 +291,6 @@ export default function WithdrawPage() {
             <span className="text-white font-semibold">WITHDRAW HISTORY</span>
           </div>
         </Link>
-
-        {/* Information */}
-        <div className="mt-6 space-y-4">
-          <div className="jarvis-card rounded-xl p-4">
-            <h3 className="text-white font-semibold mb-2">Withdrawal Information</h3>
-            <ul className="text-gray-300 text-sm space-y-1">
-              <li>• Minimum withdrawal: $10.00</li>
-              <li>• Withdrawal fee: 10% of withdrawal amount</li>
-              <li>• Processing time: 24-48 hours</li>
-              <li>• Only 1 pending withdrawal allowed at a time</li>
-              <li>• Only profits can be withdrawn</li>
-              <li>• Principal amount cannot be withdrawn</li>
-            </ul>
-          </div>
-
-          <div className="bg-amber-700/20 border border-amber-600 rounded-lg p-4">
-            <h4 className="text-amber-400 font-semibold mb-2">Important Notice</h4>
-            <p className="text-amber-200 text-sm">
-              You can only withdraw profits earned from your investments. 
-              The principal investment amount remains locked in your investment plans.
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   )
