@@ -249,10 +249,7 @@ export default function WithdrawPage() {
                 <span>Withdrawal Amount:</span>
                 <span>${amount || '0.00'}</span>
               </div>
-              <div className="flex justify-between text-sm text-white mb-2">
-                <span>Withdrawal Fee (10%):</span>
-                <span>${amount ? (parseFloat(amount) * 0.10).toFixed(2) : '0.00'}</span>
-              </div>
+
               <div className="flex justify-between text-lg font-bold text-white border-t border-white/20 pt-2">
                 <span>Net Amount:</span>
                 <span>${amount ? (parseFloat(amount) * 0.90).toFixed(2) : '0.00'}</span>

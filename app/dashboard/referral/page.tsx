@@ -268,13 +268,6 @@ export default function ReferralPage() {
               <Copy className="h-4 w-4 mr-2" />
               {copied ? 'Copied!' : 'Copy Link'}
             </button>
-            <button
-              onClick={shareReferralLink}
-              className="flex-1 bg-green-600 hover:bg-green-700 py-3 rounded-lg text-white font-semibold flex items-center justify-center transition-colors"
-            >
-              <Share className="h-4 w-4 mr-2" />
-              Share
-            </button>
           </div>
         </div>
 
