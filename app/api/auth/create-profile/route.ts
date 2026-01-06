@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
         .from('profiles')
         .select('id')
         .eq('referral_code', finalReferralCode)
-        .single()
+        .maybeSingle()
 
       if (!existingProfile) break
 

@@ -91,7 +91,7 @@ export default function DashboardPage() {
           .from('profiles')
           .select('*')
           .eq('id', user?.id)
-          .single(),
+          .maybeSingle(),
 
         // Investment plans query
         supabase
@@ -115,9 +115,29 @@ export default function DashboardPage() {
 
       // Process profile data
       let profileData = null
-      if (profileResult.status === 'fulfilled' && !profileResult.value.error) {
+      if (profileResult.status === 'fulfilled' && !profileResult.value.error && profileResult.value.data) {
         profileData = profileResult.value.data
         setProfile(profileData)
+      } else if (user) {
+        // Profile missing, attempt to create it
+        console.log('Profile missing for user, attempting to create...')
+        const { data: newProfile, error: createError } = await supabase
+          .from('profiles')
+          .insert({
+            id: user.id,
+            full_name: user.user_metadata?.full_name || 'User',
+            sponsor_id: user.user_metadata?.sponsor_id || null,
+          })
+          .select()
+          .maybeSingle()
+
+        if (!createError && newProfile) {
+          console.log('Profile created successfully')
+          profileData = newProfile
+          setProfile(profileData)
+        } else {
+          console.error('Failed to auto-create profile:', createError)
+        }
       }
 
       // Process investment plans data
