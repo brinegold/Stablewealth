@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { useRouter } from 'next/navigation'
 import { createSupabaseClient } from '@/lib/supabase'
-import { ArrowLeft, Users, Copy, Share, Gift } from 'lucide-react'
+import { ArrowLeft, Users, Copy, Share, Gift, ChevronDown, ChevronUp } from 'lucide-react'
 import Link from 'next/link'
 import { optimizedReferralService } from '@/lib/optimizedReferralService'
 import { useOptimizedData } from '@/hooks/useOptimizedData'
@@ -17,6 +17,14 @@ interface Profile {
   sponsor_name?: string
 }
 
+interface ReferralUser {
+  id: string
+  full_name: string
+  referral_code: string
+  level: number
+  joined_at?: string
+}
+
 interface ReferralStats {
   total_referrals: number
   total_commission: number
@@ -27,6 +35,7 @@ interface ReferralStats {
     usdtEarned: number
     usdtRate: number
   }>
+  referrals_by_level?: Record<number, ReferralUser[]>
 }
 
 export default function ReferralPage() {
@@ -35,6 +44,7 @@ export default function ReferralPage() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [stats, setStats] = useState<ReferralStats | null>(null)
   const [copied, setCopied] = useState(false)
+  const [expandedLevels, setExpandedLevels] = useState<Record<number, boolean>>({})
 
 
   const supabase = createSupabaseClient()
@@ -54,7 +64,12 @@ export default function ReferralPage() {
     }
   }, [user, loading, router])
 
-
+  const toggleLevel = (level: number) => {
+    setExpandedLevels(prev => ({
+      ...prev,
+      [level]: !prev[level]
+    }))
+  }
 
   const fetchReferralData = useCallback(async () => {
     if (!user?.id) return null
@@ -66,25 +81,64 @@ export default function ReferralPage() {
     const { data: optimizedStats, error: statsError } = await supabase
       .rpc('get_referral_stats_optimized', { user_id: user.id })
 
+    // Fetch referrals with commissions (only those who have earned commissions)
+    const { data: referralChain, error: chainError } = await supabase
+      .rpc('get_referrals_with_commissions', { user_id: user.id })
+
+    if (chainError) {
+      console.warn('Error fetching referrals with commissions:', chainError)
+    }
+
+    // Group referrals by level
+    const referralsByLevel: Record<number, ReferralUser[]> = {}
+    if (referralChain) {
+      referralChain.forEach((ref: any) => {
+        if (!referralsByLevel[ref.level]) {
+          referralsByLevel[ref.level] = []
+        }
+        referralsByLevel[ref.level].push({
+          id: ref.id,
+          full_name: ref.full_name,
+          referral_code: ref.referral_code,
+          level: ref.level,
+          joined_at: ref.created_at
+        })
+      })
+    }
+
     let statsData = null
     if (statsError) {
       console.warn('Database function not available, using fallback service')
       // Fallback to optimized service
       const fallbackStats = await optimizedReferralService.getReferralStats(user.id)
 
+      // Calculate total referrals from the filtered list (only those with commissions)
+      const totalReferralsWithCommissions = Object.values(referralsByLevel).reduce(
+        (sum, refs) => sum + refs.length,
+        0
+      )
+
       statsData = {
-        total_referrals: fallbackStats.totalReferrals,
+        total_referrals: totalReferralsWithCommissions,
         total_commission: fallbackStats.totalUsdtEarned,
         total_usdt_earned: fallbackStats.totalUsdtEarned,
-        level_stats: fallbackStats.levelStats
+        level_stats: fallbackStats.levelStats,
+        referrals_by_level: referralsByLevel
       }
     } else {
       // Use optimized database function results
+      // Calculate total referrals from the filtered list (only those with commissions)
+      const totalReferralsWithCommissions = Object.values(referralsByLevel).reduce(
+        (sum, refs) => sum + refs.length,
+        0
+      )
+
       statsData = {
-        total_referrals: optimizedStats.totalReferrals,
+        total_referrals: totalReferralsWithCommissions,
         total_commission: optimizedStats.totalUsdtEarned,
         total_usdt_earned: optimizedStats.totalUsdtEarned,
-        level_stats: optimizedStats.levelStats
+        level_stats: optimizedStats.levelStats,
+        referrals_by_level: referralsByLevel
       }
     }
 
@@ -294,14 +348,72 @@ export default function ReferralPage() {
           )}
         </div>
 
+        {/* My Team Section */}
+        <div className="jarvis-card rounded-2xl p-6 mb-6">
+          <h3 className="text-white font-bold text-lg mb-4 flex items-center">
+            <Users className="h-6 w-6 mr-2 text-blue-400" />
+            My Team
+          </h3>
+
+          <div className="space-y-4">
+            {referralLevels.map((level) => {
+              const levelReferrals = stats?.referrals_by_level?.[level.level] || []
+              if (levelReferrals.length === 0) return null
+
+              return (
+                <div key={level.level} className="bg-white/5 rounded-lg overflow-hidden">
+                  <div className="bg-white/10 p-3 flex items-center justify-between">
+                    <h4 className="text-white font-semibold flex items-center">
+                      <span className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-xs mr-2">
+                        {level.level}
+                      </span>
+                      Level {level.level}
+                    </h4>
+                    <span className="text-gray-400 text-sm">{levelReferrals.length} members</span>
+                  </div>
+                  <div className="divide-y divide-white/10">
+                    {levelReferrals.map((ref) => (
+                      <div key={ref.id} className="p-3 hover:bg-white/5 transition-colors">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="text-white font-medium">{ref.full_name}</p>
+                            <p className="text-gray-400 text-xs">ID: {ref.referral_code}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-gray-300 text-xs">
+                              Joined: {ref.joined_at ? new Date(ref.joined_at).toLocaleDateString() : 'N/A'}
+                            </p>
+                            <span className="inline-block px-2 py-0.5 bg-green-500/20 text-green-400 text-[10px] rounded-full mt-1">
+                              Active
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            })}
+
+            {(!stats?.referrals_by_level || Object.keys(stats.referrals_by_level).length === 0) && (
+              <div className="text-center py-8 text-gray-400">
+                <p>No team members found yet.</p>
+                <p className="text-sm mt-2">Share your referral link to start building your team!</p>
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Commission Structure */}
         <div className="jarvis-card rounded-2xl p-6 mb-6">
           <h3 className="text-white font-bold text-lg mb-4">Commission Structure</h3>
           <div className="space-y-3">
-            {/* Always show all 4 levels with actual data when available */}
+            {/* Always show all 6 levels with actual data when available */}
             {referralLevels.map((level) => {
               // Find matching level stat if it exists
               const levelStat = stats?.level_stats?.find(ls => ls.level === level.level)
+              const levelReferrals = stats?.referrals_by_level?.[level.level] || []
+              const isExpanded = expandedLevels[level.level]
 
               return (
                 <div key={level.level} className="p-3 bg-white/5 rounded-lg">

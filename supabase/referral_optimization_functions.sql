@@ -6,14 +6,15 @@ DROP FUNCTION IF EXISTS get_referral_chain_recursive(UUID, INTEGER);
 
 CREATE OR REPLACE FUNCTION get_referral_chain_recursive(
     start_user_id UUID,
-    max_levels INTEGER DEFAULT 4
+    max_levels INTEGER DEFAULT 6
 )
 RETURNS TABLE (
     id UUID,
     full_name TEXT,
     referral_code TEXT,
     main_wallet_balance DECIMAL,
-    level INTEGER
+    level INTEGER,
+    created_at TIMESTAMPTZ
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -25,7 +26,8 @@ BEGIN
             p.referral_code,
             p.main_wallet_balance,
             0 as current_level,
-            p.sponsor_id
+            p.sponsor_id,
+            p.created_at
         FROM profiles p
         WHERE p.id = start_user_id
         
@@ -38,7 +40,8 @@ BEGIN
             referrer.referral_code,
             referrer.main_wallet_balance,
             rc.current_level + 1,
-            referrer.sponsor_id
+            referrer.sponsor_id,
+            referrer.created_at
         FROM referral_chain rc
         JOIN profiles referrer ON referrer.referral_code = rc.sponsor_id
         WHERE rc.current_level < max_levels
@@ -49,7 +52,8 @@ BEGIN
         rc.full_name,
         rc.referral_code,
         rc.main_wallet_balance,
-        rc.current_level as level
+        rc.current_level as level,
+        rc.created_at
     FROM referral_chain rc
     WHERE rc.current_level > 0  -- Exclude the starting user
     ORDER BY rc.current_level;

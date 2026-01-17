@@ -161,7 +161,7 @@ export class OptimizedReferralService {
       // Use a recursive CTE (Common Table Expression) to get the entire chain in one query
       const { data, error } = await this.supabase.rpc('get_referral_chain_recursive', {
         start_user_id: userId,
-        max_levels: 4
+        max_levels: 6
       })
 
       if (error) {
@@ -186,7 +186,7 @@ export class OptimizedReferralService {
     // Batch query to get all sponsor relationships
     const { data: allProfiles, error } = await this.supabase
       .from('profiles')
-      .select('id, sponsor_id, referral_code, full_name, main_wallet_balance')
+      .select('id, sponsor_id, referral_code, full_name, main_wallet_balance, created_at')
 
     if (error || !allProfiles) {
       console.error('Error fetching profiles for referral chain:', error)
@@ -200,7 +200,7 @@ export class OptimizedReferralService {
     let currentUserId = userId
     let level = 1
 
-    while (level <= 4) {
+    while (level <= 6) {
       const currentProfile = profileById.get(currentUserId)
       if (!currentProfile?.sponsor_id) break
 
